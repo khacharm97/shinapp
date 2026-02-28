@@ -3,6 +3,7 @@ import { ComingSoonBanner } from '@/components/coming-soon-banner'
 import { Calculator } from '@/components/calculator'
 
 export default function HomePage() {
+    
   const { t } = useTranslation()
 
   return (
