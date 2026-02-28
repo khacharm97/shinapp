@@ -1,0 +1,6 @@
+{
+  "welcome": "Добро пожаловать в ShinApp",
+  "toggle_theme": "Переключить тему",
+  "language": "Язык",
+  "get_started": "Начните с редактирования src/App.tsx"
+}
