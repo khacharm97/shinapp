@@ -45,7 +45,7 @@ const formSchema = z.object({
 
 export function Calculator() {
   const { t } = useTranslation()
-  const [estimatedCost, setEstimatedCost] = useState<number | null>(null)
+  const [estimatedCost, setEstimatedCost] = useState<[number, number] | null>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,30 +86,30 @@ export function Calculator() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Wall costs
-    const wallCosts: Record<string, number> = {
-      painting: 5000,
-      wallpaper: 4000,
-      plaster: 2250,
-      decorative: 5000,
+    const wallCosts: Record<string, [number, number]> = {
+      painting: [2000, 8000],
+      wallpaper: [3000, 5000],
+      plaster: [1500, 3000],
+      decorative: [4000, 6000],
     }
-    const wallCost = wallCosts[values.walls] || 0
+    const wallCost = wallCosts[values.walls] || [0, 0]
 
     // Floor costs
-    const floorCosts: Record<string, number> = {
-      laminate: 2750,
-      tile: 5750,
-      parquet: 6500,
-      dismantling: 1400,
+    const floorCosts: Record<string, [number, number]> = {
+      laminate: [2000, 3500],
+      tile: [4500, 7000],
+      parquet: [5000, 8000],
+      dismantling: [800, 2000],
     }
-    const floorCost = floorCosts[values.floor] || 0
+    const floorCost = floorCosts[values.floor] || [0, 0]
 
     // Ceiling costs
-    const ceilingCosts: Record<string, number> = {
-      paint: 5000,
-      drywall: 3500,
-      stretch: 6500,
+    const ceilingCosts: Record<string, [number, number]> = {
+      paint: [2000, 8000],
+      drywall: [2000, 5000],
+      stretch: [5000, 8000],
     }
-    const ceilingCost = ceilingCosts[values.ceiling] || 0
+    const ceilingCost = ceilingCosts[values.ceiling] || [0, 0]
 
     // Repair multiplier
     const repairMults: Record<string, number> = {
@@ -136,22 +136,27 @@ export function Calculator() {
     const dateMult = dateMults[values.date] || 1
 
     // Area-based works
-    const baseCost = values.area * (wallCost + floorCost + ceilingCost) * repairMult * materialMult * dateMult
+    const baseCostMin = values.area * (wallCost[0] + floorCost[0] + ceilingCost[0])
+    const baseCostMax = values.area * (wallCost[1] + floorCost[1] + ceilingCost[1])
 
     // Electricity fixed / varied costs
-    let electricityCost = 0
-    if (values.electricity === 'wiring') electricityCost = 150000
-    if (values.electricity === 'sockets') electricityCost = (values.electricity_sockets_count || 0) * 3750
-    if (values.electricity === 'lighting') electricityCost = (values.electricity_lighting_count || 0) * 4500
+    let elecMin = 0, elecMax = 0
+    if (values.electricity === 'wiring') { elecMin = 100000; elecMax = 200000; }
+    if (values.electricity === 'sockets') { elecMin = (values.electricity_sockets_count || 0) * 2500; elecMax = (values.electricity_sockets_count || 0) * 5000; }
+    if (values.electricity === 'lighting') { elecMin = (values.electricity_lighting_count || 0) * 3000; elecMax = (values.electricity_lighting_count || 0) * 6000; }
 
     // Plumbing fixed / varied costs
-    let plumbingCost = 0
-    if (values.plumbing === 'pipes') plumbingCost = 80000
-    if (values.plumbing === 'bathroom') plumbingCost = 160000
-    if (values.plumbing === 'fixtures') plumbingCost = (values.plumbing_fixtures_count || 0) * 8500
+    let plumbMin = 0, plumbMax = 0
+    if (values.plumbing === 'pipes') { plumbMin = 60000; plumbMax = 100000; }
+    if (values.plumbing === 'bathroom') { plumbMin = 120000; plumbMax = 200000; }
+    if (values.plumbing === 'fixtures') { plumbMin = (values.plumbing_fixtures_count || 0) * 5000; plumbMax = (values.plumbing_fixtures_count || 0) * 12000; }
 
-    const totalCost = baseCost + electricityCost + plumbingCost
-    setEstimatedCost(Math.round(totalCost))
+    const combinedMult = repairMult * materialMult * dateMult
+
+    const totalMin = (baseCostMin + elecMin + plumbMin) * combinedMult
+    const totalMax = (baseCostMax + elecMax + plumbMax) * combinedMult
+    
+    setEstimatedCost([Math.round(totalMin), Math.round(totalMax)])
   }
 
   return (
@@ -475,8 +480,8 @@ export function Calculator() {
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-3">
               {t('calc_result')}
             </p>
-            <p className="text-5xl md:text-6xl font-extrabold text-primary flex items-center justify-center gap-2">
-              <span className="opacity-80">֏</span> {estimatedCost.toLocaleString()}
+            <p className="text-4xl md:text-5xl font-extrabold text-primary flex items-center justify-center gap-2">
+              <span className="opacity-80">֏</span> {estimatedCost[0].toLocaleString()} - {estimatedCost[1].toLocaleString()}
             </p>
             <p className="text-xs text-muted-foreground mt-4 opacity-70">
               * This is a rough estimation and may vary based on specific conditions.
