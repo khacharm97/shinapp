@@ -9,6 +9,8 @@
   "calc_desc": "Get a rough estimate for your next building project.",
   "calc_area": "Total Area (m²)",
   "calc_area_placeholder": "e.g. 150",
+  "calc_area_input": "Area (m²)",
+  "calc_count_input": "Count",
   "calc_height": "Ceiling height (m)",
   "calc_height_placeholder": "e.g. 2.8",
   "calc_rooms": "Number of rooms",

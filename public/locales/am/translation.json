@@ -9,6 +9,8 @@
   "calc_desc": "Ստացեք ձեր հաջորդ շինարարական նախագծի մոտավոր արժեքը:",
   "calc_area": "Ընդհանուր մակերես (մ²)",
   "calc_area_placeholder": "օրինակ 150",
+  "calc_area_input": "Մակերես (մ²)",
+  "calc_count_input": "Քանակ",
   "calc_height": "Առաստաղի բարձրություն (մ)",
   "calc_height_placeholder": "օրինակ 2.8",
   "calc_rooms": "Սենյակների քանակ",

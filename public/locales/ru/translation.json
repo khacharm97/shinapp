@@ -9,6 +9,8 @@
   "calc_desc": "Получите примерную оценку вашего следующего строительного проекта.",
   "calc_area": "Общая площадь (м²)",
   "calc_area_placeholder": "например 150",
+  "calc_area_input": "Площадь (м²)",
+  "calc_count_input": "Количество",
   "calc_height": "Высота потолка (м)",
   "calc_height_placeholder": "например 2.8",
   "calc_rooms": "Количество комнат",
