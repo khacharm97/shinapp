@@ -63,5 +63,10 @@
   "calc_contact_info": "Телефон: +374 77-77-77-77 | Эл. почта: example@gmail.com",
   "calc_result": "Примерная стоимость",
   "calc_error_required": "Это поле обязательно",
-  "calc_error_positive": "Значение должно быть больше нуля"
+  "calc_error_positive": "Значение должно быть больше нуля",
+  "calc_wall_area_label": "Площадь стен (м²)",
+  "calc_floor_area_label": "Площадь пола (м²)",
+  "calc_ceiling_area_label": "Площадь потолка (м²)",
+  "calc_electricity_count_label": "Количество точек электрики",
+  "calc_plumbing_count_label": "Количество точек сантехники"
 }

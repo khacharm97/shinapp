@@ -63,5 +63,10 @@
   "calc_contact_info": "Phone: +374 77-77-77-77 | Email: example@gmail.com",
   "calc_result": "Estimated Cost",
   "calc_error_required": "This field is required",
-  "calc_error_positive": "Value must be positive"
+  "calc_error_positive": "Value must be positive",
+  "calc_wall_area_label": "Wall area (m²)",
+  "calc_floor_area_label": "Floor area (m²)",
+  "calc_ceiling_area_label": "Ceiling area (m²)",
+  "calc_electricity_count_label": "Electricity count",
+  "calc_plumbing_count_label": "Plumbing count"
 }

@@ -201,7 +201,7 @@ export function Calculator() {
     setEstimatedCost([Math.round(totalMin), Math.round(totalMax)])
   }
 
-  const renderCheckable = (id: keyof z.infer<typeof formSchema>, langKey: string, inputId?: keyof z.infer<typeof formSchema>, isCount?: boolean) => {
+  const renderCheckable = (id: keyof z.infer<typeof formSchema>, langKey: string, inputId?: keyof z.infer<typeof formSchema>, isCount?: boolean, overrideLabelKey?: string) => {
     const isChecked = form.watch(id)
 
     return (
@@ -221,7 +221,7 @@ export function Calculator() {
             <FormField control={form.control} name={inputId as any} render={({ field }) => (
               <FormItem className="flex flex-col gap-1.5 mt-1">
                 <FormLabel className="text-sm text-muted-foreground font-medium w-full">
-                  {t(langKey)} {t(isCount ? "calc_count_input" : "calc_area_input").toLowerCase()}
+                  {overrideLabelKey ? t(overrideLabelKey) : `${t(langKey)} ${t(isCount ? "calc_count_input" : "calc_area_input").toLowerCase()}`}
                 </FormLabel>
                 <FormControl>
                   <Input type="number" min="0" step="any" placeholder="" {...field} value={field.value || ""} className="h-8 w-full shadow-sm" />
@@ -253,29 +253,29 @@ export function Calculator() {
                   <AccordionItem value="walls" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
                     <AccordionTrigger className="font-semibold text-primary hover:no-underline">{t('calc_walls')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
-                      {renderCheckable("walls_painting", "calc_walls_painting", "walls_painting_area")}
-                      {renderCheckable("walls_wallpaper", "calc_walls_wallpaper", "walls_wallpaper_area")}
-                      {renderCheckable("walls_plaster", "calc_walls_plaster", "walls_plaster_area")}
-                      {renderCheckable("walls_decorative", "calc_walls_decorative", "walls_decorative_area")}
+                      {renderCheckable("walls_painting", "calc_walls_painting", "walls_painting_area", false, "calc_wall_area_label")}
+                      {renderCheckable("walls_wallpaper", "calc_walls_wallpaper", "walls_wallpaper_area", false, "calc_wall_area_label")}
+                      {renderCheckable("walls_plaster", "calc_walls_plaster", "walls_plaster_area", false, "calc_wall_area_label")}
+                      {renderCheckable("walls_decorative", "calc_walls_decorative", "walls_decorative_area", false, "calc_wall_area_label")}
                     </AccordionContent>
                   </AccordionItem>
 
                   <AccordionItem value="floor" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
                     <AccordionTrigger className="font-semibold text-primary hover:no-underline">{t('calc_floor')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
-                      {renderCheckable("floor_laminate", "calc_floor_laminate", "floor_laminate_area")}
-                      {renderCheckable("floor_tile", "calc_floor_tile", "floor_tile_area")}
-                      {renderCheckable("floor_parquet", "calc_floor_parquet", "floor_parquet_area")}
-                      {renderCheckable("floor_dismantling", "calc_floor_dismantling", "floor_dismantling_area")}
+                      {renderCheckable("floor_laminate", "calc_floor_laminate", "floor_laminate_area", false, "calc_floor_area_label")}
+                      {renderCheckable("floor_tile", "calc_floor_tile", "floor_tile_area", false, "calc_floor_area_label")}
+                      {renderCheckable("floor_parquet", "calc_floor_parquet", "floor_parquet_area", false, "calc_floor_area_label")}
+                      {renderCheckable("floor_dismantling", "calc_floor_dismantling", "floor_dismantling_area", false, "calc_floor_area_label")}
                     </AccordionContent>
                   </AccordionItem>
 
                   <AccordionItem value="ceiling" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
                     <AccordionTrigger className="font-semibold text-primary hover:no-underline">{t('calc_ceiling')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
-                      {renderCheckable("ceiling_paint", "calc_ceiling_paint", "ceiling_paint_area")}
-                      {renderCheckable("ceiling_drywall", "calc_ceiling_drywall", "ceiling_drywall_area")}
-                      {renderCheckable("ceiling_stretch", "calc_ceiling_stretch", "ceiling_stretch_area")}
+                      {renderCheckable("ceiling_paint", "calc_ceiling_paint", "ceiling_paint_area", false, "calc_ceiling_area_label")}
+                      {renderCheckable("ceiling_drywall", "calc_ceiling_drywall", "ceiling_drywall_area", false, "calc_ceiling_area_label")}
+                      {renderCheckable("ceiling_stretch", "calc_ceiling_stretch", "ceiling_stretch_area", false, "calc_ceiling_area_label")}
                     </AccordionContent>
                   </AccordionItem>
 
@@ -283,8 +283,8 @@ export function Calculator() {
                     <AccordionTrigger className="font-semibold text-primary hover:no-underline">{t('calc_electricity')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("elec_wiring", "calc_elec_wiring")}
-                      {renderCheckable("elec_sockets", "calc_elec_sockets", "elec_sockets_count", true)}
-                      {renderCheckable("elec_lighting", "calc_elec_lighting", "elec_lighting_count", true)}
+                      {renderCheckable("elec_sockets", "calc_elec_sockets", "elec_sockets_count", true, "calc_electricity_count_label")}
+                      {renderCheckable("elec_lighting", "calc_elec_lighting", "elec_lighting_count", true, "calc_electricity_count_label")}
                     </AccordionContent>
                   </AccordionItem>
 
@@ -293,7 +293,7 @@ export function Calculator() {
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("plumb_pipes", "calc_plumb_pipes")}
                       {renderCheckable("plumb_bathroom", "calc_plumb_bathroom")}
-                      {renderCheckable("plumb_fixtures", "calc_plumb_fixtures", "plumb_fixtures_count", true)}
+                      {renderCheckable("plumb_fixtures", "calc_plumb_fixtures", "plumb_fixtures_count", true, "calc_plumbing_count_label")}
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>

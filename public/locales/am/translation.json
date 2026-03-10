@@ -63,5 +63,10 @@
   "calc_contact_info": "Հեռախոս՝ +374 77-77-77-77 | Էլ․ փոստ՝ example@gmail.com",
   "calc_result": "Մոտավոր արժեքը",
   "calc_error_required": "Այս դաշտը պարտադիր է",
-  "calc_error_positive": "Արժեքը պետք է դրական լինի"
+  "calc_error_positive": "Արժեքը պետք է դրական լինի",
+  "calc_wall_area_label": "Պատի մակերես (մ²)",
+  "calc_floor_area_label": "Հատակի մակերես (մ²)",
+  "calc_ceiling_area_label": "Առաստաղի մակերես (մ²)",
+  "calc_electricity_count_label": "Էլեկտրականության կետերի քանակ",
+  "calc_plumbing_count_label": "Սանտեխնիկայի կետերի քանակ"
 }
