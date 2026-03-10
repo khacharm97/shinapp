@@ -110,42 +110,42 @@ export function Calculator() {
   })
 
   const [submitMode, setSubmitMode] = useState<'basic' | 'email' | 'contact' | null>(null)
-  const [showEmailForm, setShowEmailForm] = useState(false)
+  const [activeFormSection, setActiveFormSection] = useState<'email' | 'contact' | null>(null)
 
   // We rely on onSubmit to ignore area/count values if their respective checkboxes are unchecked,
   // which prevents infinite render loops from form.setValue in a useEffect.
 
   function onBasicSubmit(e: React.MouseEvent) {
     e.preventDefault()
-    setShowEmailForm(false)
+    setActiveFormSection(null)
     setSubmitMode('basic')
     form.handleSubmit(onSubmit)()
   }
 
   function onEmailSubmit(e: React.MouseEvent) {
     e.preventDefault()
-    setShowEmailForm(true)
+    setActiveFormSection('email')
     setSubmitMode(null)
   }
 
-  function onFinalEmailSubmit(e: React.MouseEvent) {
+  function onContactSubmit(e: React.MouseEvent) {
     e.preventDefault()
-    setSubmitMode('email')
+    setActiveFormSection('contact')
+    setSubmitMode(null)
+  }
+
+  function onSecondarySubmit(e: React.MouseEvent) {
+    e.preventDefault()
     
-    // Manually trigger validation for email if they want to send it
+    // Manually trigger validation for email
     const emailValue = form.getValues('email')
     if (!emailValue || !emailValue.includes('@')) {
       form.setError('email', { type: 'manual', message: t('calc_error_required') })
       return
     }
 
+    setSubmitMode(activeFormSection)
     form.handleSubmit(onSubmit)()
-  }
-
-  function onContactSubmit(e: React.MouseEvent) {
-    e.preventDefault()
-    setShowEmailForm(false)
-    setSubmitMode('contact')
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -379,21 +379,23 @@ export function Calculator() {
               <Button type="button" onClick={onBasicSubmit} size="lg" variant="outline" className="w-full text-base shadow-sm hover:shadow-md transition-all">
                 {t('calc_submit_basic')}
               </Button>
-              <Button type="button" onClick={onEmailSubmit} size="lg" variant={showEmailForm ? "default" : "secondary"} className="w-full text-base shadow-md hover:shadow-lg transition-all hidden md:flex">
+              <Button type="button" onClick={onEmailSubmit} size="lg" variant={activeFormSection === 'email' ? "default" : "secondary"} className="w-full text-base shadow-md hover:shadow-lg transition-all hidden md:flex">
                 {t('calc_submit_email')}
               </Button>
-              <Button type="button" onClick={onContactSubmit} size="lg" variant={submitMode === "contact" ? "default" : "secondary"} className="w-full text-base shadow-sm hover:shadow-md transition-all">
+              <Button type="button" onClick={onContactSubmit} size="lg" variant={activeFormSection === 'contact' ? "default" : "secondary"} className="w-full text-base shadow-sm hover:shadow-md transition-all">
                 {t('calc_submit_contact')}
               </Button>
               {/* Mobile-only email button to keep layout balanced if it wraps */}
-              <Button type="button" onClick={onEmailSubmit} size="lg" variant={showEmailForm ? "default" : "secondary"} className="w-full text-base shadow-md hover:shadow-lg transition-all flex md:hidden">
+              <Button type="button" onClick={onEmailSubmit} size="lg" variant={activeFormSection === 'email' ? "default" : "secondary"} className="w-full text-base shadow-md hover:shadow-lg transition-all flex md:hidden">
                 {t('calc_submit_email')}
               </Button>
             </div>
 
-            {showEmailForm && (
+            {activeFormSection && (
               <div className="mt-8 p-6 bg-muted/20 border border-primary/20 rounded-xl space-y-6 animate-in fade-in slide-in-from-top-4">
-                <h4 className="font-semibold text-xl text-primary">{t('calc_submit_email')}</h4>
+                <h4 className="font-semibold text-xl text-primary">
+                  {activeFormSection === 'email' ? t('calc_submit_email') : t('calc_submit_contact')}
+                </h4>
                 <FormField control={form.control} name="email" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('calc_email')}</FormLabel>
@@ -412,8 +414,8 @@ export function Calculator() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <Button type="button" onClick={onFinalEmailSubmit} size="lg" className="w-full text-base shadow-md hover:shadow-lg transition-all">
-                  {t('calc_send')}
+                <Button type="button" onClick={onSecondarySubmit} size="lg" className="w-full text-base shadow-md hover:shadow-lg transition-all">
+                  {activeFormSection === 'email' ? t('calc_send') : t('calc_send_contact')}
                 </Button>
               </div>
             )}
@@ -422,13 +424,14 @@ export function Calculator() {
 
         {submitMode === 'contact' && (
           <div className="mt-8 p-6 rounded-xl bg-secondary/30 border border-secondary text-center animate-in fade-in slide-in-from-top-4 duration-500">
-            <p className="text-lg font-medium text-foreground">
+            <h4 className="text-xl font-bold text-primary mb-4">{t('calc_contact_success')}</h4>
+            <div className="text-lg font-medium text-foreground">
               {t('calc_contact_info').split('|').map((part, index) => (
                 <div key={index}>
                   <span className="block sm:inline sm:mr-4 last:mr-0">{part.trim()}</span>
                 </div>
               ))}
-            </p>
+            </div>
           </div>
         )}
 
@@ -440,7 +443,7 @@ export function Calculator() {
           </div>
         )}
 
-        {(submitMode === 'basic' || submitMode === 'email') && estimatedCost !== null && (
+        {(submitMode === 'basic' || submitMode === 'email' || submitMode === 'contact') && estimatedCost !== null && (
           <div className="mt-8 p-8 rounded-xl bg-primary/10 border border-primary/20 text-center animate-in fade-in zoom-in duration-500 shadow-inner">
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-3">
               {t('calc_result')}
