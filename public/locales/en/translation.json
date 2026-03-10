@@ -56,7 +56,11 @@
   "calc_notes_placeholder": "Special cases, accurate measurement requirements...",
   "calc_email": "E-mail address",
   "calc_email_placeholder": "example@mail.com",
-  "calc_submit": "Calculate Estimate",
+  "calc_submit_basic": "Calculate Estimate",
+  "calc_submit_email": "Send Estimate to Email",
+  "calc_submit_contact": "Contact Us",
+  "calc_send": "Send Estimate",
+  "calc_contact_info": "Phone: +374 77-77-77-77 | Email: example@gmail.com",
   "calc_result": "Estimated Cost",
   "calc_error_required": "This field is required",
   "calc_error_positive": "Value must be positive"

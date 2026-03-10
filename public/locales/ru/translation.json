@@ -56,7 +56,11 @@
   "calc_notes_placeholder": "Особые случаи, необходимость точных замеров...",
   "calc_email": "Электронная почта",
   "calc_email_placeholder": "example@mail.com",
-  "calc_submit": "Рассчитать стоимость",
+  "calc_submit_basic": "Рассчитать стоимость",
+  "calc_submit_email": "Отправить смету на почту",
+  "calc_submit_contact": "Связаться с нами",
+  "calc_send": "Отправить смету",
+  "calc_contact_info": "Телефон: +374 77-77-77-77 | Эл. почта: example@gmail.com",
   "calc_result": "Примерная стоимость",
   "calc_error_required": "Это поле обязательно",
   "calc_error_positive": "Значение должно быть больше нуля"
