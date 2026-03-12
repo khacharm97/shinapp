@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
+import { Loader2 } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -111,6 +113,7 @@ export function Calculator() {
 
   const [submitMode, setSubmitMode] = useState<'basic' | 'email' | 'contact' | null>(null)
   const [activeFormSection, setActiveFormSection] = useState<'email' | 'contact' | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // We rely on onSubmit to ignore area/count values if their respective checkboxes are unchecked,
   // which prevents infinite render loops from form.setValue in a useEffect.
@@ -134,7 +137,122 @@ export function Calculator() {
     setSubmitMode(null)
   }
 
-  function onSecondarySubmit(e: React.MouseEvent) {
+  const generateEstimateReport = (values: z.infer<typeof formSchema>) => {
+    let baseCostMin = 0
+    let baseCostMax = 0
+    const items: Array<{ Service: string; 'Quantity / Area': number | string; 'Min Cost': number | string; 'Max Cost': number | string }> = []
+
+    const addItem = (name: string, qty: number | string, min: number, max: number) => {
+      items.push({ Service: name, 'Quantity / Area': qty, 'Min Cost': min, 'Max Cost': max })
+    }
+
+    // Walls
+    if (values.walls_painting) {
+      const min = values.walls_painting_area * 2000; const max = values.walls_painting_area * 8000;
+      baseCostMin += min; baseCostMax += max;
+      addItem(t('calc_walls_painting'), values.walls_painting_area, min, max)
+    }
+    if (values.walls_wallpaper) {
+      const min = values.walls_wallpaper_area * 3000; const max = values.walls_wallpaper_area * 5000;
+      baseCostMin += min; baseCostMax += max;
+      addItem(t('calc_walls_wallpaper'), values.walls_wallpaper_area, min, max)
+    }
+    if (values.walls_plaster) {
+      const min = values.walls_plaster_area * 1500; const max = values.walls_plaster_area * 3000;
+      baseCostMin += min; baseCostMax += max;
+      addItem(t('calc_walls_plaster'), values.walls_plaster_area, min, max)
+    }
+    if (values.walls_decorative) {
+      const min = values.walls_decorative_area * 4000; const max = values.walls_decorative_area * 6000;
+      baseCostMin += min; baseCostMax += max;
+      addItem(t('calc_walls_decorative'), values.walls_decorative_area, min, max)
+    }
+
+    // Floor
+    if (values.floor_laminate) {
+      const min = values.floor_laminate_area * 2000; const max = values.floor_laminate_area * 3500;
+      baseCostMin += min; baseCostMax += max;
+      addItem(t('calc_floor_laminate'), values.floor_laminate_area, min, max)
+    }
+    if (values.floor_tile) {
+      const min = values.floor_tile_area * 4500; const max = values.floor_tile_area * 7000;
+      baseCostMin += min; baseCostMax += max;
+      addItem(t('calc_floor_tile'), values.floor_tile_area, min, max)
+    }
+    if (values.floor_parquet) {
+      const min = values.floor_parquet_area * 5000; const max = values.floor_parquet_area * 8000;
+      baseCostMin += min; baseCostMax += max;
+      addItem(t('calc_floor_parquet'), values.floor_parquet_area, min, max)
+    }
+    if (values.floor_dismantling) {
+      const min = values.floor_dismantling_area * 800; const max = values.floor_dismantling_area * 2000;
+      baseCostMin += min; baseCostMax += max;
+      addItem(t('calc_floor_dismantling'), values.floor_dismantling_area, min, max)
+    }
+
+    // Ceiling
+    if (values.ceiling_paint) {
+      const min = values.ceiling_paint_area * 2000; const max = values.ceiling_paint_area * 8000;
+      baseCostMin += min; baseCostMax += max;
+      addItem(t('calc_ceiling_paint'), values.ceiling_paint_area, min, max)
+    }
+    if (values.ceiling_drywall) {
+      const min = values.ceiling_drywall_area * 2000; const max = values.ceiling_drywall_area * 5000;
+      baseCostMin += min; baseCostMax += max;
+      addItem(t('calc_ceiling_drywall'), values.ceiling_drywall_area, min, max)
+    }
+    if (values.ceiling_stretch) {
+      const min = values.ceiling_stretch_area * 5000; const max = values.ceiling_stretch_area * 8000;
+      baseCostMin += min; baseCostMax += max;
+      addItem(t('calc_ceiling_stretch'), values.ceiling_stretch_area, min, max)
+    }
+
+    // Electricity
+    let elecMin = 0, elecMax = 0
+    if (values.elec_wiring) { const min = 100000; const max = 200000; elecMin += min; elecMax += max; addItem(t('calc_elec_wiring'), "1", min, max) }
+    if (values.elec_sockets) { const min = values.elec_sockets_count * 2500; const max = values.elec_sockets_count * 5000; elecMin += min; elecMax += max; addItem(t('calc_elec_sockets'), values.elec_sockets_count, min, max) }
+    if (values.elec_lighting) { const min = values.elec_lighting_count * 3000; const max = values.elec_lighting_count * 6000; elecMin += min; elecMax += max; addItem(t('calc_elec_lighting'), values.elec_lighting_count, min, max) }
+
+    // Plumbing
+    let plumbMin = 0, plumbMax = 0
+    if (values.plumb_pipes) { const min = 60000; const max = 100000; plumbMin += min; plumbMax += max; addItem(t('calc_plumb_pipes'), "1", min, max) }
+    if (values.plumb_bathroom) { const min = 120000; const max = 200000; plumbMin += min; plumbMax += max; addItem(t('calc_plumb_bathroom'), "1", min, max) }
+    if (values.plumb_fixtures) { const min = values.plumb_fixtures_count * 5000; const max = values.plumb_fixtures_count * 12000; plumbMin += min; plumbMax += max; addItem(t('calc_plumb_fixtures'), values.plumb_fixtures_count, min, max) }
+
+    // Multipliers
+    const repairMults: Record<string, number> = { cosmetic: 1, average: 1.25, capital: 1.6 }
+    const repairMult = repairMults[values.repair || "cosmetic"] || 1
+
+    const materialMults: Record<string, number> = { econom: 0.8, standard: 1, premium: 1.4 }
+    const materialMult = materialMults[values.material || "standard"] || 1
+
+    const dateMults: Record<string, number> = { urgent: 1.1, ordinary: 1, not_important: 0.9 }
+    const dateMult = dateMults[values.date || "ordinary"] || 1
+
+    const combinedMult = repairMult * materialMult * dateMult
+
+    const totalMinBase = baseCostMin + elecMin + plumbMin
+    const totalMaxBase = baseCostMax + elecMax + plumbMax
+
+    const totalMin = totalMinBase * combinedMult
+    const totalMax = totalMaxBase * combinedMult
+
+    if (combinedMult !== 1) {
+      items.push({ Service: '---', 'Quantity / Area': '---', 'Min Cost': '---', 'Max Cost': '---' })
+      items.push({ Service: t('calc_multipliers', 'Multipliers factor'), 'Quantity / Area': '-', 'Min Cost': combinedMult.toFixed(2), 'Max Cost': combinedMult.toFixed(2) })
+    }
+    
+    items.push({ Service: '---', 'Quantity / Area': '---', 'Min Cost': '---', 'Max Cost': '---' })
+    items.push({ Service: t('calc_result', 'Total Estimation'), 'Quantity / Area': '-', 'Min Cost': Math.round(totalMin), 'Max Cost': Math.round(totalMax) })
+
+    return {
+      items,
+      totalMin: Math.round(totalMin),
+      totalMax: Math.round(totalMax)
+    }
+  }
+
+  async function onSecondarySubmit(e: React.MouseEvent) {
     e.preventDefault()
     
     // Manually trigger validation for email
@@ -144,61 +262,55 @@ export function Calculator() {
       return
     }
 
-    setSubmitMode(activeFormSection)
-    form.handleSubmit(onSubmit)()
+    const notesValue = form.getValues('notes') || ''
+    const values = form.getValues()
+
+    if (activeFormSection === 'contact' || activeFormSection === 'email') {
+      setIsSubmitting(true)
+      try {
+        const { error } = await supabase
+          .from('contact_requests')
+          .insert([
+            { email: emailValue, notes: notesValue }
+          ])
+        
+        if (error) throw error
+
+        if (activeFormSection === 'email') {
+          const { items } = generateEstimateReport(values)
+          const payload = {
+            recipients: [emailValue],
+            subject: t('calc_email_subject', 'Your Repair Estimate from ShinApp'),
+            message: notesValue ? `${t('calc_email_message', 'Please find your attached estimate.')}\n\nNotes:\n${notesValue}` : t('calc_email_message', 'Please find your attached estimate.'),
+            columns: ['Service', 'Quantity / Area', 'Min Cost', 'Max Cost'],
+            rows: items
+          }
+
+          const { error: edgeError } = await supabase.functions.invoke('send-excel-email', {
+            body: payload
+          })
+
+          if (edgeError) {
+            console.error('Error invoking edge function:', edgeError)
+          } 
+        }
+
+        setSubmitMode(activeFormSection)
+        form.handleSubmit(onSubmit)()
+      } catch (err) {
+        console.error('Error submitting to Supabase:', err)
+      } finally {
+        setIsSubmitting(false)
+      }
+    } else {
+      setSubmitMode(activeFormSection)
+      form.handleSubmit(onSubmit)()
+    }
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    let baseCostMin = 0
-    let baseCostMax = 0
-
-    // Walls
-    if (values.walls_painting) { baseCostMin += values.walls_painting_area * 2000; baseCostMax += values.walls_painting_area * 8000; }
-    if (values.walls_wallpaper) { baseCostMin += values.walls_wallpaper_area * 3000; baseCostMax += values.walls_wallpaper_area * 5000; }
-    if (values.walls_plaster) { baseCostMin += values.walls_plaster_area * 1500; baseCostMax += values.walls_plaster_area * 3000; }
-    if (values.walls_decorative) { baseCostMin += values.walls_decorative_area * 4000; baseCostMax += values.walls_decorative_area * 6000; }
-
-    // Floor
-    if (values.floor_laminate) { baseCostMin += values.floor_laminate_area * 2000; baseCostMax += values.floor_laminate_area * 3500; }
-    if (values.floor_tile) { baseCostMin += values.floor_tile_area * 4500; baseCostMax += values.floor_tile_area * 7000; }
-    if (values.floor_parquet) { baseCostMin += values.floor_parquet_area * 5000; baseCostMax += values.floor_parquet_area * 8000; }
-    if (values.floor_dismantling) { baseCostMin += values.floor_dismantling_area * 800; baseCostMax += values.floor_dismantling_area * 2000; }
-
-    // Ceiling
-    if (values.ceiling_paint) { baseCostMin += values.ceiling_paint_area * 2000; baseCostMax += values.ceiling_paint_area * 8000; }
-    if (values.ceiling_drywall) { baseCostMin += values.ceiling_drywall_area * 2000; baseCostMax += values.ceiling_drywall_area * 5000; }
-    if (values.ceiling_stretch) { baseCostMin += values.ceiling_stretch_area * 5000; baseCostMax += values.ceiling_stretch_area * 8000; }
-
-    // Electricity fixed / varied costs
-    let elecMin = 0, elecMax = 0
-    if (values.elec_wiring) { elecMin += 100000; elecMax += 200000; }
-    if (values.elec_sockets) { elecMin += values.elec_sockets_count * 2500; elecMax += values.elec_sockets_count * 5000; }
-    if (values.elec_lighting) { elecMin += values.elec_lighting_count * 3000; elecMax += values.elec_lighting_count * 6000; }
-
-    // Plumbing fixed / varied costs
-    let plumbMin = 0, plumbMax = 0
-    if (values.plumb_pipes) { plumbMin += 60000; plumbMax += 100000; }
-    if (values.plumb_bathroom) { plumbMin += 120000; plumbMax += 200000; }
-    if (values.plumb_fixtures) { plumbMin += values.plumb_fixtures_count * 5000; plumbMax += values.plumb_fixtures_count * 12000; }
-
-    // Repair multiplier
-    const repairMults: Record<string, number> = { cosmetic: 1, average: 1.25, capital: 1.6 }
-    const repairMult = repairMults[values.repair || "cosmetic"] || 1
-
-    // Material multiplier
-    const materialMults: Record<string, number> = { econom: 0.8, standard: 1, premium: 1.4 }
-    const materialMult = materialMults[values.material || "standard"] || 1
-
-    // Date multiplier
-    const dateMults: Record<string, number> = { urgent: 1.1, ordinary: 1, not_important: 0.9 }
-    const dateMult = dateMults[values.date || "ordinary"] || 1
-
-    const combinedMult = repairMult * materialMult * dateMult
-
-    const totalMin = (baseCostMin + elecMin + plumbMin) * combinedMult
-    const totalMax = (baseCostMax + elecMax + plumbMax) * combinedMult
-    
-    setEstimatedCost([Math.round(totalMin), Math.round(totalMax)])
+    const { totalMin, totalMax } = generateEstimateReport(values)
+    setEstimatedCost([totalMin, totalMax])
   }
 
   const renderCheckable = (id: keyof z.infer<typeof formSchema>, langKey: string, inputId?: keyof z.infer<typeof formSchema>, isCount?: boolean, overrideLabelKey?: string) => {
@@ -414,7 +526,8 @@ export function Calculator() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <Button type="button" onClick={onSecondarySubmit} size="lg" className="w-full text-base shadow-md hover:shadow-lg transition-all">
+                <Button type="button" onClick={onSecondarySubmit} disabled={isSubmitting} size="lg" className="w-full text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center">
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {activeFormSection === 'email' ? t('calc_send') : t('calc_send_contact')}
                 </Button>
               </div>
@@ -425,13 +538,6 @@ export function Calculator() {
         {submitMode === 'contact' && (
           <div className="mt-8 p-6 rounded-xl bg-secondary/30 border border-secondary text-center animate-in fade-in slide-in-from-top-4 duration-500">
             <h4 className="text-xl font-bold text-primary mb-4">{t('calc_contact_success')}</h4>
-            <div className="text-lg font-medium text-foreground">
-              {t('calc_contact_info').split('|').map((part, index) => (
-                <div key={index}>
-                  <span className="block sm:inline sm:mr-4 last:mr-0">{part.trim()}</span>
-                </div>
-              ))}
-            </div>
           </div>
         )}
 
