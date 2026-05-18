@@ -241,7 +241,7 @@ export function Calculator() {
       items.push({ Service: '---', 'Quantity / Area': '---', 'Min Cost': '---', 'Max Cost': '---' })
       items.push({ Service: t('calc_multipliers', 'Multipliers factor'), 'Quantity / Area': '-', 'Min Cost': combinedMult.toFixed(2), 'Max Cost': combinedMult.toFixed(2) })
     }
-    
+
     items.push({ Service: '---', 'Quantity / Area': '---', 'Min Cost': '---', 'Max Cost': '---' })
     items.push({ Service: t('calc_result', 'Total Estimation'), 'Quantity / Area': '-', 'Min Cost': Math.round(totalMin), 'Max Cost': Math.round(totalMax) })
 
@@ -254,7 +254,7 @@ export function Calculator() {
 
   async function onSecondarySubmit(e: React.MouseEvent) {
     e.preventDefault()
-    
+
     // Manually trigger validation for email
     const emailValue = form.getValues('email')
     if (!emailValue || !emailValue.includes('@')) {
@@ -273,7 +273,7 @@ export function Calculator() {
           .insert([
             { email: emailValue, notes: notesValue }
           ])
-        
+
         if (error) throw error
 
         if (activeFormSection === 'email') {
@@ -292,7 +292,7 @@ export function Calculator() {
 
           if (edgeError) {
             console.error('Error invoking edge function:', edgeError)
-          } 
+          }
         }
 
         setSubmitMode(activeFormSection)
@@ -359,7 +359,7 @@ export function Calculator() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Construction Works (Checkboxes) */}
-              
+
               <div className="space-y-6">
                 <Accordion type="multiple" className="w-full space-y-4">
                   <AccordionItem value="walls" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
@@ -487,19 +487,15 @@ export function Calculator() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+            <div className="grid grid-cols-1 gap-4 mt-8">
               <Button type="button" onClick={onBasicSubmit} size="lg" variant="outline" className="w-full text-base shadow-sm hover:shadow-md transition-all">
                 {t('calc_submit_basic')}
               </Button>
-              <Button type="button" onClick={onEmailSubmit} size="lg" variant={activeFormSection === 'email' ? "default" : "secondary"} className="w-full text-base shadow-md hover:shadow-lg transition-all hidden md:flex">
+              <Button type="button" onClick={onEmailSubmit} size="lg" variant="outline" className="w-full text-base shadow-sm hover:shadow-md transition-all">
                 {t('calc_submit_email')}
               </Button>
-              <Button type="button" onClick={onContactSubmit} size="lg" variant={activeFormSection === 'contact' ? "default" : "secondary"} className="w-full text-base shadow-sm hover:shadow-md transition-all">
+              <Button type="button" onClick={onContactSubmit} size="lg" variant="outline" className="w-full text-base shadow-sm hover:shadow-md transition-all">
                 {t('calc_submit_contact')}
-              </Button>
-              {/* Mobile-only email button to keep layout balanced if it wraps */}
-              <Button type="button" onClick={onEmailSubmit} size="lg" variant={activeFormSection === 'email' ? "default" : "secondary"} className="w-full text-base shadow-md hover:shadow-lg transition-all flex md:hidden">
-                {t('calc_submit_email')}
               </Button>
             </div>
 
@@ -554,8 +550,8 @@ export function Calculator() {
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-3">
               {t('calc_result')}
             </p>
-            <p className="text-4xl md:text-5xl font-extrabold text-primary flex items-center justify-center gap-2">
-              <span className="opacity-80">֏</span> {estimatedCost[0].toLocaleString()} - {estimatedCost[1].toLocaleString()}
+            <p className="text-4xl md:text-5xl font-extrabold text-brand flex items-center justify-center gap-2">
+              <span>֏</span> {estimatedCost[0].toLocaleString()} - {estimatedCost[1].toLocaleString()}
             </p>
             <p className="text-xs text-muted-foreground mt-4 opacity-70">
               * This is a rough estimation and may vary based on specific conditions.
