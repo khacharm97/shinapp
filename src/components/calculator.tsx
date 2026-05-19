@@ -323,7 +323,7 @@ export function Calculator() {
             <FormControl>
               <Checkbox checked={field.value as boolean} onCheckedChange={field.onChange} />
             </FormControl>
-            <FormLabel className="font-normal cursor-pointer text-base leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            <FormLabel className="font-normal cursor-pointer text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
               {t(langKey)}
             </FormLabel>
           </FormItem>
@@ -363,7 +363,7 @@ export function Calculator() {
               <div className="space-y-6">
                 <Accordion type="multiple" className="w-full space-y-4">
                   <AccordionItem value="walls" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
-                    <AccordionTrigger className="font-semibold text-primary hover:no-underline">{t('calc_walls')}</AccordionTrigger>
+                    <AccordionTrigger className="text-base font-semibold text-primary hover:no-underline">{t('calc_walls')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("walls_painting", "calc_walls_painting", "walls_painting_area", false, "calc_wall_area_label")}
                       {renderCheckable("walls_wallpaper", "calc_walls_wallpaper", "walls_wallpaper_area", false, "calc_wall_area_label")}
@@ -373,7 +373,7 @@ export function Calculator() {
                   </AccordionItem>
 
                   <AccordionItem value="floor" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
-                    <AccordionTrigger className="font-semibold text-primary hover:no-underline">{t('calc_floor')}</AccordionTrigger>
+                    <AccordionTrigger className="text-base font-semibold text-primary hover:no-underline">{t('calc_floor')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("floor_laminate", "calc_floor_laminate", "floor_laminate_area", false, "calc_floor_area_label")}
                       {renderCheckable("floor_tile", "calc_floor_tile", "floor_tile_area", false, "calc_floor_area_label")}
@@ -383,7 +383,7 @@ export function Calculator() {
                   </AccordionItem>
 
                   <AccordionItem value="ceiling" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
-                    <AccordionTrigger className="font-semibold text-primary hover:no-underline">{t('calc_ceiling')}</AccordionTrigger>
+                    <AccordionTrigger className="text-base font-semibold text-primary hover:no-underline">{t('calc_ceiling')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("ceiling_paint", "calc_ceiling_paint", "ceiling_paint_area", false, "calc_ceiling_area_label")}
                       {renderCheckable("ceiling_drywall", "calc_ceiling_drywall", "ceiling_drywall_area", false, "calc_ceiling_area_label")}
@@ -392,7 +392,7 @@ export function Calculator() {
                   </AccordionItem>
 
                   <AccordionItem value="electricity" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
-                    <AccordionTrigger className="font-semibold text-primary hover:no-underline">{t('calc_electricity')}</AccordionTrigger>
+                    <AccordionTrigger className="text-base font-semibold text-primary hover:no-underline">{t('calc_electricity')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("elec_wiring", "calc_elec_wiring")}
                       {renderCheckable("elec_sockets", "calc_elec_sockets", "elec_sockets_count", true, "calc_electricity_count_label")}
@@ -401,7 +401,7 @@ export function Calculator() {
                   </AccordionItem>
 
                   <AccordionItem value="plumbing" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
-                    <AccordionTrigger className="font-semibold text-primary hover:no-underline">{t('calc_plumbing')}</AccordionTrigger>
+                    <AccordionTrigger className="text-base font-semibold text-primary hover:no-underline">{t('calc_plumbing')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("plumb_pipes", "calc_plumb_pipes")}
                       {renderCheckable("plumb_bathroom", "calc_plumb_bathroom")}
@@ -546,14 +546,14 @@ export function Calculator() {
         )}
 
         {(submitMode === 'basic' || submitMode === 'email' || submitMode === 'contact') && estimatedCost !== null && (
-          <div className="mt-8 p-8 rounded-xl bg-primary/10 border border-primary/20 text-center animate-in fade-in zoom-in duration-500 shadow-inner">
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-3">
+          <div className="mt-8 p-8 rounded-xl bg-white dark:bg-primary/10 border border-zinc-100 dark:border-primary/20 text-center animate-in fade-in zoom-in duration-500 shadow-xl dark:shadow-inner">
+            <p className="text-sm font-semibold text-zinc-500 dark:text-muted-foreground uppercase tracking-widest mb-3">
               {t('calc_result')}
             </p>
             <p className="text-4xl md:text-5xl font-extrabold text-brand flex items-center justify-center gap-2">
               <span>֏</span> {estimatedCost[0].toLocaleString()} - {estimatedCost[1].toLocaleString()}
             </p>
-            <p className="text-xs text-muted-foreground mt-4 opacity-70">
+            <p className="text-xs text-zinc-400 dark:text-muted-foreground mt-4 opacity-80 dark:opacity-70">
               * This is a rough estimation and may vary based on specific conditions.
             </p>
           </div>
