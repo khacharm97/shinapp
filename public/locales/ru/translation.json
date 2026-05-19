@@ -70,5 +70,8 @@
   "calc_floor_area_label": "Площадь пола (м²)",
   "calc_ceiling_area_label": "Площадь потолка (м²)",
   "calc_electricity_count_label": "Количество точек электрики",
-  "calc_plumbing_count_label": "Количество точек сантехники"
+  "calc_plumbing_count_label": "Количество точек сантехники",
+  "calc_email_simulation": "Симуляция: Смета будет отправлена на {{email}} вместе с примечаниями.",
+  "calc_email_success": "Смета успешно отправлена на {{email}}.",
+  "calc_email_error": "Не удалось отправить смету на {{email}}. Пожалуйста, попробуйте еще раз."
 }

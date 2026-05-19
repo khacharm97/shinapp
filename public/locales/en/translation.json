@@ -70,5 +70,8 @@
   "calc_floor_area_label": "Floor area (m²)",
   "calc_ceiling_area_label": "Ceiling area (m²)",
   "calc_electricity_count_label": "Electricity count",
-  "calc_plumbing_count_label": "Plumbing count"
+  "calc_plumbing_count_label": "Plumbing count",
+  "calc_email_simulation": "Estimate would be sent to {{email}} along with notes.",
+  "calc_email_success": "Estimate has been sent successfully to {{email}}.",
+  "calc_email_error": "Failed to send estimate to {{email}}. Please try again."
 }

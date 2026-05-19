@@ -114,6 +114,7 @@ export function Calculator() {
   const [submitMode, setSubmitMode] = useState<'basic' | 'email' | 'contact' | null>(null)
   const [activeFormSection, setActiveFormSection] = useState<'email' | 'contact' | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [emailStatus, setEmailStatus] = useState<'success' | 'error' | null>(null)
 
   // We rely on onSubmit to ignore area/count values if their respective checkboxes are unchecked,
   // which prevents infinite render loops from form.setValue in a useEffect.
@@ -122,6 +123,7 @@ export function Calculator() {
     e.preventDefault()
     setActiveFormSection(null)
     setSubmitMode('basic')
+    setEmailStatus(null)
     form.handleSubmit(onSubmit)()
   }
 
@@ -129,12 +131,14 @@ export function Calculator() {
     e.preventDefault()
     setActiveFormSection('email')
     setSubmitMode(null)
+    setEmailStatus(null)
   }
 
   function onContactSubmit(e: React.MouseEvent) {
     e.preventDefault()
     setActiveFormSection('contact')
     setSubmitMode(null)
+    setEmailStatus(null)
   }
 
   const generateEstimateReport = (values: z.infer<typeof formSchema>) => {
@@ -267,6 +271,7 @@ export function Calculator() {
 
     if (activeFormSection === 'contact' || activeFormSection === 'email') {
       setIsSubmitting(true)
+      setEmailStatus(null)
       try {
         const { error } = await supabase
           .from('contact_requests')
@@ -292,6 +297,9 @@ export function Calculator() {
 
           if (edgeError) {
             console.error('Error invoking edge function:', edgeError)
+            setEmailStatus('error')
+          } else {
+            setEmailStatus('success')
           }
         }
 
@@ -299,6 +307,9 @@ export function Calculator() {
         form.handleSubmit(onSubmit)()
       } catch (err) {
         console.error('Error submitting to Supabase:', err)
+        if (activeFormSection === 'email') {
+          setEmailStatus('error')
+        }
       } finally {
         setIsSubmitting(false)
       }
@@ -537,10 +548,18 @@ export function Calculator() {
           </div>
         )}
 
-        {submitMode === 'email' && estimatedCost !== null && (
+        {submitMode === 'email' && estimatedCost !== null && emailStatus === 'success' && (
           <div className="mt-8 p-4 rounded-lg bg-green-500/10 border border-green-500/30 text-center animate-in fade-in duration-300">
             <p className="text-sm font-medium text-green-700 dark:text-green-400">
-              Simulation: Estimate would be sent to {form.getValues('email')} along with notes.
+              {t('calc_email_success', { email: form.getValues('email') })}
+            </p>
+          </div>
+        )}
+
+        {submitMode === 'email' && estimatedCost !== null && emailStatus === 'error' && (
+          <div className="mt-8 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-center animate-in fade-in duration-300">
+            <p className="text-sm font-medium text-red-700 dark:text-red-400">
+              {t('calc_email_error', { email: form.getValues('email') })}
             </p>
           </div>
         )}

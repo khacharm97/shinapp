@@ -70,5 +70,8 @@
   "calc_floor_area_label": "Հատակի մակերես (մ²)",
   "calc_ceiling_area_label": "Առաստաղի մակերես (մ²)",
   "calc_electricity_count_label": "Էլեկտրականության կետերի քանակ",
-  "calc_plumbing_count_label": "Սանտեխնիկայի կետերի քանակ"
+  "calc_plumbing_count_label": "Սանտեխնիկայի կետերի քանակ",
+  "calc_email_simulation": "Սիմուլյացիա. Նախահաշիվը կուղարկվի {{email}} հասցեին՝ նշումների հետ միասին:",
+  "calc_email_success": "Նախահաշիվը հաջողությամբ ուղարկվել է {{email}} հասցեին:",
+  "calc_email_error": "Չհաջողվեց ուղարկել նախահաշիվը {{email}} հասցեին: Խնդրում ենք փորձել կրկին:"
 }
