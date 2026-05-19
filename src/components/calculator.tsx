@@ -353,7 +353,7 @@ export function Calculator() {
         <CardTitle className="text-2xl">{t('calc_title')}</CardTitle>
         <CardDescription>{t('calc_desc')}</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
