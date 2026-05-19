@@ -336,7 +336,7 @@ export function Calculator() {
                   {overrideLabelKey ? t(overrideLabelKey) : `${t(langKey)} ${t(isCount ? "calc_count_input" : "calc_area_input").toLowerCase()}`}
                 </FormLabel>
                 <FormControl>
-                  <Input type="number" min="0" step="any" placeholder="" {...field} value={field.value || ""} className="h-8 w-full shadow-sm" />
+                  <Input type="number" min="0" step="any" placeholder="" {...field} value={field.value || ""} className="h-8 w-full shadow-none" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
