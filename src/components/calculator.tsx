@@ -353,11 +353,11 @@ export function Calculator() {
         <CardTitle className="text-2xl">{t('calc_title')}</CardTitle>
         <CardDescription>{t('calc_desc')}</CardDescription>
       </CardHeader>
-      <CardContent className="px-4">
+      <CardContent className="md:px-6 px-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Construction Works (Checkboxes) */}
 
               <div className="space-y-6">
