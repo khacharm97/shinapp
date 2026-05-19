@@ -522,7 +522,7 @@ export function Calculator() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <Button type="button" onClick={onSecondarySubmit} disabled={isSubmitting} size="lg" className="w-full text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center">
+                <Button type="button" onClick={onSecondarySubmit} disabled={isSubmitting} size="lg" variant="brand" className="w-full text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center">
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {activeFormSection === 'email' ? t('calc_send') : t('calc_send_contact')}
                 </Button>

@@ -19,7 +19,7 @@ export default function HomePage() {
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-14rem)] text-center px-4">
-        <div className="space-y-6 max-w-2xl mt-8 w-full flex flex-col items-center">
+        <div className="space-y-6 max-w-2xl w-full flex flex-col items-center">
           {bannerSrc && (
             <div className="w-full max-w-md overflow-hidden rounded-2xl shadow-md hover:shadow-xl border border-border/40 transition-all duration-300 hover:scale-[1.02] animate-in fade-in zoom-in duration-700">
               <img
