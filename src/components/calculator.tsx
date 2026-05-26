@@ -377,7 +377,8 @@ export function Calculator() {
             firstName: firstNameValue,
             lastName: lastNameValue,
             columns: [colService, colQty, colMin, colMax],
-            rows: items
+            rows: items,
+            lang: i18n.language
           }
 
           const { error: edgeError } = await supabase.functions.invoke('send-excel-email', {
@@ -393,7 +394,23 @@ export function Calculator() {
         }
 
         if (activeFormSection === 'contact') {
-          setContactStatus('success')
+          const payload = {
+            recipients: [email],
+            firstName: firstNameValue,
+            lastName: lastNameValue,
+            lang: i18n.language
+          }
+
+          const { error: edgeError } = await supabase.functions.invoke('send-contact-email', {
+            body: payload
+          })
+
+          if (edgeError) {
+            console.error('Error invoking send-contact-email:', edgeError)
+            setContactStatus('error')
+          } else {
+            setContactStatus('success')
+          }
         }
 
         setSubmitMode(activeFormSection)
