@@ -346,11 +346,7 @@ export function Calculator() {
 
         if (activeFormSection === 'email') {
           const { items } = generateEstimateReport(values)
-          const nameLine = `${firstNameValue} ${lastNameValue}`.trim()
           const messageParts = [
-            t('calc_email_message', 'Please find your attached estimate.'),
-            nameLine ? `${t('calc_email_from', 'From')}: ${nameLine}` : '',
-            notesValue ? `${t('calc_notes')}:\n${notesValue}` : '',
           ].filter(Boolean)
 
           let colService = 'Service'
