@@ -18,10 +18,10 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-14rem)] text-center px-4">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-14rem)] text-center px-0">
         <div className="space-y-6 max-w-2xl w-full flex flex-col items-center">
           {bannerSrc && (
-            <div className="w-full max-w-md overflow-hidden rounded-2xl shadow-md hover:shadow-xl border border-border/40 transition-all duration-300 hover:scale-[1.02] animate-in fade-in zoom-in duration-700">
+            <div className="w-full max-w-md overflow-hidden rounded-2xl shadow-md hover:shadow-xl border border-border/40 transition-all duration-300 hover:scale-[1.02] animate-in fade-in zoom-in duration-700 mb-3">
               <img
                 src={bannerSrc}
                 alt="ShinApp Banner"
@@ -29,9 +29,12 @@ export default function HomePage() {
               />
             </div>
           )}
-          <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl text-primary animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-2">
+          <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl text-primary animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-1">
             {t('welcome')}
           </h2>
+          <p className="text-lg text-muted-foreground max-w-xl animate-in fade-in slide-in-from-bottom-6 mb-0 duration-1000 delay-150">
+            {t('welcome_description')}
+          </p>
           <div className="pt-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
             <Calculator />
           </div>

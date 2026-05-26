@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { contactRequestExists, insertContactRequest, updateContactRequest } from '@/lib/contact-requests'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -74,12 +75,14 @@ const formSchema = z.object({
   plumb_fixtures: z.boolean().default(false),
   plumb_fixtures_count: z.coerce.number().optional().default(0),
 
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
   email: z.string().optional(),
   notes: z.string().optional(),
 })
 
 export function Calculator() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [estimatedCost, setEstimatedCost] = useState<[number, number] | null>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -106,6 +109,8 @@ export function Calculator() {
       plumb_pipes: false,
       plumb_bathroom: false,
       plumb_fixtures: false, plumb_fixtures_count: 0,
+      firstName: "",
+      lastName: "",
       notes: "",
       email: "",
     },
@@ -115,6 +120,7 @@ export function Calculator() {
   const [activeFormSection, setActiveFormSection] = useState<'email' | 'contact' | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [emailStatus, setEmailStatus] = useState<'success' | 'error' | null>(null)
+  const [contactStatus, setContactStatus] = useState<'success' | 'error' | 'already_sent' | null>(null)
 
   // We rely on onSubmit to ignore area/count values if their respective checkboxes are unchecked,
   // which prevents infinite render loops from form.setValue in a useEffect.
@@ -124,6 +130,7 @@ export function Calculator() {
     setActiveFormSection(null)
     setSubmitMode('basic')
     setEmailStatus(null)
+    setContactStatus(null)
     form.handleSubmit(onSubmit)()
   }
 
@@ -132,6 +139,7 @@ export function Calculator() {
     setActiveFormSection('email')
     setSubmitMode(null)
     setEmailStatus(null)
+    setContactStatus(null)
   }
 
   function onContactSubmit(e: React.MouseEvent) {
@@ -139,15 +147,33 @@ export function Calculator() {
     setActiveFormSection('contact')
     setSubmitMode(null)
     setEmailStatus(null)
+    setContactStatus(null)
   }
 
   const generateEstimateReport = (values: z.infer<typeof formSchema>) => {
     let baseCostMin = 0
     let baseCostMax = 0
-    const items: Array<{ Service: string; 'Quantity / Area': number | string; 'Min Cost': number | string; 'Max Cost': number | string }> = []
+    let colService = 'Service'
+    let colQty = 'Quantity / Area'
+    let colMin = 'Min Cost'
+    let colMax = 'Max Cost'
+
+    if (i18n.language === 'ru') {
+      colService = 'Услуга'
+      colQty = 'Количество / Площадь'
+      colMin = 'Мин. цена'
+      colMax = 'Макс. цена'
+    } else if (i18n.language === 'am') {
+      colService = 'Ծառայություն'
+      colQty = 'Քանակ / Մակերես'
+      colMin = 'Նվազ. արժեք'
+      colMax = 'Առավ. արժեք'
+    }
+
+    const items: Array<Record<string, string | number>> = []
 
     const addItem = (name: string, qty: number | string, min: number, max: number) => {
-      items.push({ Service: name, 'Quantity / Area': qty, 'Min Cost': min, 'Max Cost': max })
+      items.push({ [colService]: name, [colQty]: qty, [colMin]: min, [colMax]: max })
     }
 
     // Walls
@@ -242,12 +268,12 @@ export function Calculator() {
     const totalMax = totalMaxBase * combinedMult
 
     if (combinedMult !== 1) {
-      items.push({ Service: '---', 'Quantity / Area': '---', 'Min Cost': '---', 'Max Cost': '---' })
-      items.push({ Service: t('calc_multipliers', 'Multipliers factor'), 'Quantity / Area': '-', 'Min Cost': combinedMult.toFixed(2), 'Max Cost': combinedMult.toFixed(2) })
+      items.push({ [colService]: '---', [colQty]: '---', [colMin]: '---', [colMax]: '---' })
+      items.push({ [colService]: t('calc_multipliers', 'Multipliers factor'), [colQty]: '-', [colMin]: combinedMult.toFixed(2), [colMax]: combinedMult.toFixed(2) })
     }
 
-    items.push({ Service: '---', 'Quantity / Area': '---', 'Min Cost': '---', 'Max Cost': '---' })
-    items.push({ Service: t('calc_result', 'Total Estimation'), 'Quantity / Area': '-', 'Min Cost': Math.round(totalMin), 'Max Cost': Math.round(totalMax) })
+    items.push({ [colService]: '---', [colQty]: '---', [colMin]: '---', [colMax]: '---' })
+    items.push({ [colService]: t('calc_result', 'Total Estimation'), [colQty]: '-', [colMin]: Math.round(totalMin), [colMax]: Math.round(totalMax) })
 
     return {
       items,
@@ -259,35 +285,98 @@ export function Calculator() {
   async function onSecondarySubmit(e: React.MouseEvent) {
     e.preventDefault()
 
-    // Manually trigger validation for email
+    const firstNameValue = form.getValues('firstName')?.trim() ?? ''
+    const lastNameValue = form.getValues('lastName')?.trim() ?? ''
     const emailValue = form.getValues('email')
-    if (!emailValue || !emailValue.includes('@')) {
-      form.setError('email', { type: 'manual', message: t('calc_error_required') })
-      return
+    let hasError = false
+
+    if (!firstNameValue) {
+      form.setError('firstName', { type: 'manual', message: t('calc_error_required') })
+      hasError = true
+    }
+    if (!lastNameValue) {
+      form.setError('lastName', { type: 'manual', message: t('calc_error_required') })
+      hasError = true
     }
 
+    if (!emailValue || !emailValue.includes('@')) {
+      form.setError('email', { type: 'manual', message: t('calc_error_required') })
+      hasError = true
+    }
+
+    if (hasError) return
+
+    const email = (emailValue ?? '').trim()
     const notesValue = form.getValues('notes') || ''
     const values = form.getValues()
 
     if (activeFormSection === 'contact' || activeFormSection === 'email') {
       setIsSubmitting(true)
       setEmailStatus(null)
+      setContactStatus(null)
       try {
-        const { error } = await supabase
-          .from('contact_requests')
-          .insert([
-            { email: emailValue, notes: notesValue }
-          ])
+        const { exists, contact: hasContact, error: findError } = await contactRequestExists(email)
+        if (findError) throw findError
 
-        if (error) throw error
+        if (activeFormSection === 'contact' && exists) {
+          if (hasContact) {
+            setContactStatus('already_sent')
+            return
+          } else {
+            const { error: updateError } = await updateContactRequest(email, {
+              notes: notesValue,
+              first_name: firstNameValue,
+              last_name: lastNameValue,
+              contact: true,
+            })
+            if (updateError) throw updateError
+          }
+        }
+
+        if (!exists) {
+          const { error: insertError } = await insertContactRequest({
+            email,
+            notes: notesValue,
+            first_name: firstNameValue,
+            last_name: lastNameValue,
+            contact: activeFormSection === 'contact',
+          })
+          if (insertError) throw insertError
+        }
 
         if (activeFormSection === 'email') {
           const { items } = generateEstimateReport(values)
+          const nameLine = `${firstNameValue} ${lastNameValue}`.trim()
+          const messageParts = [
+            t('calc_email_message', 'Please find your attached estimate.'),
+            nameLine ? `${t('calc_email_from', 'From')}: ${nameLine}` : '',
+            notesValue ? `${t('calc_notes')}:\n${notesValue}` : '',
+          ].filter(Boolean)
+
+          let colService = 'Service'
+          let colQty = 'Quantity / Area'
+          let colMin = 'Min Cost'
+          let colMax = 'Max Cost'
+
+          if (i18n.language === 'ru') {
+            colService = 'Услуга'
+            colQty = 'Количество / Площадь'
+            colMin = 'Мин. цена'
+            colMax = 'Макс. цена'
+          } else if (i18n.language === 'am') {
+            colService = 'Ծառայություն'
+            colQty = 'Քանակ / Մակերես'
+            colMin = 'Նվազ. արժեք'
+            colMax = 'Առավ. արժեք'
+          }
+
           const payload = {
-            recipients: [emailValue],
+            recipients: [email],
             subject: t('calc_email_subject', 'Your Repair Estimate from ShinApp'),
-            message: notesValue ? `${t('calc_email_message', 'Please find your attached estimate.')}\n\nNotes:\n${notesValue}` : t('calc_email_message', 'Please find your attached estimate.'),
-            columns: ['Service', 'Quantity / Area', 'Min Cost', 'Max Cost'],
+            message: messageParts.join('\n\n'),
+            firstName: firstNameValue,
+            lastName: lastNameValue,
+            columns: [colService, colQty, colMin, colMax],
             rows: items
           }
 
@@ -303,12 +392,19 @@ export function Calculator() {
           }
         }
 
+        if (activeFormSection === 'contact') {
+          setContactStatus('success')
+        }
+
         setSubmitMode(activeFormSection)
         form.handleSubmit(onSubmit)()
       } catch (err) {
         console.error('Error submitting to Supabase:', err)
         if (activeFormSection === 'email') {
           setEmailStatus('error')
+        }
+        if (activeFormSection === 'contact') {
+          setContactStatus('error')
         }
       } finally {
         setIsSubmitting(false)
@@ -373,7 +469,7 @@ export function Calculator() {
 
               <div className="space-y-6">
                 <Accordion type="multiple" className="w-full space-y-4">
-                  <AccordionItem value="walls" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
+                  <AccordionItem value="walls" className="bg-muted/30 px-5 rounded-lg border last:border-b pb-0">
                     <AccordionTrigger className="text-base font-semibold text-primary hover:no-underline">{t('calc_walls')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("walls_painting", "calc_walls_painting", "walls_painting_area", false, "calc_wall_area_label")}
@@ -383,7 +479,7 @@ export function Calculator() {
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="floor" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
+                  <AccordionItem value="floor" className="bg-muted/30 px-5 rounded-lg border last:border-b pb-0">
                     <AccordionTrigger className="text-base font-semibold text-primary hover:no-underline">{t('calc_floor')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("floor_laminate", "calc_floor_laminate", "floor_laminate_area", false, "calc_floor_area_label")}
@@ -393,7 +489,7 @@ export function Calculator() {
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="ceiling" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
+                  <AccordionItem value="ceiling" className="bg-muted/30 px-5 rounded-lg border last:border-b pb-0">
                     <AccordionTrigger className="text-base font-semibold text-primary hover:no-underline">{t('calc_ceiling')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("ceiling_paint", "calc_ceiling_paint", "ceiling_paint_area", false, "calc_ceiling_area_label")}
@@ -402,7 +498,7 @@ export function Calculator() {
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="electricity" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
+                  <AccordionItem value="electricity" className="bg-muted/30 px-5 rounded-lg border last:border-b pb-0">
                     <AccordionTrigger className="text-base font-semibold text-primary hover:no-underline">{t('calc_electricity')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("elec_wiring", "calc_elec_wiring")}
@@ -411,7 +507,7 @@ export function Calculator() {
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="plumbing" className="bg-muted/30 px-5 rounded-lg border border-b pb-0">
+                  <AccordionItem value="plumbing" className="bg-muted/30 px-5 rounded-lg border last:border-b pb-0">
                     <AccordionTrigger className="text-base font-semibold text-primary hover:no-underline">{t('calc_plumbing')}</AccordionTrigger>
                     <AccordionContent className="space-y-1 pb-4 pt-2 border-t">
                       {renderCheckable("plumb_pipes", "calc_plumb_pipes")}
@@ -424,7 +520,7 @@ export function Calculator() {
 
               {/* Multipliers & General Settings */}
               <div className="space-y-6">
-                <div className="bg-muted/10 p-5 rounded-lg border h-full space-y-8">
+                <div className="bg-muted/10 px-5 py-3 rounded-lg border h-full space-y-8">
                   <FormField control={form.control} name="repair" render={({ field }) => (
                     <FormItem className="space-y-4">
                       <FormLabel className="text-base font-semibold text-primary">{t('calc_repair')}</FormLabel>
@@ -515,6 +611,26 @@ export function Calculator() {
                 <h4 className="font-semibold text-xl text-primary">
                   {activeFormSection === 'email' ? t('calc_submit_email') : t('calc_submit_contact')}
                 </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField control={form.control} name="firstName" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('calc_first_name')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t('calc_first_name_placeholder')} autoComplete="given-name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="lastName" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('calc_last_name')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t('calc_last_name_placeholder')} autoComplete="family-name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
                 <FormField control={form.control} name="email" render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('calc_email')}</FormLabel>
@@ -528,11 +644,20 @@ export function Calculator() {
                   <FormItem>
                     <FormLabel>{t('calc_notes')}</FormLabel>
                     <FormControl>
-                      <Textarea placeholder={t('calc_notes_placeholder')} className="resize-none" {...field} />
+                      <Textarea
+                        placeholder={t(activeFormSection === 'contact' ? 'calc_contact_notes_placeholder' : 'calc_notes_placeholder')}
+                        className="resize-none"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
+                {activeFormSection === 'contact' && contactStatus === 'already_sent' && (
+                  <div className="rounded-lg bg-amber-500/10 border border-amber-500/30 p-4 text-sm text-center text-amber-800 dark:text-amber-300">
+                    {t('calc_contact_already_sent')}
+                  </div>
+                )}
                 <Button type="button" onClick={onSecondarySubmit} disabled={isSubmitting} size="lg" variant="brand" className="w-full text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center">
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {activeFormSection === 'email' ? t('calc_send') : t('calc_send_contact')}
@@ -542,9 +667,17 @@ export function Calculator() {
           </form>
         </Form>
 
-        {submitMode === 'contact' && (
+        {submitMode === 'contact' && contactStatus === 'success' && (
           <div className="mt-8 p-6 rounded-xl bg-secondary/30 border border-secondary text-center animate-in fade-in slide-in-from-top-4 duration-500">
             <h4 className="text-xl font-bold text-primary mb-4">{t('calc_contact_success')}</h4>
+          </div>
+        )}
+
+        {submitMode === 'contact' && contactStatus === 'error' && (
+          <div className="mt-8 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-center animate-in fade-in duration-300">
+            <p className="text-sm font-medium text-red-700 dark:text-red-400">
+              {t('calc_contact_error')}
+            </p>
           </div>
         )}
 
@@ -566,14 +699,14 @@ export function Calculator() {
 
         {(submitMode === 'basic' || submitMode === 'email' || submitMode === 'contact') && estimatedCost !== null && (
           <div className="mt-8 p-8 rounded-xl bg-white dark:bg-primary/10 border border-zinc-100 dark:border-primary/20 text-center animate-in fade-in zoom-in duration-500 shadow-xl dark:shadow-inner">
-            <p className="text-sm font-semibold text-zinc-500 dark:text-muted-foreground uppercase tracking-widest mb-3">
+            <p className="text-sm font-semibold text-zinc-500 dark:text-muted-foreground mb-3">
               {t('calc_result')}
             </p>
             <p className="text-4xl md:text-5xl font-extrabold text-brand flex items-center justify-center gap-2">
               <span>֏</span> {estimatedCost[0].toLocaleString()} - {estimatedCost[1].toLocaleString()}
             </p>
             <p className="text-xs text-zinc-400 dark:text-muted-foreground mt-4 opacity-80 dark:opacity-70">
-              * This is a rough estimation and may vary based on specific conditions.
+              * {t('calc_result_disclaimer')}
             </p>
           </div>
         )}
