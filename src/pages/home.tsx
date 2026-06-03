@@ -1,6 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
-import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import homeBanner from '@/assets/home_bunner.png'
 
@@ -47,9 +45,9 @@ export default function HomePage() {
 
           {/* Search Input and Button */}
           <div className="flex w-full max-w-3xl mx-auto bg-white p-1.5 rounded-xl shadow-lg items-center">
-            <input 
-              type="text" 
-              placeholder={t('search_placeholder')} 
+            <input
+              type="text"
+              placeholder={t('search_placeholder')}
               className="flex-1 h-12 bg-transparent border-none px-4 text-lg text-black placeholder:text-gray-400 focus:outline-none focus:ring-0"
             />
             <Button className="h-12 px-8 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 text-base font-semibold shrink-0">
