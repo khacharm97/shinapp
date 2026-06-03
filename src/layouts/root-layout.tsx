@@ -1,10 +1,18 @@
-import { Outlet, Link } from "react-router-dom"
+import { NavLink, Outlet, Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Mail, Phone } from "lucide-react"
+import { Mail, Phone, Menu } from "lucide-react"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ModeToggle } from "@/components/mode-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
+import { Button } from "@/components/ui/button"
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import logo from "@/assets/logo.png"
+import logoMini from "@/assets/logo_mini.png"
 
 const FOOTER_PHONE = "+374(93)-23-34-02"
 const FOOTER_PHONE_HREF = "tel:+37493233402"
@@ -13,24 +21,79 @@ const FOOTER_EMAIL = "shinapp.support@gmail.com"
 export default function RootLayout() {
   const { t } = useTranslation()
 
+  const getDesktopNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `relative py-1 transition-colors hover:text-brand ${
+      isActive ? "text-brand after:scale-x-100" : "text-foreground/80 after:scale-x-0"
+    } after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full after:origin-left after:bg-brand after:transition-transform after:duration-300`
+
+  const getMobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `transition-colors hover:text-brand ${
+      isActive ? "text-brand font-semibold" : "text-foreground/80"
+    }`
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
         <header className="border-b">
           <div className="container mx-auto flex h-16 items-center justify-between px-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4 md:gap-10">
               <Link to="/" className="flex items-center">
-                <img src={logo} alt="ShinApp Logo" className="h-8 w-auto object-contain animate-in fade-in duration-500" />
+                <img src={logoMini} alt="ShinApp Logo" className="h-8 w-auto object-contain animate-in fade-in duration-500" />
               </Link>
+              <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+                <NavLink to="/" end className={getDesktopNavLinkClass}>{t("nav_home")}</NavLink>
+                <NavLink to="/masters" className={getDesktopNavLinkClass}>{t("nav_masters")}</NavLink>
+                <NavLink to="/technique" className={getDesktopNavLinkClass}>{t("nav_technique")}</NavLink>
+                <NavLink to="/calculator" className={getDesktopNavLinkClass}>{t("nav_calculator")}</NavLink>
+                <NavLink to="/about" className={getDesktopNavLinkClass}>{t("nav_about_us")}</NavLink>
+              </nav>
             </div>
             <div className="flex items-center space-x-4">
               <LanguageToggle />
               <ModeToggle />
+              <div className="hidden md:flex items-center gap-2">
+                <Button variant="ghost" asChild>
+                  <Link to="/login">{t("nav_login")}</Link>
+                </Button>
+                <Button className="bg-brand text-brand-foreground hover:bg-brand/90" asChild>
+                  <Link to="/signup">{t("nav_signup")}</Link>
+                </Button>
+              </div>
+              <div className="md:hidden">
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" aria-label="Menu">
+                      <Menu className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="flex flex-col p-6 sm:max-w-xs">
+                    <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                    <div className="flex items-center gap-3 mb-8 mt-2 border-b pb-6">
+                      <img src={logoMini} alt="ShinApp Logo" className="h-8 w-auto object-contain" />
+                      <span className="font-bold text-xl tracking-tight">ShinApp</span>
+                    </div>
+                    <nav className="flex flex-col gap-6 text-base font-medium flex-1 overflow-y-auto">
+                      <NavLink to="/" end className={getMobileNavLinkClass}>{t("nav_home")}</NavLink>
+                      <NavLink to="/masters" className={getMobileNavLinkClass}>{t("nav_masters")}</NavLink>
+                      <NavLink to="/technique" className={getMobileNavLinkClass}>{t("nav_technique")}</NavLink>
+                      <NavLink to="/calculator" className={getMobileNavLinkClass}>{t("nav_calculator")}</NavLink>
+                      <NavLink to="/about" className={getMobileNavLinkClass}>{t("nav_about_us")}</NavLink>
+                    </nav>
+                    <div className="mt-auto flex flex-col gap-2 pt-6 border-t pb-2">
+                      <Button variant="outline" size="sm" asChild className="w-full">
+                        <Link to="/login">{t("nav_login")}</Link>
+                      </Button>
+                      <Button size="sm" className="bg-brand text-brand-foreground hover:bg-brand/90 w-full" asChild>
+                        <Link to="/signup">{t("nav_signup")}</Link>
+                      </Button>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
             </div>
           </div>
         </header>
-
-        <main className="flex-1 container mx-auto px-4 md:py-8 py-4 ">
+        <main className="flex-1 w-full flex flex-col">
           <Outlet />
         </main>
 

@@ -86,5 +86,18 @@
   "calc_plumbing_count_label": "Plumbing count",
   "calc_email_simulation": "Estimate would be sent to {{email}} along with notes.",
   "calc_email_success": "Estimate has been sent successfully to {{email}}.",
-  "calc_email_error": "Failed to send estimate to {{email}}. Please try again."
+  "calc_email_error": "Failed to send estimate to {{email}}. Please try again.",
+  "nav_home": "Home",
+  "nav_masters": "Masters",
+  "nav_technique": "Technique",
+  "nav_calculator": "Calculator",
+  "nav_about_us": "About us",
+  "nav_login": "Log in",
+  "nav_signup": "Sign up",
+  "badge_reliable_specialists": "Reliable specialists",
+  "badge_reliable_platform": "Reliable platform",
+  "badge_wide_selection": "Wide selection",
+  "badge_fast_decision": "Fast decision",
+  "search_placeholder": "Search masters, techniques...",
+  "search_button": "Search"
 }
