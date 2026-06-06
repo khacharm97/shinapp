@@ -113,7 +113,7 @@ export function InfiniteSliderSection<T>({
   }, []);
 
   return (
-    <section className="w-full mx-auto px-4 md:px-20 py-8 md:py-16 text-start">
+    <section className="w-full max-w-[1740px] mx-auto px-4 md:px-20 py-8 md:py-16 text-start">
       <h2 className="text-3xl md:text-5xl font-bold text-brand mb-8">
         {title}
       </h2>
