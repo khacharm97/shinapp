@@ -3,6 +3,11 @@ import RootLayout from '@/layouts/root-layout'
 import HomePage from '@/pages/home'
 import ComingSoonPage from '@/pages/coming-soon'
 import CalculatorPage from '@/pages/calculator'
+import ProfilePage from '@/pages/profile'
+
+import AuthLayout from '@/layouts/auth-layout'
+import LoginPage from '@/pages/login'
+import SignupPage from '@/pages/signup'
 
 const router = createBrowserRouter([
   {
@@ -12,6 +17,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />,
+      },
+      {
+        path: "profile",
+        element: <ProfilePage />,
       },
       {
         path: "masters",
@@ -30,15 +39,20 @@ const router = createBrowserRouter([
         element: <ComingSoonPage />,
       },
       {
-        path: "login",
-        element: <ComingSoonPage />,
-      },
-      {
-        path: "signup",
-        element: <ComingSoonPage />,
+        element: <AuthLayout />,
+        children: [
+          {
+            path: "login",
+            element: <LoginPage />,
+          },
+          {
+            path: "signup",
+            element: <SignupPage />,
+          }
+        ]
       }
     ],
-  },
+  }
 ])
 
 function App() {
