@@ -1,18 +1,45 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import type { RootState } from '../index';
+import { logout } from '../slices/authSlice';
+
+const baseQuery = fetchBaseQuery({ 
+  baseUrl: 'http://localhost:3000/auth/', // Ensure api-gateway runs on 3000
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState).auth.token;
+    if (token) {
+      headers.set('authorization', `Bearer ${token}`);
+    }
+    return headers;
+  },
+});
+
+const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
+  let result = await baseQuery(args, api, extraOptions);
+  if (result.error && result.error.status === 401) {
+    api.dispatch(logout());
+  }
+  return result;
+};
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({ 
-    baseUrl: 'http://localhost:3000/auth/', // Ensure api-gateway runs on 3000
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem('access_token');
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
+  tagTypes: ['Profile'],
   endpoints: (builder) => ({
+    getProfile: builder.query({
+      query: () => 'profile',
+      providesTags: ['Profile'],
+    }),
+    getMasters: builder.query({
+      query: ({ page = 1, limit = 10 }) => `masters?page=${page}&limit=${limit}`,
+    }),
+    updateProfile: builder.mutation({
+      query: (profileData) => ({
+        url: 'profile',
+        method: 'PUT',
+        body: profileData,
+      }),
+    }),
     login: builder.mutation({
       query: (credentials) => ({
         url: 'login',
@@ -30,4 +57,10 @@ export const authApi = createApi({
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApi;
+export const { 
+  useLoginMutation, 
+  useRegisterMutation,
+  useGetProfileQuery,
+  useGetMastersQuery,
+  useUpdateProfileMutation
+} = authApi;

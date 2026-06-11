@@ -7,10 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useRegisterMutation } from "@/store/api/authApi"
+import { useDispatch } from "react-redux"
+import { setCredentials } from "@/store/slices/authSlice"
 
 export default function SignupPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [showPassword, setShowPassword] = useState(false)
   const [selectedRole, setSelectedRole] = useState<'master' | 'customer' | null>(null)
   
@@ -20,29 +23,44 @@ export default function SignupPage() {
   // Form state
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [validationError, setValidationError] = useState('')
 
   const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setValidationError('')
+
+    if (password !== confirmPassword) {
+      setValidationError(t("auth_error_passwords_mismatch", "Passwords do not match."))
+      return
+    }
     
     try {
       const response = await register({
         name,
         email, 
+        phone,
         password,
         role: selectedRole
       }).unwrap()
 
       console.log("Registration successful:", response)
       if (response.access_token) {
-        localStorage.setItem("access_token", response.access_token)
-        if (selectedRole === 'master') {
-          navigate("/profile")
-        } else {
-          navigate("/")
+        dispatch(setCredentials({ token: response.access_token, user: response.user }))
+
+        try {
+          const payload = JSON.parse(atob(response.access_token.split('.')[1]))
+          if (payload.roles && payload.roles.includes('MASTER')) {
+            navigate("/profile")
+            return
+          }
+        } catch (e) {
+          console.error("Failed to parse JWT payload:", e)
         }
-      } else {
-        navigate("/login")
+
+        navigate("/")
       }
     } catch (err) {
       console.error("Registration failed:", err)
@@ -70,7 +88,12 @@ export default function SignupPage() {
         <form className="flex flex-col gap-5" onSubmit={handleSignupSubmit}>
           {isError && (
             <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm font-medium">
-              {error?.data?.message || t("auth_error", "An error occurred during registration.")}
+              {(error as any)?.data?.message || t("auth_error", "An error occurred during registration.")}
+            </div>
+          )}
+          {validationError && (
+            <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm font-medium">
+              {validationError}
             </div>
           )}
           <div className="space-y-2">
@@ -90,7 +113,7 @@ export default function SignupPage() {
 
           <div className="space-y-2">
             <Label htmlFor="email" className="text-foreground/80 font-medium">
-              {t("auth_email_label", "Email or Phone")}
+              {t("auth_email_label_only", "Email")}
             </Label>
             <Input
               id="email"
@@ -98,6 +121,21 @@ export default function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="example@gmail.com"
+              className="h-12 border-gray-300 focus-visible:ring-brand"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-foreground/80 font-medium">
+              {t("auth_phone_label", "Phone Number")}
+            </Label>
+            <Input
+              id="phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+374 __ __ __ __"
               className="h-12 border-gray-300 focus-visible:ring-brand"
               required
             />
@@ -113,6 +151,30 @@ export default function SignupPage() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="h-12 border-gray-300 focus-visible:ring-brand pr-10"
+                required
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword" className="text-foreground/80 font-medium">
+              {t("auth_confirm_password_label", "Confirm Password")}
+            </Label>
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
                 className="h-12 border-gray-300 focus-visible:ring-brand pr-10"
                 required

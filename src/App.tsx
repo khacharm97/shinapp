@@ -4,6 +4,8 @@ import HomePage from '@/pages/home'
 import ComingSoonPage from '@/pages/coming-soon'
 import CalculatorPage from '@/pages/calculator'
 import ProfilePage from '@/pages/profile'
+import MastersPage from '@/pages/masters'
+import ProtectedRoute from '@/components/ProtectedRoute'
 
 import AuthLayout from '@/layouts/auth-layout'
 import LoginPage from '@/pages/login'
@@ -19,12 +21,17 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "profile",
-        element: <ProfilePage />,
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "profile",
+            element: <ProfilePage />,
+          }
+        ]
       },
       {
         path: "masters",
-        element: <ComingSoonPage />,
+        element: <MastersPage />,
       },
       {
         path: "technique",

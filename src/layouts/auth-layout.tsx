@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router-dom"
+import { Outlet } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import homeBanner from "@/assets/home_bunner.png"
 

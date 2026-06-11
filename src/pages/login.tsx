@@ -7,10 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useLoginMutation } from "@/store/api/authApi"
+import { useDispatch } from "react-redux"
+import { setCredentials } from "@/store/slices/authSlice"
 
 export default function LoginPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [showPassword, setShowPassword] = useState(false)
   const [hasError, setHasError] = useState(false)
 
@@ -28,18 +31,7 @@ export default function LoginPage() {
     try {
       const response = await login({ identifier, password }).unwrap()
       if (response.access_token) {
-        localStorage.setItem("access_token", response.access_token)
-        
-        try {
-          // Decode JWT payload to check role
-          const payload = JSON.parse(atob(response.access_token.split('.')[1]))
-          if (payload.roles && payload.roles.includes('MASTER')) {
-            navigate("/profile")
-            return
-          }
-        } catch (e) {
-          console.error("Failed to parse JWT payload:", e)
-        }
+        dispatch(setCredentials({ token: response.access_token, user: response.user }))
         
         navigate("/")
       }
@@ -63,7 +55,7 @@ export default function LoginPage() {
       <form className="flex flex-col gap-6" onSubmit={handleLoginSubmit}>
         {hasError && (
           <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm font-medium">
-            {error?.data?.message || t("auth_error_invalid_credentials", "Invalid email/phone or password.")}
+            {(error as any)?.data?.message || t("auth_error_invalid_credentials", "Invalid email/phone or password.")}
           </div>
         )}
         <div className="space-y-2">
