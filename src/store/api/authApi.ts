@@ -2,8 +2,11 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../index';
 import { logout } from '../slices/authSlice';
 
+const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
+const baseUrl = backendUrl.startsWith('http') ? `${backendUrl}/auth/` : `https://${backendUrl}/auth/`;
+
 const baseQuery = fetchBaseQuery({ 
-  baseUrl: 'http://localhost:3000/auth/', // Ensure api-gateway runs on 3000
+  baseUrl, // Ensure api-gateway runs on 3000
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
     if (token) {
