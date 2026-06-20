@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2, MapPin, Star, CheckCircle2, Phone, Mail, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { useGetMastersQuery } from "@/store/api/authApi";
@@ -92,21 +93,25 @@ export default function MastersPage() {
           <div className="space-y-6">
             {masters.map((master: any) => (
               <div key={master.id} className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md">
-                {/* Profile Image (Placeholder) */}
-                <div className="md:w-64 md:min-w-64 h-64 md:h-auto bg-slate-200 relative shrink-0">
-                  <img
-                    src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"
-                    alt={master.name || "Master"}
-                    className="w-full h-full object-cover"
-                  />
+                {/* Profile Image */}
+                <div className="w-full md:w-72 md:min-w-72 p-6 md:p-8 flex items-center justify-center bg-slate-50/50 relative shrink-0 border-b md:border-b-0 md:border-r border-slate-100">
+                  <Link to={`/masters/${master.id}`} className="w-48 h-48 md:w-52 md:h-52 rounded-full border-4 border-white shadow-sm overflow-hidden bg-slate-200 block transition-transform hover:scale-[1.02]">
+                    <img
+                      src={master.avatarUrl ? `http://localhost:3000${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
+                      alt={master.name || "Master"}
+                      className="w-full h-full object-cover"
+                    />
+                  </Link>
                 </div>
 
                 {/* Profile Info */}
                 <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
                   <div>
-                    <h2 className="text-2xl font-bold text-slate-900 mb-1">
-                      {master.name || "Unnamed Master"}
-                    </h2>
+                    <Link to={`/masters/${master.id}`}>
+                      <h2 className="text-2xl font-bold text-slate-900 mb-1 hover:text-brand transition-colors">
+                        {master.name || "Unnamed Master"}
+                      </h2>
+                    </Link>
                     <p className="text-lg text-slate-600 font-medium mb-3">
                       {getLocalizedSkills(master.userInfo?.skills)}
                     </p>
@@ -144,7 +149,10 @@ export default function MastersPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <Button asChild variant="outline" className="font-medium rounded-md px-6">
+                      <Link to={`/masters/${master.id}`}>View Profile</Link>
+                    </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button className="bg-brand hover:bg-brand/90 text-white font-medium rounded-md px-6">

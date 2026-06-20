@@ -5,11 +5,13 @@ import ComingSoonPage from '@/pages/coming-soon'
 import CalculatorPage from '@/pages/calculator'
 import ProfilePage from '@/pages/profile'
 import MastersPage from '@/pages/masters'
+import MasterDetailsPage from '@/pages/master-details'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 import AuthLayout from '@/layouts/auth-layout'
 import LoginPage from '@/pages/login'
 import SignupPage from '@/pages/signup'
+import AuthCallbackPage from '@/pages/auth-callback'
 
 const router = createBrowserRouter([
   {
@@ -34,6 +36,10 @@ const router = createBrowserRouter([
         element: <MastersPage />,
       },
       {
+        path: "masters/:id",
+        element: <MasterDetailsPage />,
+      },
+      {
         path: "technique",
         element: <ComingSoonPage />,
       },
@@ -55,6 +61,10 @@ const router = createBrowserRouter([
           {
             path: "signup",
             element: <SignupPage />,
+          },
+          {
+            path: "auth/callback",
+            element: <AuthCallbackPage />,
           }
         ]
       }

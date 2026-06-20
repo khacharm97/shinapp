@@ -161,5 +161,7 @@
   "auth_email_label_only": "Эл. почта",
   "auth_phone_label": "Номер телефона",
   "auth_confirm_password_label": "Подтвердите пароль",
-  "auth_error_passwords_mismatch": "Пароли не совпадают."
+  "auth_error_passwords_mismatch": "Пароли не совпадают.",
+  "banner_complete_profile_text": "Пожалуйста, заполните ваш профиль, чтобы начать получать заказы",
+  "banner_complete_profile_button": "Заполнить профиль"
 }

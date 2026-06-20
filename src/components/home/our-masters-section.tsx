@@ -20,15 +20,15 @@ export function OurMastersSection() {
       exploreLink="/masters"
       exploreText={t('explore_more')}
       renderItem={(master, index) => (
-        <div key={`${master.id}-${index}`} className="min-w-[260px] md:min-w-[300px] flex-shrink-0 snap-start bg-background flex flex-col">
+        <div key={`${master.id}-${index}`} className="min-w-[200px] md:min-w-[240px] flex-shrink-0 snap-start bg-background flex flex-col">
           <img 
             src={masterImg} 
             alt={master.name} 
-            className="w-full h-[320px] md:h-[400px] object-cover rounded-lg mb-3 bg-gray-100 dark:bg-gray-800"
+            className="w-full h-[240px] md:h-[300px] object-cover rounded-lg mb-2 bg-gray-100 dark:bg-gray-800"
           />
           <div className="flex flex-col gap-1">
-            <h3 className="font-semibold text-lg">{master.name}</h3>
-            <div className="flex items-center text-sm text-foreground/70 gap-2">
+            <h3 className="font-semibold text-base">{master.name}</h3>
+            <div className="flex items-center text-xs text-foreground/70 gap-2">
               <span>{t(master.role)}</span>
               <span>-</span>
               {master.status === 'available' ? (

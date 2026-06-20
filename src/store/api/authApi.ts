@@ -33,6 +33,9 @@ export const authApi = createApi({
     getMasters: builder.query({
       query: ({ page = 1, limit = 10 }) => `masters?page=${page}&limit=${limit}`,
     }),
+    getMasterById: builder.query({
+      query: (id: string) => `masters/${id}`,
+    }),
     updateProfile: builder.mutation({
       query: (profileData) => ({
         url: 'profile',
@@ -54,6 +57,13 @@ export const authApi = createApi({
         body: userData,
       }),
     }),
+    uploadAvatar: builder.mutation({
+      query: (formData: FormData) => ({
+        url: 'profile/avatar',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
   }),
 });
 
@@ -62,5 +72,7 @@ export const {
   useRegisterMutation,
   useGetProfileQuery,
   useGetMastersQuery,
-  useUpdateProfileMutation
+  useGetMasterByIdQuery,
+  useUpdateProfileMutation,
+  useUploadAvatarMutation
 } = authApi;

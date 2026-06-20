@@ -161,5 +161,7 @@
   "auth_email_label_only": "Email",
   "auth_phone_label": "Phone Number",
   "auth_confirm_password_label": "Confirm Password",
-  "auth_error_passwords_mismatch": "Passwords do not match."
+  "auth_error_passwords_mismatch": "Passwords do not match.",
+  "banner_complete_profile_text": "Please complete your profile to start receiving orders",
+  "banner_complete_profile_button": "Complete Profile"
 }
