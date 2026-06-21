@@ -196,7 +196,7 @@ export default function ProfilePage() {
             <div className="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300 group-hover:border-blue-500 transition-colors overflow-hidden">
               {(previewUrl || user.avatarUrl) ? (
                 <img 
-                  src={previewUrl || `http://localhost:3000${user.avatarUrl}`} 
+                  src={previewUrl || `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${user.avatarUrl}`} 
                   alt="Avatar" 
                   className="w-full h-full object-cover" 
                   onError={(e) => {

@@ -97,7 +97,7 @@ export default function MastersPage() {
                 <div className="w-full md:w-72 md:min-w-72 p-6 md:p-8 flex items-center justify-center bg-slate-50/50 relative shrink-0 border-b md:border-b-0 md:border-r border-slate-100">
                   <Link to={`/masters/${master.id}`} className="w-48 h-48 md:w-52 md:h-52 rounded-full border-4 border-white shadow-sm overflow-hidden bg-slate-200 block transition-transform hover:scale-[1.02]">
                     <img
-                      src={master.avatarUrl ? `http://localhost:3000${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
+                      src={master.avatarUrl ? `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                       alt={master.name || "Master"}
                       className="w-full h-full object-cover"
                       onError={(e) => {

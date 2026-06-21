@@ -5,9 +5,7 @@ import { useGetMasterByIdQuery } from "@/store/api/authApi";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
 
-// Manager contact details
 const MANAGER_PHONE = "+37493233402";
-const MANAGER_PHONE_DISPLAY = "+374(93)-23-34-02";
 const MANAGER_EMAIL = "info@shinapp.am";
 
 export default function MasterDetailsPage() {
@@ -92,7 +90,7 @@ export default function MasterDetailsPage() {
                   <div>
                     <div className="w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-slate-200 shrink-0">
                       <img
-                        src={master.avatarUrl ? `http://localhost:3000${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
+                        src={master.avatarUrl ? `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                         alt={master.name || "Master"}
                         className="w-full h-full object-cover"
                         onError={(e) => {
