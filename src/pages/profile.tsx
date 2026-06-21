@@ -3,8 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslation } from "react-i18next";
 import { Plus, Camera, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useGetProfileQuery, useUpdateProfileMutation } from "@/store/api/authApi";
+import { useEffect, useState, useRef } from "react";
+import { useGetProfileQuery, useUpdateProfileMutation, useUploadAvatarMutation } from "@/store/api/authApi";
 
 
 import {
@@ -53,13 +53,27 @@ export default function ProfilePage() {
 
   const { data: profileData, isLoading: isFetchingProfile } = useGetProfileQuery(undefined);
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
+  const [uploadAvatar, { isLoading: isUploadingAvatar }] = useUploadAvatarMutation();
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // We map the backend data to our user info object
   const user = {
     email: profileData?.email || "",
     name: profileData?.name || "",
     role: profileData?.roles?.[0] === 'MASTER' ? t("role_master", "Master") : t("role_customer", "Customer"),
+    avatarUrl: profileData?.avatarUrl || null,
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
   const form = useForm<ProfileFormValues>({
@@ -126,6 +140,13 @@ export default function ProfilePage() {
   async function onSubmit(data: ProfileFormValues) {
     setSubmitStatus('idle');
     try {
+      if (avatarFile) {
+        const formData = new FormData();
+        formData.append('file', avatarFile);
+        await uploadAvatar(formData).unwrap();
+        setAvatarFile(null); // Clear so it doesn't re-upload on next save
+      }
+
       await updateProfile({
         name: data.fullName,
         phone: data.phone,
@@ -171,14 +192,32 @@ export default function ProfilePage() {
         <div className="flex items-center gap-6 p-6 bg-white rounded-2xl shadow-sm transition-all hover:shadow-md relative overflow-hidden">
           <div className="absolute top-0 left-0 w-2 h-full bg-brand"></div>
 
-          <div className="relative group cursor-pointer">
-            <div className="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300 group-hover:border-blue-500 transition-colors">
-              <Plus className="w-8 h-8 text-orange-500" strokeWidth={3} />
+          <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+            <div className="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300 group-hover:border-blue-500 transition-colors overflow-hidden">
+              {(previewUrl || user.avatarUrl) ? (
+                <img 
+                  src={previewUrl || `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${user.avatarUrl}`} 
+                  alt="Avatar" 
+                  className="w-full h-full object-cover" 
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600";
+                  }}
+                />
+              ) : (
+                <Plus className="w-8 h-8 text-orange-500" strokeWidth={3} />
+              )}
             </div>
             <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <Camera className="w-6 h-6 text-white" />
             </div>
           </div>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            className="hidden" 
+            accept="image/*" 
+            onChange={handleFileChange} 
+          />
 
           <div className="flex flex-col">
             <h3 className="text-lg font-semibold text-slate-900 mb-1">
@@ -487,8 +526,8 @@ export default function ProfilePage() {
                   {t("profile_update_error", "Failed to update profile. Please try again.")}
                 </div>
               )}
-              <Button disabled={isUpdating} type="submit" className="w-full sm:w-auto mt-8 h-12 px-8 text-base font-semibold">
-                {isUpdating ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
+              <Button disabled={isUpdating || isUploadingAvatar} type="submit" className="w-full sm:w-auto mt-8 h-12 px-8 text-base font-semibold">
+                {(isUpdating || isUploadingAvatar) ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
                 {t("profile_save")}
               </Button>
             </form>

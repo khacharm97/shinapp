@@ -161,5 +161,9 @@
   "auth_email_label_only": "Էլ. հասցե",
   "auth_phone_label": "Հեռախոսահամար",
   "auth_confirm_password_label": "Հաստատեք գաղտնաբառը",
-  "auth_error_passwords_mismatch": "Գաղտնաբառերը չեն համընկնում:"
+  "auth_error_passwords_mismatch": "Գաղտնաբառերը չեն համընկնում:",
+  "banner_complete_profile_text": "Խնդրում ենք լրացնել Ձեր անձնական տվյալները՝ պատվերներ ստանալու համար",
+  "banner_complete_profile_button": "Լրացնել տվյալները",
+  "profile_customers": "Հաճախորդներ",
+  "profile_total_jobs": "Ընդհանուր աշխատանքներ"
 }

@@ -28,7 +28,7 @@ import logoMini from "@/assets/logo_mini.png"
 import { useGetProfileQuery } from "@/store/api/authApi"
 import { useAppSelector, useAppDispatch } from "@/store/hooks"
 import { logout, updateUser } from "@/store/slices/authSlice"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 const FOOTER_PHONE = "+374(93)-23-34-02"
 const FOOTER_PHONE_HREF = "tel:+37493233402"
@@ -36,7 +36,7 @@ const FOOTER_EMAIL = "shinapp.support@gmail.com"
 
 export default function RootLayout() {
   const { t } = useTranslation()
-  useLocation()
+  const location = useLocation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { token, user: reduxUser } = useAppSelector((state) => state.auth)
@@ -56,6 +56,33 @@ export default function RootLayout() {
   // We consider them logged in if there's a token
   const isLoggedIn = !!token
 
+  const isMaster = user?.roles?.includes('MASTER')
+  const isVerified = !!user?.verifiedAt
+  const showCompleteProfileBanner = isLoggedIn && isMaster && !isVerified && location.pathname !== '/profile'
+
+  const [showNavbar, setShowNavbar] = useState(true)
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+
+      if (currentScrollY > lastScrollY && currentScrollY > 60) {
+        // Scrolling down
+        setShowNavbar(false)
+      } else {
+        // Scrolling up or at the top
+        setShowNavbar(true)
+      }
+
+      lastScrollY = currentScrollY
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
   const handleLogout = () => {
     dispatch(logout())
     navigate("/")
@@ -72,7 +99,10 @@ export default function RootLayout() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
-        <header className="border-b">
+        <header
+          className={`border-b sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-transform duration-300 ${showNavbar ? "translate-y-0" : "-translate-y-full"
+            }`}
+        >
           <div className="container mx-auto flex h-16 items-center justify-between px-4">
             <div className="flex items-center gap-4 md:gap-10">
               <Link to="/" className="flex items-center">
@@ -171,6 +201,16 @@ export default function RootLayout() {
             </div>
           </div>
         </header>
+        {showCompleteProfileBanner && (
+          <div className="bg-orange-100 border-b border-orange-200 py-3 px-4 flex justify-between flex-col sm:flex-row items-center gap-4 animate-in slide-in-from-top-2">
+            <div className="text-orange-800 font-medium text-sm">
+              {t("banner_complete_profile_text", "Please complete your profile to start receiving orders")}
+            </div>
+            <Button size="sm" asChild className="bg-orange-500 hover:bg-orange-600 text-white shrink-0">
+              <Link to="/profile">{t("banner_complete_profile_button", "Complete Profile")}</Link>
+            </Button>
+          </div>
+        )}
         <main className="flex-1 w-full flex flex-col">
           <Outlet />
         </main>
