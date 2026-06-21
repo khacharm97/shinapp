@@ -100,6 +100,9 @@ export default function MastersPage() {
                       src={master.avatarUrl ? `http://localhost:3000${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                       alt={master.name || "Master"}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600";
+                      }}
                     />
                   </Link>
                 </div>

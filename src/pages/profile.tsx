@@ -195,7 +195,14 @@ export default function ProfilePage() {
           <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
             <div className="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300 group-hover:border-blue-500 transition-colors overflow-hidden">
               {(previewUrl || user.avatarUrl) ? (
-                <img src={previewUrl || `http://localhost:3000${user.avatarUrl}`} alt="Avatar" className="w-full h-full object-cover" />
+                <img 
+                  src={previewUrl || `http://localhost:3000${user.avatarUrl}`} 
+                  alt="Avatar" 
+                  className="w-full h-full object-cover" 
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600";
+                  }}
+                />
               ) : (
                 <Plus className="w-8 h-8 text-orange-500" strokeWidth={3} />
               )}

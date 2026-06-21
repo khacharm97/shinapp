@@ -42,7 +42,7 @@ export default function MasterDetailsPage() {
   const getLocalizedSkills = (skills?: string[] | null) => {
     if (!skills || skills.length === 0) return "";
     return skills.map(skill => {
-      switch(skill) {
+      switch (skill) {
         case "shinarar": return t("profile_skill_shinarar", "Shinarar");
         case "nerkarar": return t("profile_skill_nerkarar", "Nerkarar");
         case "plumber": return t("calc_plumbing", "Plumber");
@@ -73,7 +73,7 @@ export default function MasterDetailsPage() {
 
   return (
     <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="mx-auto space-y-8">
         <div>
           <Button asChild variant="ghost" className="mb-4 text-slate-500 hover:text-slate-900 -ml-4">
             <Link to="/masters">
@@ -85,26 +85,51 @@ export default function MasterDetailsPage() {
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
           {/* Header Section */}
-          <div className="bg-brand/5 border-b border-slate-100 p-8 md:p-12 flex flex-col md:flex-row items-center md:items-start gap-8">
-            <div className="w-48 h-48 md:w-56 md:h-56 rounded-full border-4 border-white shadow-md overflow-hidden bg-slate-200 shrink-0">
-              <img
-                src={master.avatarUrl ? `http://localhost:3000${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
-                alt={master.name || "Master"}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            
-            <div className="flex-1 text-center md:text-left space-y-4 pt-2">
+          <div className="bg-brand/5 border-b border-slate-100 p-4 flex flex-col md:flex-row items-center md:items-start gap-8">
+            <div className="flex-1 text-center md:text-left space-y-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-                    {master.name || "Unnamed Master"}
-                  </h1>
-                  <p className="text-xl text-slate-600 font-medium">
-                    {getLocalizedSkills(master.userInfo?.skills)}
-                  </p>
+                <div className="flex gap-4">
+                  <div>
+                    <div className="w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-slate-200 shrink-0">
+                      <img
+                        src={master.avatarUrl ? `http://localhost:3000${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
+                        alt={master.name || "Master"}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600";
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-strat justify-start md:justify-start gap-4 text-sm border-t border-slate-200/60">
+                    <h1 className="text-xl font-bold text-slate-900 mb-2">
+                      {master.name || "Unnamed Master"}
+                      {master.isVerified && (
+                        <span className="inline-block ml-2 text-blue-500">
+                          {/* Assuming there is a verified icon somewhere, just omitting for now as it's not strictly requested, but removing the skill is. */}
+                        </span>
+                      )}
+                    </h1>
+                    {master.userInfo?.regionId && (
+                      <div className="flex items-center text-slate-500">
+                        <MapPin className="w-4 h-4 mr-1" />
+                        {getLocalizedLocation(master.userInfo?.regionId, master.userInfo?.cityId)}
+                      </div>
+                    )}
+                    <div className="flex gap-4">
+                      <div className="flex items-center text-orange-500 font-medium bg-orange-50 px-0 py-1 rounded-md">
+                        <Star className="w-4 h-4 mr-1 fill-current" />
+                        Top Rated
+                      </div>
+
+                      <div className="flex items-center text-green-600 font-medium bg-green-50 px-2 py-1 rounded-md">
+                        <CheckCircle2 className="w-4 h-4 mr-1" />
+                        Available now
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                
+
                 <div className="flex flex-col gap-3 shrink-0">
                   <Button onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
                     <Phone className="w-4 h-4 mr-2" />
@@ -117,22 +142,14 @@ export default function MasterDetailsPage() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm pt-4 border-t border-slate-200/60 mt-4">
-                {master.userInfo?.regionId && (
-                  <div className="flex items-center text-slate-500">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    {getLocalizedLocation(master.userInfo?.regionId, master.userInfo?.cityId)}
-                  </div>
-                )}
-                
-                <div className="flex items-center text-orange-500 font-medium bg-orange-50 px-2 py-1 rounded-md">
-                  <Star className="w-4 h-4 mr-1 fill-current" />
-                  Top Rated
+              <div className="flex items-center justify-center md:justify-start gap-12">
+                <div>
+                  <div className="text-3xl font-bold text-brand">0</div>
+                  <div className="text-sm text-slate-500 mt-1">{t("profile_customers", "Customers")}</div>
                 </div>
-
-                <div className="flex items-center text-green-600 font-medium bg-green-50 px-2 py-1 rounded-md">
-                  <CheckCircle2 className="w-4 h-4 mr-1" />
-                  Available now
+                <div>
+                  <div className="text-3xl font-bold text-brand">0</div>
+                  <div className="text-sm text-slate-500 mt-1">{t("profile_total_jobs", "Total Jobs")}</div>
                 </div>
               </div>
             </div>
@@ -140,10 +157,12 @@ export default function MasterDetailsPage() {
 
           {/* Details Section */}
           <div className="p-8 md:p-12 space-y-12">
-            
+
             {/* About */}
             <section>
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">About Me</h2>
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">
+                {getLocalizedSkills(master.userInfo?.skills) || t("profile_about", "About Me")}
+              </h2>
               <div className="prose prose-slate max-w-none">
                 <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
                   {master.userInfo?.about || "This master hasn't provided a detailed description yet. Contact the manager for more information."}
@@ -164,7 +183,7 @@ export default function MasterDetailsPage() {
                 <p className="text-sm text-slate-500 mt-2">Prices are estimates and may vary based on project requirements.</p>
               </section>
             )}
-            
+
           </div>
         </div>
       </div>
