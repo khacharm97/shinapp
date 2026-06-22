@@ -37,17 +37,14 @@ export default function MasterDetailsPage() {
     return loc;
   };
 
-  const getLocalizedSkills = (skills?: string[] | null) => {
-    if (!skills || skills.length === 0) return "";
-    return skills.map(skill => {
-      switch (skill) {
-        case "shinarar": return t("profile_skill_shinarar", "Shinarar");
-        case "nerkarar": return t("profile_skill_nerkarar", "Nerkarar");
-        case "plumber": return t("calc_plumbing", "Plumber");
-        case "electrician": return t("calc_electricity", "Electrician");
-        default: return skill;
-      }
-    }).join(" | ");
+  const getSkillTranslation = (skill: string) => {
+    switch (skill) {
+      case "shinarar": return t("profile_skill_shinarar", "Shinarar");
+      case "nerkarar": return t("profile_skill_nerkarar", "Nerkarar");
+      case "plumber": return t("calc_plumbing", "Plumber");
+      case "electrician": return t("calc_electricity", "Electrician");
+      default: return skill;
+    }
   };
 
   if (isLoading) {
@@ -159,7 +156,7 @@ export default function MasterDetailsPage() {
             {/* About */}
             <section>
               <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                {getLocalizedSkills(master.userInfo?.skills) || t("profile_about", "About Me")}
+                {t("profile_about", "About Me")}
               </h2>
               <div className="prose prose-slate max-w-none">
                 <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
@@ -167,6 +164,25 @@ export default function MasterDetailsPage() {
                 </p>
               </div>
             </section>
+
+            {/* Skills */}
+            {master.userInfo?.skills && master.userInfo.skills.length > 0 && (
+              <section className="pt-8 border-t border-slate-100">
+                <h2 className="text-2xl font-bold text-brand mb-6">
+                  {t("profile_skills", "Skills")}
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {master.userInfo.skills.map((skill, index) => (
+                    <div
+                      key={index}
+                      className="bg-slate-100 text-slate-800 px-4 py-2 rounded-md text-sm font-medium"
+                    >
+                      {getSkillTranslation(skill)}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Pricing (if any) */}
             {master.userInfo?.priceValue && (
