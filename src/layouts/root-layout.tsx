@@ -125,7 +125,7 @@ export default function RootLayout() {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                         <Avatar className="h-10 w-10">
-                          <AvatarImage src="/profile.png" alt="Profile" />
+                          <AvatarImage src={user?.avatarUrl ? `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${user.avatarUrl}` : "/profile.png"} alt={user?.name || "Profile"} className="object-cover" />
                           <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
                         </Avatar>
                       </Button>
