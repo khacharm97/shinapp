@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAppSelector } from "@/store/hooks";
 
 // Manager contact details
 const MANAGER_PHONE = "+37493233402";
@@ -19,6 +20,7 @@ const MANAGER_EMAIL = "info@shinapp.am";
 
 export default function MastersPage() {
   const { t, i18n } = useTranslation();
+  const { user } = useAppSelector((state) => state.auth);
   const [page, setPage] = useState(1);
   const limit = 5;
 
@@ -91,11 +93,20 @@ export default function MastersPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            {masters.map((master: any) => (
-              <div key={master.id} className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md">
+            {masters.map((master: any) => {
+              const isCurrentUser = user?.id === master.id;
+              
+              return (
+              <div key={master.id} className={`bg-white rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md relative ${isCurrentUser ? 'border-2 border-brand' : 'border border-slate-100'}`}>
+                {isCurrentUser && (
+                  <div className="absolute top-0 right-0 bg-brand text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm">
+                    {t("profile_this_is_you", "Your Profile")}
+                  </div>
+                )}
+                
                 {/* Profile Image */}
                 <div className="w-full md:w-72 md:min-w-72 p-6 md:p-8 flex items-center justify-center bg-slate-50/50 relative shrink-0 border-b md:border-b-0 md:border-r border-slate-100">
-                  <Link to={`/masters/${master.id}`} className="w-48 h-48 md:w-52 md:h-52 rounded-full border-4 border-white shadow-sm overflow-hidden bg-slate-200 block transition-transform hover:scale-[1.02]">
+                  <Link to={`/masters/${master.id}`} className={`w-48 h-48 md:w-52 md:h-52 rounded-full border-4 shadow-sm overflow-hidden bg-slate-200 block transition-transform hover:scale-[1.02] ${isCurrentUser ? 'border-brand/20' : 'border-white'}`}>
                     <img
                       src={master.avatarUrl ? `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                       alt={master.name || "Master"}
@@ -176,7 +187,8 @@ export default function MastersPage() {
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
