@@ -172,7 +172,7 @@ export default function MasterDetailsPage() {
                   {t("profile_skills", "Skills")}
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  {master.userInfo.skills.map((skill, index) => (
+                  {master.userInfo.skills.map((skill: string, index: number) => (
                     <div
                       key={index}
                       className="bg-slate-100 text-slate-800 px-4 py-2 rounded-md text-sm font-medium"
