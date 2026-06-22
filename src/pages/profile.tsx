@@ -99,22 +99,25 @@ export default function ProfilePage() {
   useEffect(() => {
     if (profileData) {
       // Pre-fill form from backend data (combining user and userInfo)
-      form.reset({
-        fullName: profileData.name || "",
-        phone: profileData.phone || "",
-        email: profileData.email || "",
-        regionId: profileData.userInfo?.regionId || "",
-        cityId: profileData.userInfo?.cityId || "",
-        skills: profileData.userInfo?.skills?.length ? profileData.userInfo.skills : ["shinarar", "nerkarar"],
-        largeScale: profileData.userInfo?.largeScale || false,
-        urgentOrders: profileData.userInfo?.urgentOrders || false,
-        onlinePay: profileData.userInfo?.onlinePay || false,
-        buyMaterial: profileData.userInfo?.buyMaterial || false,
-        nightShift: profileData.userInfo?.nightShift || false,
-        pricingFormat: profileData.userInfo?.pricingFormat || "",
-        priceValue: profileData.userInfo?.priceValue || "",
-        about: profileData.userInfo?.about || "",
-      });
+      setTimeout(() => {
+        form.reset({
+          fullName: profileData.name || "",
+          phone: profileData.phone || "",
+          email: profileData.email || "",
+          regionId: profileData.userInfo?.regionId || "",
+          cityId: profileData.userInfo?.cityId || "",
+          skills: profileData.userInfo?.skills?.length ? profileData.userInfo.skills : ["shinarar", "nerkarar"],
+          largeScale: profileData.userInfo?.largeScale || false,
+          urgentOrders: profileData.userInfo?.urgentOrders || false,
+          onlinePay: profileData.userInfo?.onlinePay || false,
+          buyMaterial: profileData.userInfo?.buyMaterial || false,
+          nightShift: profileData.userInfo?.nightShift || false,
+          pricingFormat: profileData.userInfo?.pricingFormat || "",
+          priceValue: profileData.userInfo?.priceValue || "",
+          about: profileData.userInfo?.about || "",
+        });
+      }, 100);
+
     }
   }, [profileData, form]);
 
@@ -195,10 +198,10 @@ export default function ProfilePage() {
           <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
             <div className="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300 group-hover:border-blue-500 transition-colors overflow-hidden">
               {(previewUrl || user.avatarUrl) ? (
-                <img 
-                  src={previewUrl || `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${user.avatarUrl}`} 
-                  alt="Avatar" 
-                  className="w-full h-full object-cover" 
+                <img
+                  src={previewUrl || `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${user.avatarUrl}`}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
                   onError={(e) => {
                     e.currentTarget.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600";
                   }}
@@ -211,12 +214,12 @@ export default function ProfilePage() {
               <Camera className="w-6 h-6 text-white" />
             </div>
           </div>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            className="hidden" 
-            accept="image/*" 
-            onChange={handleFileChange} 
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleFileChange}
           />
 
           <div className="flex flex-col">
