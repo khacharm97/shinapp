@@ -13,37 +13,6 @@ function normalizeEmail(email: string) {
   return email.trim().toLowerCase()
 }
 
-export async function contactRequestExists(email: string) {
-  const normalized = normalizeEmail(email)
-  try {
-    const response = await fetch(`${apiUrl}/contact-requests/exists?email=${encodeURIComponent(normalized)}`);
-    if (!response.ok) throw new Error('Network response was not ok');
-    const data = await response.json();
-    return { exists: data.exists, contact: data.contact, error: null };
-  } catch (error) {
-    return { exists: false, contact: false, error };
-  }
-}
-
-export async function updateContactRequest(email: string, row: Partial<ContactRequestInsert>) {
-  const normalized = normalizeEmail(email)
-  const updateData = { ...row }
-  if (row.email) updateData.email = normalizeEmail(row.email)
-  
-  try {
-    const response = await fetch(`${apiUrl}/contact-requests/${encodeURIComponent(normalized)}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updateData)
-    });
-    if (!response.ok) throw new Error('Network response was not ok');
-    const data = await response.json();
-    return { data, error: null };
-  } catch (error) {
-    return { data: null, error };
-  }
-}
-
 export async function insertContactRequest(row: ContactRequestInsert) {
   try {
     const response = await fetch(`${apiUrl}/contact-requests`, {
