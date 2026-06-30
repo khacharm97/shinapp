@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { 
-  Target, Rocket, CheckCircle, ShieldCheck, 
-  Eye, Award, Globe, Users, Briefcase, 
-  Wrench, Building, Truck, UserCheck, 
-  Compass, MapPin, Search, PlusCircle, Star
+import {
+  Target, Rocket, CheckCircle, ShieldCheck,
+  Eye, Award, Globe, Users, Briefcase,
+  Wrench, Building, Truck, UserCheck,
+  Compass, MapPin, Star
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -12,13 +12,13 @@ export default function AboutPage() {
 
   return (
     <div className="w-full min-h-screen bg-background text-foreground animate-in fade-in duration-700">
-      
+
       {/* Hero Section */}
       <section className="relative px-4 py-20 md:py-32 overflow-hidden flex flex-col items-center text-center">
         <div className="absolute inset-0 bg-gradient-to-br from-brand/10 via-background to-blue-500/10 -z-10" />
         <div className="absolute top-10 left-10 w-72 h-72 bg-brand/20 rounded-full blur-3xl opacity-50 -z-10 animate-pulse" />
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl opacity-50 -z-10 animate-pulse" />
-        
+
         <div className="max-w-4xl mx-auto space-y-6">
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-brand">
             {t('about_title')}
@@ -51,9 +51,9 @@ export default function AboutPage() {
           </div>
           <div className="flex-1 w-full relative">
             <div className="aspect-square max-w-sm mx-auto bg-gradient-to-tr from-orange-400 to-red-500 rounded-full blur-3xl opacity-20 absolute inset-0" />
-            <img 
-              src="/img/pattern.png" 
-              alt="Goal" 
+            <img
+              src="/img/pattern.png"
+              alt="Goal"
               className="relative z-10 w-full rounded-3xl shadow-2xl object-cover aspect-video md:aspect-square"
               onError={(e) => { e.currentTarget.style.display = 'none' }}
             />
@@ -87,7 +87,7 @@ export default function AboutPage() {
             </div>
           ))}
         </div>
-        
+
         <div className="mt-12 text-center">
           <p className="text-2xl font-semibold text-brand">{t('about_offers_desc_2')}</p>
         </div>
@@ -107,7 +107,7 @@ export default function AboutPage() {
                 <p className="text-muted-foreground leading-relaxed">{t('about_values_1_desc')}</p>
               </CardContent>
             </Card>
-            
+
             <Card className="border-none shadow-lg bg-background/50 backdrop-blur-sm">
               <CardHeader className="flex flex-row items-center gap-4 pb-2">
                 <Eye className="w-10 h-10 text-brand" />
@@ -117,7 +117,7 @@ export default function AboutPage() {
                 <p className="text-muted-foreground leading-relaxed">{t('about_values_2_desc')}</p>
               </CardContent>
             </Card>
-            
+
             <Card className="border-none shadow-lg bg-background/50 backdrop-blur-sm">
               <CardHeader className="flex flex-row items-center gap-4 pb-2">
                 <Award className="w-10 h-10 text-brand" />
@@ -127,7 +127,7 @@ export default function AboutPage() {
                 <p className="text-muted-foreground leading-relaxed">{t('about_values_3_desc')}</p>
               </CardContent>
             </Card>
-            
+
             <Card className="border-none shadow-lg bg-background/50 backdrop-blur-sm">
               <CardHeader className="flex flex-row items-center gap-4 pb-2">
                 <Globe className="w-10 h-10 text-brand" />
@@ -145,7 +145,7 @@ export default function AboutPage() {
       <section className="px-4 py-16 md:py-24 max-w-5xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">{t('about_audience_title')}</h2>
         <p className="text-xl text-center text-muted-foreground mb-16">{t('about_audience_desc')}</p>
-        
+
         <div className="space-y-6">
           {[
             { title: t('about_audience_1_title'), desc: t('about_audience_1_desc'), icon: UserCheck, color: "bg-blue-500" },
@@ -181,7 +181,7 @@ export default function AboutPage() {
               <p>{t('about_vision_3')}</p>
             </div>
           </div>
-          
+
           <div className="p-8 md:p-12 rounded-3xl bg-gradient-to-bl from-brand/10 to-emerald-500/10 border border-brand/20">
             <div className="w-16 h-16 rounded-2xl bg-brand text-white flex items-center justify-center mb-8">
               <Rocket className="w-8 h-8" />

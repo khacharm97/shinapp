@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, MapPin, Star, CheckCircle2, Phone, Mail, ChevronLeft, ChevronRight, MoreHorizontal, Search, X } from "lucide-react";
+import { Loader2, Star, CheckCircle2, ChevronLeft, ChevronRight, MoreHorizontal, Search, X } from "lucide-react";
 import { useGlobalSearchQuery } from "@/store/api/authApi";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
@@ -14,39 +14,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useAppSelector } from "@/store/hooks";
 
-const MANAGER_PHONE = "+37493233402";
-const MANAGER_PHONE_DISPLAY = "+374(93)-23-34-02";
-const MANAGER_EMAIL = "info@shinapp.am";
+import { useAppSelector } from "@/store/hooks";
 
 export default function SearchPage() {
   const { t, i18n } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const [searchInput, setSearchInput] = useState(searchParams.get("q") || "");
   const [debouncedSearch, setDebouncedSearch] = useState(searchInput);
-  
+
   const [page, setPage] = useState(1);
   const [topRated, setTopRated] = useState(false);
   const [availableNow, setAvailableNow] = useState(false);
   const [regionId, setRegionId] = useState<string>("");
   const [cityId, setCityId] = useState<string>("");
-  
+
   const limit = 10;
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchInput);
       setPage(1); // Reset to page 1 on new search
-      
+
       const newParams = new URLSearchParams(searchParams);
       if (searchInput) {
         newParams.set("q", searchInput);
@@ -58,9 +49,9 @@ export default function SearchPage() {
     return () => clearTimeout(timer);
   }, [searchInput, searchParams, setSearchParams]);
 
-  const { data, isLoading, isError } = useGlobalSearchQuery({ 
-    page, 
-    limit, 
+  const { data, isLoading, isError } = useGlobalSearchQuery({
+    page,
+    limit,
     search: debouncedSearch,
     regionId: regionId || undefined,
     cityId: cityId || undefined,
@@ -92,7 +83,7 @@ export default function SearchPage() {
   const getLocalizedSkills = (skills?: string[] | null) => {
     if (!skills || skills.length === 0) return "";
     return skills.map(skill => {
-      switch(skill) {
+      switch (skill) {
         case "shinarar": return t("profile_skill_shinarar", "Shinarar");
         case "nerkarar": return t("profile_skill_nerkarar", "Nerkarar");
         case "plumber": return t("calc_plumbing", "Plumber");
@@ -109,7 +100,7 @@ export default function SearchPage() {
   return (
     <div className="flex-1 w-full bg-white min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-6xl mx-auto">
-        
+
         {/* Top Search Bar */}
         <div className="mb-8 flex justify-center">
           <div className="relative w-full max-w-2xl border border-gray-300 rounded-lg shadow-sm flex items-center px-4 h-14 bg-white transition-shadow focus-within:ring-2 focus-within:ring-brand/20 focus-within:border-brand">
@@ -130,7 +121,7 @@ export default function SearchPage() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          
+
           {/* Left Sidebar */}
           <div className="w-full lg:w-64 shrink-0 space-y-8">
             <div>
@@ -140,8 +131,8 @@ export default function SearchPage() {
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
-                  <Checkbox 
-                    id="top-rated" 
+                  <Checkbox
+                    id="top-rated"
                     checked={topRated}
                     onCheckedChange={(c) => { setTopRated(c === true); setPage(1); }}
                   />
@@ -151,8 +142,8 @@ export default function SearchPage() {
                   </Label>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Checkbox 
-                    id="available-now" 
+                  <Checkbox
+                    id="available-now"
                     checked={availableNow}
                     onCheckedChange={(c) => { setAvailableNow(c === true); setPage(1); }}
                   />
@@ -168,11 +159,11 @@ export default function SearchPage() {
               <h3 className="font-semibold text-lg text-gray-900 mb-4">Location</h3>
               <div className="space-y-4">
                 <div>
-                  <Select 
-                    value={regionId} 
-                    onValueChange={(val) => { 
-                      setRegionId(val === "all" ? "" : val); 
-                      setCityId(""); 
+                  <Select
+                    value={regionId}
+                    onValueChange={(val) => {
+                      setRegionId(val === "all" ? "" : val);
+                      setCityId("");
                       setPage(1);
                     }}
                   >
@@ -189,11 +180,11 @@ export default function SearchPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 {regionId && selectedRegion && selectedRegion.cities.length > 0 && (
                   <div>
-                    <Select 
-                      value={cityId} 
+                    <Select
+                      value={cityId}
                       onValueChange={(val) => { setCityId(val === "all" ? "" : val); setPage(1); }}
                     >
                       <SelectTrigger className="w-full bg-white border-gray-300">
@@ -232,91 +223,91 @@ export default function SearchPage() {
               <>
                 {masters.map((master: any) => {
                   const isCurrentUser = user?.id === master.id;
-                  
+
                   return (
-                  <div key={master.id} className={`bg-gray-50 rounded-xl overflow-hidden flex flex-col md:flex-row p-6 relative ${isCurrentUser ? 'ring-2 ring-brand' : ''}`}>
-                    {isCurrentUser && (
-                      <div className="absolute top-0 right-0 bg-brand text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm">
-                        {t("profile_this_is_you", "Your Profile")}
-                      </div>
-                    )}
-                    
-                    {/* Profile Image */}
-                    <div className="w-full md:w-48 shrink-0 flex flex-col items-center mb-6 md:mb-0 md:mr-6">
-                      <div className="relative">
-                        <Link to={`/masters/${master.id}`} className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden block shadow-sm bg-white border border-gray-200 hover:opacity-90 transition-opacity">
-                          <img
-                            src={master.avatarUrl ? `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
-                            alt={master.name || "Master"}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600";
-                            }}
-                          />
-                        </Link>
-                        {/* Online Indicator Dot */}
-                        <div className="absolute top-2 left-2 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                      </div>
-                    </div>
-
-                    {/* Profile Info */}
-                    <div className="flex-1 flex flex-col justify-center">
-                      <Link to={`/masters/${master.id}`} className="block w-max hover:text-brand transition-colors">
-                        <h2 className="text-xl font-bold text-gray-900 mb-1">
-                          {master.name || "Unnamed Master"}
-                        </h2>
-                      </Link>
-                      <p className="text-gray-700 font-medium mb-3">
-                        {getLocalizedSkills(master.userInfo?.skills) || "No specific skills listed"}
-                        {master.userInfo?.regionId && (
-                           <span className="text-gray-500 ml-2 font-normal">
-                             {getLocalizedLocation(master.userInfo?.regionId, master.userInfo?.cityId)}
-                           </span>
-                        )}
-                      </p>
-
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm mb-4">
-                        {master.userInfo?.priceValue && (
-                          <div className="text-gray-600 font-medium">
-                            Minimal price {master.userInfo.priceValue} AMD/{master.userInfo.pricingFormat === 'daily' ? 'day' : master.userInfo.pricingFormat === 'sqm' ? 'sqm' : 'hr'}
-                          </div>
-                        )}
-
-                        <div className="flex items-center text-orange-500 font-medium">
-                          <Star className="w-4 h-4 fill-current mr-1" />
-                          Top Rated
-                        </div>
-
-                        <div className="flex items-center text-green-600 font-medium">
-                          <CheckCircle2 className="w-4 h-4 mr-1" />
-                          Available now
-                        </div>
-                      </div>
-
-                      {/* Tags */}
-                      {master.userInfo?.skills && master.userInfo.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {master.userInfo.skills.slice(0, 6).map((skill: string) => (
-                            <span key={skill} className="bg-gray-200 text-gray-700 text-xs px-2.5 py-1 rounded-md font-medium">
-                              {skill}
-                            </span>
-                          ))}
-                          {master.userInfo.skills.length > 6 && (
-                            <span className="bg-gray-200 text-gray-700 text-xs px-2.5 py-1 rounded-md font-medium">
-                              +{master.userInfo.skills.length - 6}
-                            </span>
-                          )}
+                    <div key={master.id} className={`bg-gray-50 rounded-xl overflow-hidden flex flex-col md:flex-row p-6 relative ${isCurrentUser ? 'ring-2 ring-brand' : ''}`}>
+                      {isCurrentUser && (
+                        <div className="absolute top-0 right-0 bg-brand text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm">
+                          {t("profile_this_is_you", "Your Profile")}
                         </div>
                       )}
 
-                      <div className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
-                        <h3 className="font-semibold text-gray-900 text-sm mb-1">About me</h3>
-                        <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
-                          {master.userInfo?.about || "Research and brainstorm. Think about your background, education, awards, skills and other attributes..."}
+                      {/* Profile Image */}
+                      <div className="w-full md:w-48 shrink-0 flex flex-col items-center mb-6 md:mb-0 md:mr-6">
+                        <div className="relative">
+                          <Link to={`/masters/${master.id}`} className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden block shadow-sm bg-white border border-gray-200 hover:opacity-90 transition-opacity">
+                            <img
+                              src={master.avatarUrl ? `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
+                              alt={master.name || "Master"}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600";
+                              }}
+                            />
+                          </Link>
+                          {/* Online Indicator Dot */}
+                          <div className="absolute top-2 left-2 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                        </div>
+                      </div>
+
+                      {/* Profile Info */}
+                      <div className="flex-1 flex flex-col justify-center">
+                        <Link to={`/masters/${master.id}`} className="block w-max hover:text-brand transition-colors">
+                          <h2 className="text-xl font-bold text-gray-900 mb-1">
+                            {master.name || "Unnamed Master"}
+                          </h2>
+                        </Link>
+                        <p className="text-gray-700 font-medium mb-3">
+                          {getLocalizedSkills(master.userInfo?.skills) || "No specific skills listed"}
+                          {master.userInfo?.regionId && (
+                            <span className="text-gray-500 ml-2 font-normal">
+                              {getLocalizedLocation(master.userInfo?.regionId, master.userInfo?.cityId)}
+                            </span>
+                          )}
                         </p>
+
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm mb-4">
+                          {master.userInfo?.priceValue && (
+                            <div className="text-gray-600 font-medium">
+                              Minimal price {master.userInfo.priceValue} AMD/{master.userInfo.pricingFormat === 'daily' ? 'day' : master.userInfo.pricingFormat === 'sqm' ? 'sqm' : 'hr'}
+                            </div>
+                          )}
+
+                          <div className="flex items-center text-orange-500 font-medium">
+                            <Star className="w-4 h-4 fill-current mr-1" />
+                            Top Rated
+                          </div>
+
+                          <div className="flex items-center text-green-600 font-medium">
+                            <CheckCircle2 className="w-4 h-4 mr-1" />
+                            Available now
+                          </div>
+                        </div>
+
+                        {/* Tags */}
+                        {master.userInfo?.skills && master.userInfo.skills.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {master.userInfo.skills.slice(0, 6).map((skill: string) => (
+                              <span key={skill} className="bg-gray-200 text-gray-700 text-xs px-2.5 py-1 rounded-md font-medium">
+                                {skill}
+                              </span>
+                            ))}
+                            {master.userInfo.skills.length > 6 && (
+                              <span className="bg-gray-200 text-gray-700 text-xs px-2.5 py-1 rounded-md font-medium">
+                                +{master.userInfo.skills.length - 6}
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
+                          <h3 className="font-semibold text-gray-900 text-sm mb-1">About me</h3>
+                          <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                            {master.userInfo?.about || "Research and brainstorm. Think about your background, education, awards, skills and other attributes..."}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
                   );
                 })}
               </>
@@ -333,7 +324,7 @@ export default function SearchPage() {
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                
+
                 <div className="flex items-center gap-1">
                   {[...Array(totalPages)].map((_, i) => {
                     const pageNum = i + 1;

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-react'
-import { contactRequestExists, insertContactRequest, updateContactRequest } from '@/lib/contact-requests'
+import { insertContactRequest } from '@/lib/contact-requests'
 
 const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
 const apiUrl = backendUrl.startsWith('http') ? backendUrl : `https://${backendUrl}`;
