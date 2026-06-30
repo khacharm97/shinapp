@@ -1,4 +1,5 @@
-import { supabase } from '@/lib/supabase'
+const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
+const apiUrl = backendUrl.startsWith('http') ? backendUrl : `https://${backendUrl}`;
 
 export type ContactRequestInsert = {
   email: string
@@ -14,21 +15,14 @@ function normalizeEmail(email: string) {
 
 export async function contactRequestExists(email: string) {
   const normalized = normalizeEmail(email)
-
-  const { data, error } = await supabase
-    .from('contact_requests')
-    .select('id, contact')
-    .ilike('email', normalized)
-    .limit(1)
-
-  if (error) {
-    return { exists: false, contact: false, error }
+  try {
+    const response = await fetch(`${apiUrl}/contact-requests/exists?email=${encodeURIComponent(normalized)}`);
+    if (!response.ok) throw new Error('Network response was not ok');
+    const data = await response.json();
+    return { exists: data.exists, contact: data.contact, error: null };
+  } catch (error) {
+    return { exists: false, contact: false, error };
   }
-
-  const exists = (data?.length ?? 0) > 0
-  const contact = exists ? (data![0].contact ?? false) : false
-
-  return { exists, contact, error: null }
 }
 
 export async function updateContactRequest(email: string, row: Partial<ContactRequestInsert>) {
@@ -36,15 +30,37 @@ export async function updateContactRequest(email: string, row: Partial<ContactRe
   const updateData = { ...row }
   if (row.email) updateData.email = normalizeEmail(row.email)
   
-  return supabase.from('contact_requests').update(updateData).ilike('email', normalized)
+  try {
+    const response = await fetch(`${apiUrl}/contact-requests/${encodeURIComponent(normalized)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updateData)
+    });
+    if (!response.ok) throw new Error('Network response was not ok');
+    const data = await response.json();
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
 }
 
 export async function insertContactRequest(row: ContactRequestInsert) {
-  return supabase.from('contact_requests').insert({
-    email: normalizeEmail(row.email),
-    notes: row.notes,
-    first_name: row.first_name,
-    last_name: row.last_name,
-    contact: row.contact,
-  })
+  try {
+    const response = await fetch(`${apiUrl}/contact-requests`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: normalizeEmail(row.email),
+        notes: row.notes,
+        firstName: row.first_name,
+        lastName: row.last_name,
+        contact: row.contact,
+      })
+    });
+    if (!response.ok) throw new Error('Network response was not ok');
+    const data = await response.json();
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
 }

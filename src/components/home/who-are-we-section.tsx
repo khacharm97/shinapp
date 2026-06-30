@@ -8,18 +8,13 @@ export function WhoAreWeSection() {
       <h2 className="text-3xl md:text-5xl font-bold text-brand mb-8">
         {t('who_are_we_title')}
       </h2>
-      <div className="space-y-6 text-base md:text-lg text-foreground/80 w-full leading-relaxed">
-        <div className='flex flex-col line-height-'>
-          <p>{t('who_are_we_desc_1')}</p>
-          <p>{t('who_are_we_desc_2')}</p>
-          <p>{t('who_are_we_desc_3')}</p>
-        </div>
-        <div>
-          <p className='text-gray-400 dark:text-gray-400 font-medium'>{t('who_are_we_desc_1')}</p>
-          <p className='text-gray-400 dark:text-gray-400 font-medium'>
-          {t('who_are_we_desc_2')}
+      <div className="space-y-4 text-base md:text-lg text-foreground/80 w-full leading-relaxed">
+        <p className="font-bold text-foreground">{t('who_are_we_desc_1')}</p>
+        <p>{t('who_are_we_desc_2')}</p>
+        <p>{t('who_are_we_desc_3')}</p>
+        <p className="text-gray-500 dark:text-gray-400 font-medium mt-2">
+          {t('who_are_we_desc_4')}
         </p>
-        </div>
       </div>
     </section>
   )

@@ -4,8 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
 import { contactRequestExists, insertContactRequest, updateContactRequest } from '@/lib/contact-requests'
+
+const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
+const apiUrl = backendUrl.startsWith('http') ? backendUrl : `https://${backendUrl}`;
 
 import { Button } from '@/components/ui/button'
 import {
@@ -315,34 +317,14 @@ export function Calculator() {
       setEmailStatus(null)
       setContactStatus(null)
       try {
-        const { exists, contact: hasContact, error: findError } = await contactRequestExists(email)
-        if (findError) throw findError
-
-        if (activeFormSection === 'contact' && exists) {
-          if (hasContact) {
-            setContactStatus('already_sent')
-            return
-          } else {
-            const { error: updateError } = await updateContactRequest(email, {
-              notes: notesValue,
-              first_name: firstNameValue,
-              last_name: lastNameValue,
-              contact: true,
-            })
-            if (updateError) throw updateError
-          }
-        }
-
-        if (!exists) {
-          const { error: insertError } = await insertContactRequest({
-            email,
-            notes: notesValue,
-            first_name: firstNameValue,
-            last_name: lastNameValue,
-            contact: activeFormSection === 'contact',
-          })
-          if (insertError) throw insertError
-        }
+        const { error: insertError } = await insertContactRequest({
+          email,
+          notes: notesValue,
+          first_name: firstNameValue,
+          last_name: lastNameValue,
+          contact: activeFormSection === 'contact',
+        })
+        if (insertError) throw insertError
 
         if (activeFormSection === 'email') {
           const { items } = generateEstimateReport(values)
@@ -377,12 +359,14 @@ export function Calculator() {
             lang: i18n.language
           }
 
-          const { error: edgeError } = await supabase.functions.invoke('send-excel-email', {
-            body: payload
+          const response = await fetch(`${apiUrl}/contact-requests/email/estimate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
           })
 
-          if (edgeError) {
-            console.error('Error invoking edge function:', edgeError)
+          if (!response.ok) {
+            console.error('Error invoking backend email function:', await response.text())
             setEmailStatus('error')
           } else {
             setEmailStatus('success')
@@ -397,12 +381,14 @@ export function Calculator() {
             lang: i18n.language
           }
 
-          const { error: edgeError } = await supabase.functions.invoke('send-contact-email', {
-            body: payload
+          const response = await fetch(`${apiUrl}/contact-requests/email/contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
           })
 
-          if (edgeError) {
-            console.error('Error invoking send-contact-email:', edgeError)
+          if (!response.ok) {
+            console.error('Error invoking send-contact-email:', await response.text())
             setContactStatus('error')
           } else {
             setContactStatus('success')

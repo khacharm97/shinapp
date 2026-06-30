@@ -6,6 +6,8 @@ import CalculatorPage from '@/pages/calculator'
 import ProfilePage from '@/pages/profile'
 import MastersPage from '@/pages/masters'
 import MasterDetailsPage from '@/pages/master-details'
+import AboutPage from '@/pages/about'
+import SearchPage from '@/pages/search'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 import AuthLayout from '@/layouts/auth-layout'
@@ -40,6 +42,10 @@ const router = createBrowserRouter([
         element: <MasterDetailsPage />,
       },
       {
+        path: "search",
+        element: <SearchPage />,
+      },
+      {
         path: "technique",
         element: <ComingSoonPage />,
       },
@@ -49,7 +55,7 @@ const router = createBrowserRouter([
       },
       {
         path: "about",
-        element: <ComingSoonPage />,
+        element: <AboutPage />,
       },
       {
         element: <AuthLayout />,

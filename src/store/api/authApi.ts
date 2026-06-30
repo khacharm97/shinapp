@@ -34,7 +34,26 @@ export const authApi = createApi({
       providesTags: ['Profile'],
     }),
     getMasters: builder.query({
-      query: ({ page = 1, limit = 10 }) => `masters?page=${page}&limit=${limit}`,
+      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow }: any) => {
+        let qs = `masters?page=${page}&limit=${limit}`;
+        if (search) qs += `&search=${encodeURIComponent(search)}`;
+        if (regionId) qs += `&regionId=${encodeURIComponent(regionId)}`;
+        if (cityId) qs += `&cityId=${encodeURIComponent(cityId)}`;
+        if (topRated !== undefined) qs += `&topRated=${topRated}`;
+        if (availableNow !== undefined) qs += `&availableNow=${availableNow}`;
+        return qs;
+      },
+    }),
+    globalSearch: builder.query({
+      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow }: any) => {
+        let qs = `search?page=${page}&limit=${limit}`;
+        if (search) qs += `&search=${encodeURIComponent(search)}`;
+        if (regionId) qs += `&regionId=${encodeURIComponent(regionId)}`;
+        if (cityId) qs += `&cityId=${encodeURIComponent(cityId)}`;
+        if (topRated !== undefined) qs += `&topRated=${topRated}`;
+        if (availableNow !== undefined) qs += `&availableNow=${availableNow}`;
+        return qs;
+      },
     }),
     getMasterById: builder.query({
       query: (id: string) => `masters/${id}`,
@@ -75,6 +94,7 @@ export const {
   useRegisterMutation,
   useGetProfileQuery,
   useGetMastersQuery,
+  useGlobalSearchQuery,
   useGetMasterByIdQuery,
   useUpdateProfileMutation,
   useUploadAvatarMutation
