@@ -12,7 +12,7 @@ export default function AuthLayout() {
       <div className="relative z-10 flex flex-col lg:flex-row w-full items-center justify-center lg:justify-between p-8 gap-8">
         {/* Left side: Text overlay */}
         <div className="hidden lg:flex flex-col flex-1 text-white h-full justify-end pb-12">
-          <h1 className="text-5xl font-bold mb-6 tracking-tight">
+          <h1 className="text-4xl font-bold mb-6 tracking-tight">
             {t("auth_banner_title", "Find your sweet home")}
           </h1>
           <p className="text-lg text-white/90 leading-relaxed max-w-xl">

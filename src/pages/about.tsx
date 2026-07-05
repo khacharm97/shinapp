@@ -20,7 +20,7 @@ export default function AboutPage() {
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl opacity-50 -z-10 animate-pulse" />
 
         <div className="max-w-4xl mx-auto space-y-6">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-brand text-center">
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-brand text-center">
             {t('about_title')}
           </h1>
           <h2 className="text-2xl md:text-3xl font-semibold text-foreground/80 mt-4">
@@ -43,7 +43,7 @@ export default function AboutPage() {
               <div className="p-4 bg-orange-100 dark:bg-orange-900/30 rounded-2xl text-orange-500">
                 <Target className="w-10 h-10" />
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold">{t('about_goal_title')}</h2>
+              <h2 className="text-2xl md:text-3xl font-bold">{t('about_goal_title')}</h2>
             </div>
             <p className="text-lg text-muted-foreground">{t('about_goal_1')}</p>
             <p className="text-lg text-muted-foreground">{t('about_goal_2')}</p>
@@ -55,7 +55,7 @@ export default function AboutPage() {
       {/* What ShinApp Offers */}
       <section className="px-4 py-16 md:py-24 max-w-7xl mx-auto">
         <div className="mb-16 max-w-3xl mx-auto flex flex-col">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">{t('about_offers_title')}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">{t('about_offers_title')}</h2>
           <p className="text-xl text-muted-foreground">{t('about_offers_desc_1')}</p>
         </div>
 
@@ -87,7 +87,7 @@ export default function AboutPage() {
       {/* Our Values */}
       <section className="px-4 py-16 md:py-24 bg-brand/5 dark:bg-brand/10">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">{t('about_values_title')}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-16">{t('about_values_title')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card className="border-none shadow-lg bg-background/50 backdrop-blur-sm">
               <CardHeader className="flex flex-row items-center gap-4 pb-2">
@@ -134,7 +134,7 @@ export default function AboutPage() {
 
       {/* Who is ShinApp for? */}
       <section className="px-4 py-16 md:py-24 max-w-5xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">{t('about_audience_title')}</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-6">{t('about_audience_title')}</h2>
         <p className="text-xl text-center text-muted-foreground mb-16">{t('about_audience_desc')}</p>
 
         <div className="space-y-6">
@@ -165,7 +165,7 @@ export default function AboutPage() {
             <div className="w-16 h-16 rounded-2xl bg-indigo-500 text-white flex items-center justify-center mb-8">
               <Eye className="w-8 h-8" />
             </div>
-            <h2 className="text-3xl font-bold mb-6">{t('about_vision_title')}</h2>
+            <h2 className="text-2xl font-bold mb-6">{t('about_vision_title')}</h2>
             <div className="space-y-4 text-lg text-foreground/80">
               <p>{t('about_vision_1')}</p>
               <p>{t('about_vision_2')}</p>
@@ -177,7 +177,7 @@ export default function AboutPage() {
             <div className="w-16 h-16 rounded-2xl bg-brand text-white flex items-center justify-center mb-8">
               <Rocket className="w-8 h-8" />
             </div>
-            <h2 className="text-3xl font-bold mb-6">{t('about_mission_title')}</h2>
+            <h2 className="text-2xl font-bold mb-6">{t('about_mission_title')}</h2>
             <div className="space-y-4 text-lg text-foreground/80">
               <p>{t('about_mission_1')}</p>
               <p>{t('about_mission_2')}</p>

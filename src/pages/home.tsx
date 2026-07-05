@@ -1,7 +1,7 @@
 import { HeroSection } from '@/components/home/hero-section'
 import { WhoAreWeSection } from '@/components/home/who-are-we-section'
 import { OurMastersSection } from '@/components/home/our-masters-section'
-import { OurTechniqueSection } from '@/components/home/our-technique-section'
+// import { OurTechniqueSection } from '@/components/home/our-technique-section'
 import { WhyTrustUsSection } from '@/components/home/why-trust-us-section'
 
 export default function HomePage() {
@@ -10,7 +10,7 @@ export default function HomePage() {
       <HeroSection />
       <WhoAreWeSection />
       <OurMastersSection />
-      <OurTechniqueSection />
+      {/* <OurTechniqueSection /> */}
       <WhyTrustUsSection />
     </div>
   )

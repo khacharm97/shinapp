@@ -72,7 +72,7 @@ export default function SignupPage() {
     <>
       <div className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-brand mb-2">
+          <h1 className="text-3xl font-bold text-brand mb-2">
             {t("welcome", "Welcome to ShinApp")}
           </h1>
           <p className="text-foreground/70 text-lg">

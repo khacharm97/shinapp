@@ -5,7 +5,7 @@ export function WhoAreWeSection() {
 
   return (
     <section className="w-full max-w-[1740px] mx-auto px-4 md:px-20 py-8 md:py-24 text-start">
-      <h2 className="text-3xl md:text-5xl font-bold text-brand mb-8">
+      <h2 className="text-2xl md:text-4xl font-bold text-brand mb-8">
         {t('who_are_we_title')}
       </h2>
       <div className="space-y-4 text-base md:text-lg text-foreground/80 w-full leading-relaxed">

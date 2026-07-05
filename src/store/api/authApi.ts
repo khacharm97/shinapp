@@ -58,6 +58,9 @@ export const authApi = createApi({
     getMasterById: builder.query({
       query: (id: string) => `masters/${id}`,
     }),
+    getHomeMasters: builder.query({
+      query: ({ limit = 6 }: any = {}) => `masters?limit=${limit}`,
+    }),
     updateProfile: builder.mutation({
       query: (profileData) => ({
         url: 'profile',
@@ -96,6 +99,7 @@ export const {
   useGetMastersQuery,
   useGlobalSearchQuery,
   useGetMasterByIdQuery,
+  useGetHomeMastersQuery,
   useUpdateProfileMutation,
   useUploadAvatarMutation
 } = authApi;
