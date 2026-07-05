@@ -14,19 +14,19 @@ export default function AboutPage() {
     <div className="w-full min-h-screen bg-background text-foreground animate-in fade-in duration-700">
 
       {/* Hero Section */}
-      <section className="relative px-4 py-20 md:py-32 overflow-hidden flex flex-col items-center text-center">
+      <section className="relative px-4 py-20 md:py-32 overflow-hidden flex flex-col items-center">
         <div className="absolute inset-0 bg-gradient-to-br from-brand/10 via-background to-blue-500/10 -z-10" />
         <div className="absolute top-10 left-10 w-72 h-72 bg-brand/20 rounded-full blur-3xl opacity-50 -z-10 animate-pulse" />
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl opacity-50 -z-10 animate-pulse" />
 
         <div className="max-w-4xl mx-auto space-y-6">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-brand">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-brand text-center">
             {t('about_title')}
           </h1>
           <h2 className="text-2xl md:text-3xl font-semibold text-foreground/80 mt-4">
             {t('about_subtitle')}
           </h2>
-          <div className="mt-8 space-y-4 text-lg md:text-xl text-muted-foreground leading-relaxed text-left md:text-center mx-auto">
+          <div className="mt-8 space-y-4 text-lg md:text-xl text-muted-foreground leading-relaxed">
             <p>{t('about_desc_1')}</p>
             <p>{t('about_desc_2')}</p>
             <p className="font-semibold text-foreground">{t('about_desc_3')}</p>
@@ -37,8 +37,8 @@ export default function AboutPage() {
 
       {/* Our Goal Section */}
       <section className="px-4 py-16 md:py-24 bg-card/50 border-y border-border">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1 space-y-6">
+        <div className="max-w-5xl mx-auto flex flex-col items-center justify-center">
+          <div className="w-full max-w-2xl space-y-6">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-4 bg-orange-100 dark:bg-orange-900/30 rounded-2xl text-orange-500">
                 <Target className="w-10 h-10" />
@@ -49,22 +49,13 @@ export default function AboutPage() {
             <p className="text-lg text-muted-foreground">{t('about_goal_2')}</p>
             <p className="text-lg text-muted-foreground">{t('about_goal_3')}</p>
           </div>
-          <div className="flex-1 w-full relative">
-            <div className="aspect-square max-w-sm mx-auto bg-gradient-to-tr from-orange-400 to-red-500 rounded-full blur-3xl opacity-20 absolute inset-0" />
-            <img
-              src="/img/pattern.png"
-              alt="Goal"
-              className="relative z-10 w-full rounded-3xl shadow-2xl object-cover aspect-video md:aspect-square"
-              onError={(e) => { e.currentTarget.style.display = 'none' }}
-            />
-          </div>
         </div>
       </section>
 
       {/* What ShinApp Offers */}
       <section className="px-4 py-16 md:py-24 max-w-7xl mx-auto">
-        <div className="text-center mb-16 max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('about_offers_title')}</h2>
+        <div className="mb-16 max-w-3xl mx-auto flex flex-col">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center">{t('about_offers_title')}</h2>
           <p className="text-xl text-muted-foreground">{t('about_offers_desc_1')}</p>
         </div>
 
