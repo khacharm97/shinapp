@@ -30,7 +30,7 @@ export function OurMastersSection() {
     )
   }
 
-  const masters = data?.items || []
+  const masters: any[] = (data as any)?.items || []
 
   if (masters.length === 0) {
     return null;
@@ -42,7 +42,7 @@ export function OurMastersSection() {
       items={masters}
       exploreLink="/masters"
       exploreText={t('explore_more')}
-      renderItem={(master, index) => (
+      renderItem={(master: any, index: number) => (
         <Link 
           to={`/masters/${master.id}`} 
           key={`${master.id}-${index}`} 
