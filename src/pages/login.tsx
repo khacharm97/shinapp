@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
 import { Eye, EyeOff } from "lucide-react"
@@ -20,13 +20,23 @@ export default function LoginPage() {
   // Form state
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
+  const [customError, setCustomError] = useState<string | null>(null)
 
-  // RTK Query hook
   const [login, { isLoading, error }] = useLoginMutation()
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const errorParam = params.get('error')
+    if (errorParam === 'auth_error_user_blocked') {
+      setHasError(true)
+      setCustomError('auth_error_user_blocked')
+    }
+  }, [])
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setHasError(false)
+    setCustomError(null)
     
     try {
       const response = await login({ identifier, password }).unwrap()
@@ -55,7 +65,7 @@ export default function LoginPage() {
       <form className="flex flex-col gap-6" onSubmit={handleLoginSubmit}>
         {hasError && (
           <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm font-medium">
-            {(error as any)?.data?.message || t("auth_error_invalid_credentials", "Invalid email/phone or password.")}
+            {t(customError || (error as any)?.data?.message || "auth_error_invalid_credentials", "Invalid email/phone or password.")}
           </div>
         )}
         <div className="space-y-2">
@@ -68,7 +78,7 @@ export default function LoginPage() {
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
             placeholder="example@gmail.com" 
-            className={`h-12 border-gray-300 focus-visible:ring-brand ${hasError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+            className={`h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand ${hasError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
             required
           />
         </div>
@@ -84,7 +94,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••" 
-              className={`h-12 border-gray-300 focus-visible:ring-brand pr-10 ${hasError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+              className={`h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand pr-10 ${hasError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
               required
             />
             <button
@@ -128,7 +138,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <Button variant="outline" asChild className="w-full h-12 border-gray-200 hover:bg-gray-50 flex items-center justify-center gap-3 font-medium text-foreground">
+      <Button variant="outline" asChild className="w-full h-12 border-gray-200 dark:border-border hover:bg-gray-50 dark:hover:bg-zinc-900 flex items-center justify-center gap-3 font-medium text-foreground">
         <a href={`${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}/auth/google`}>
           {/* Simple Google SVG icon */}
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-6 h-6">
@@ -142,7 +152,7 @@ export default function LoginPage() {
       </Button>
 
       <div className="mt-8 text-center text-sm">
-        <span className="text-gray-500">
+        <span className="text-gray-500 dark:text-gray-400">
           {t("auth_no_account", "Don't have an account?")}{" "}
         </span>
         <Link to="/signup" className="text-brand font-bold hover:underline transition-all">

@@ -2,9 +2,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslation } from "react-i18next";
-import { Plus, Camera, Loader2 } from "lucide-react";
+import { Plus, Camera, Loader2, Trash2, ImagePlus } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
-import { useGetProfileQuery, useUpdateProfileMutation, useUploadAvatarMutation } from "@/store/api/authApi";
+import { 
+  useGetProfileQuery, 
+  useUpdateProfileMutation, 
+  useUploadAvatarMutation, 
+  useGetSkillsQuery, 
+  useCreatePortfolioMutation,
+  useDeletePortfolioMutation
+} from "@/store/api/authApi";
 
 
 import {
@@ -16,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,6 +34,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { MultiSelect, type Option } from "@/components/ui/multi-select";
 import { armeniaRegions } from "@/lib/armenia-regions";
 
@@ -35,7 +52,7 @@ const profileSchema = z.object({
   email: z.string().email("Invalid email address."),
   regionId: z.string().min(1, "Region is required."),
   cityId: z.string().optional(),
-  skills: z.array(z.string()).min(1, "Select at least one skill."),
+  skills: z.array(z.string()).optional().default([]),
   largeScale: z.boolean(),
   urgentOrders: z.boolean(),
   onlinePay: z.boolean(),
@@ -52,6 +69,7 @@ export default function ProfilePage() {
   const { t, i18n } = useTranslation();
 
   const { data: profileData, isLoading: isFetchingProfile } = useGetProfileQuery(undefined);
+  const { data: skillsData } = useGetSkillsQuery(undefined);
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
   const [uploadAvatar, { isLoading: isUploadingAvatar }] = useUploadAvatarMutation();
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -59,6 +77,33 @@ export default function ProfilePage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [portfolioOpen, setPortfolioOpen] = useState(false);
+  const [portfolioTitle, setPortfolioTitle] = useState("");
+  const [portfolioDesc, setPortfolioDesc] = useState("");
+  const [portfolioFiles, setPortfolioFiles] = useState<File[]>([]);
+  const [createPortfolio, { isLoading: isCreatingPortfolio }] = useCreatePortfolioMutation();
+  const [deletePortfolio, { isLoading: isDeletingPortfolio }] = useDeletePortfolioMutation();
+
+  const handlePortfolioSubmit = async () => {
+    if (!portfolioTitle || portfolioFiles.length === 0) return;
+    const formData = new FormData();
+    formData.append('title', portfolioTitle);
+    formData.append('description', portfolioDesc);
+    portfolioFiles.forEach(f => formData.append('images', f));
+    await createPortfolio(formData).unwrap();
+    setPortfolioOpen(false);
+    setPortfolioTitle("");
+    setPortfolioDesc("");
+    setPortfolioFiles([]);
+  };
+
+  const handlePortfolioFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      setPortfolioFiles(prev => [...prev, ...filesArray].slice(0, 3)); // Max 3 files
+    }
+  };
 
   // We map the backend data to our user info object
   const user = {
@@ -84,7 +129,7 @@ export default function ProfilePage() {
       email: "",
       regionId: "",
       cityId: "",
-      skills: ["shinarar", "nerkarar"], // Default skills
+      skills: [],
       largeScale: false,
       urgentOrders: false,
       onlinePay: false,
@@ -106,7 +151,7 @@ export default function ProfilePage() {
           email: profileData.email || "",
           regionId: profileData.userInfo?.regionId || "",
           cityId: profileData.userInfo?.cityId || "",
-          skills: profileData.userInfo?.skills?.length ? profileData.userInfo.skills : ["shinarar", "nerkarar"],
+          skills: profileData.userInfo?.skills?.length ? profileData.userInfo.skills : [],
           largeScale: profileData.userInfo?.largeScale || false,
           urgentOrders: profileData.userInfo?.urgentOrders || false,
           onlinePay: profileData.userInfo?.onlinePay || false,
@@ -133,12 +178,10 @@ export default function ProfilePage() {
     return item.nameEn;
   };
 
-  const skillOptions: Option[] = [
-    { label: t("profile_skill_shinarar"), value: "shinarar" },
-    { label: t("profile_skill_nerkarar"), value: "nerkarar" },
-    { label: t("calc_plumbing"), value: "plumber" }, // Reusing some calc translations for example
-    { label: t("calc_electricity"), value: "electrician" },
-  ];
+  const skillOptions: Option[] = skillsData ? skillsData.map((s: any) => ({
+    label: getLocalizedName(s),
+    value: s.key,
+  })) : [];
 
   async function onSubmit(data: ProfileFormValues) {
     setSubmitStatus('idle');
@@ -176,27 +219,27 @@ export default function ProfilePage() {
 
   if (isFetchingProfile) {
     return (
-      <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex items-center justify-center">
+      <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-brand" />
       </div>
     );
   }
 
   return (
-    <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-foreground">
             {t("profile_title")}
           </h1>
         </div>
 
         {/* Profile Card Header */}
-        <div className="flex items-center gap-6 p-6 bg-white rounded-2xl shadow-sm transition-all hover:shadow-md relative overflow-hidden">
+        <div className="flex items-center gap-6 p-6 bg-white dark:bg-card border border-transparent dark:border-border rounded-2xl shadow-sm transition-all hover:shadow-md relative overflow-hidden">
           <div className="absolute top-0 left-0 w-2 h-full bg-brand"></div>
 
           <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-            <div className="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center border-2 border-dashed border-slate-300 group-hover:border-blue-500 transition-colors overflow-hidden">
+            <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center border-2 border-dashed border-slate-300 dark:border-zinc-600 group-hover:border-blue-500 transition-colors overflow-hidden">
               {(previewUrl || user.avatarUrl) ? (
                 <img
                   src={previewUrl || `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${user.avatarUrl}`}
@@ -223,19 +266,19 @@ export default function ProfilePage() {
           />
 
           <div className="flex flex-col">
-            <h3 className="text-lg font-semibold text-slate-900 mb-1">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-foreground mb-1">
               {user.email}
             </h3>
-            <p className="text-sm text-slate-500 flex items-center gap-2 font-medium">
+            <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 font-medium">
               <span>{user.name}</span>
-              <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+              <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
               <span>{user.role}</span>
             </p>
           </div>
         </div>
 
         {/* Profile Form */}
-        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+        <div className="bg-white dark:bg-card p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-border">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               {/* Basic Info */}
@@ -344,24 +387,26 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              <FormField
-                control={form.control}
-                name="skills"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("profile_skills")}</FormLabel>
-                    <FormControl>
-                      <MultiSelect
-                        options={skillOptions}
-                        selected={field.value}
-                        onChange={field.onChange}
-                        placeholder={t("profile_skills_placeholder")}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="skills"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("profile_skills")}</FormLabel>
+                      <FormControl>
+                        <MultiSelect
+                          options={skillOptions}
+                          selected={field.value}
+                          onChange={field.onChange}
+                          placeholder={t("profile_skills_placeholder")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               {/* Preferences / Toggles */}
               <div className="space-y-4 pt-4 border-t border-slate-100">
@@ -369,7 +414,7 @@ export default function ProfilePage() {
                   control={form.control}
                   name="largeScale"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-slate-50 transition-colors">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base font-medium">{t("profile_large_scale")}</FormLabel>
                       </div>
@@ -387,7 +432,7 @@ export default function ProfilePage() {
                   control={form.control}
                   name="urgentOrders"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-slate-50 transition-colors">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base font-medium">{t("profile_urgent")}</FormLabel>
                       </div>
@@ -405,7 +450,7 @@ export default function ProfilePage() {
                   control={form.control}
                   name="onlinePay"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-slate-50 transition-colors">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base font-medium">{t("profile_online_pay")}</FormLabel>
                       </div>
@@ -423,7 +468,7 @@ export default function ProfilePage() {
                   control={form.control}
                   name="buyMaterial"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-slate-50 transition-colors">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base font-medium">{t("profile_buy_material")}</FormLabel>
                       </div>
@@ -441,7 +486,7 @@ export default function ProfilePage() {
                   control={form.control}
                   name="nightShift"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-slate-50 transition-colors">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base font-medium">{t("profile_night_shift")}</FormLabel>
                       </div>
@@ -536,6 +581,88 @@ export default function ProfilePage() {
             </form>
           </Form>
         </div>
+
+        {profileData?.roles?.includes('MASTER') && (
+          <div className="bg-white dark:bg-card p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-border mt-8">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-foreground">Portfolios</h2>
+              <Dialog open={portfolioOpen} onOpenChange={setPortfolioOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline"><Plus className="w-4 h-4 mr-2" /> Add Portfolio</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add New Portfolio</DialogTitle>
+                    <DialogDescription>Showcase your best work (Max 3 images).</DialogDescription>
+                  </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label>Title</Label>
+                        <Input placeholder="e.g. Modern Kitchen Renovation" value={portfolioTitle} onChange={e => setPortfolioTitle(e.target.value)} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Description</Label>
+                        <Textarea placeholder="Details about this project..." value={portfolioDesc} onChange={e => setPortfolioDesc(e.target.value)} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Images ({portfolioFiles.length}/3)</Label>
+                        <Input type="file" multiple accept="image/*" onChange={handlePortfolioFileChange} disabled={portfolioFiles.length >= 3} />
+                      {portfolioFiles.length > 0 && (
+                        <div className="flex gap-2 mt-2 flex-wrap">
+                          {portfolioFiles.map((f, i) => (
+                            <div key={i} className="relative w-20 h-20 rounded-md overflow-hidden bg-slate-100">
+                              <img src={URL.createObjectURL(f)} className="w-full h-full object-cover" alt="preview" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="ghost" onClick={() => setPortfolioOpen(false)}>Cancel</Button>
+                    <Button onClick={handlePortfolioSubmit} disabled={!portfolioTitle || portfolioFiles.length === 0 || isCreatingPortfolio}>
+                      {isCreatingPortfolio && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} Save Portfolio
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {profileData.portfolios && profileData.portfolios.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {profileData.portfolios.map((port: any) => (
+                  <div key={port.id} className="border border-slate-200 dark:border-border rounded-xl overflow-hidden group">
+                    <div className="aspect-video bg-slate-100 relative">
+                      {port.imageUrls?.[0] ? (
+                        <img src={`${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${port.imageUrls[0]}`} className="w-full h-full object-cover" alt={port.title} />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-400">
+                          <ImagePlus className="w-8 h-8" />
+                        </div>
+                      )}
+                      <button 
+                        disabled={isDeletingPortfolio}
+                        onClick={() => deletePortfolio(port.id)}
+                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-slate-900 dark:text-foreground line-clamp-1">{port.title}</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{port.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center p-8 bg-slate-50 dark:bg-zinc-900/50 rounded-xl border border-dashed border-slate-200 dark:border-border">
+                <p className="text-slate-500">You haven't added any portfolios yet.</p>
+              </div>
+            )}
+          </div>
+        )}
+
       </div>
     </div>
   );

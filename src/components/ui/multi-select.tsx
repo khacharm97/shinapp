@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronsUpDown, X } from "lucide-react"
+import { ChevronsUpDown, X, Search } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 
 export type Option = {
   label: string
@@ -32,19 +33,31 @@ export function MultiSelect({
   className,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false)
+  const [searchQuery, setSearchQuery] = React.useState("")
 
   const handleUnselect = (item: string) => {
     onChange(selected.filter((i) => i !== item))
   }
 
+  const filteredOptions = options.filter(o => o.label.toLowerCase().includes(searchQuery.toLowerCase()))
+  
+  const showCreate = searchQuery.trim().length > 0 && 
+    !options.some(o => o.label.toLowerCase() === searchQuery.toLowerCase()) &&
+    !selected.includes(searchQuery.trim());
+
+  // Prevent closing when typing in input
+  const handleInputClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
+        <div
           role="combobox"
           aria-expanded={open}
-          className={cn("w-full justify-between h-auto min-h-10 py-2", className)}
+          className={cn("flex w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer min-h-10 h-auto", className)}
+          onClick={() => setOpen(!open)}
         >
           <div className="flex flex-wrap gap-1">
             {selected.length === 0 && (
@@ -52,7 +65,7 @@ export function MultiSelect({
             )}
             {selected.map((item) => {
               const option = options.find((o) => o.value === item)
-              if (!option) return null
+              const label = option ? option.label : item // Show raw value if not found in options
               return (
                 <Badge
                   variant="secondary"
@@ -63,8 +76,9 @@ export function MultiSelect({
                     handleUnselect(item)
                   }}
                 >
-                  {option.label}
+                  {label}
                   <button
+                    type="button"
                     className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -88,11 +102,21 @@ export function MultiSelect({
             })}
           </div>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-        </Button>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] p-0" align="start">
+        <div className="p-2 border-b flex items-center gap-2" onClick={handleInputClick}>
+          <Search className="w-4 h-4 text-muted-foreground" />
+          <Input 
+            autoFocus
+            className="h-8 border-0 focus-visible:ring-0 shadow-none p-0" 
+            placeholder="Search or type to create..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
         <div className="max-h-64 overflow-auto py-1">
-          {options.map((option) => {
+          {filteredOptions.map((option) => {
             const isSelected = selected.includes(option.value)
             return (
               <DropdownMenuCheckboxItem
@@ -110,7 +134,19 @@ export function MultiSelect({
               </DropdownMenuCheckboxItem>
             )
           })}
-          {options.length === 0 && (
+          {showCreate && (
+            <DropdownMenuCheckboxItem
+              checked={false}
+              onCheckedChange={() => {
+                onChange([...selected, searchQuery.trim()]);
+                setSearchQuery("");
+              }}
+              className="text-brand font-medium italic"
+            >
+              Create "{searchQuery.trim()}"
+            </DropdownMenuCheckboxItem>
+          )}
+          {filteredOptions.length === 0 && !showCreate && (
             <div className="p-2 text-sm text-center text-muted-foreground">
               No options found.
             </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2, Star, CheckCircle2, ChevronLeft, ChevronRight, MoreHorizontal, Search, X } from "lucide-react";
-import { useGlobalSearchQuery } from "@/store/api/authApi";
+import { useGlobalSearchQuery, useGetSkillsQuery } from "@/store/api/authApi";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -59,6 +59,8 @@ export default function SearchPage() {
     availableNow: availableNow || undefined,
   });
 
+  const { data: skillsData } = useGetSkillsQuery(undefined);
+
   const getLocalizedLocation = (rId?: string | null, cId?: string | null) => {
     if (!rId) return "";
     const region = armeniaRegions.find((r) => r.id === rId);
@@ -80,17 +82,18 @@ export default function SearchPage() {
     return loc;
   };
 
+  const getLocalizedSkillName = (skillKey: string) => {
+    if (!skillsData) return skillKey;
+    const skill = skillsData.find((s: any) => s.key === skillKey);
+    if (!skill) return skillKey;
+    if (i18n.language === "am") return skill.nameAm;
+    if (i18n.language === "ru") return skill.nameRu;
+    return skill.nameEn;
+  };
+
   const getLocalizedSkills = (skills?: string[] | null) => {
     if (!skills || skills.length === 0) return "";
-    return skills.map(skill => {
-      switch (skill) {
-        case "shinarar": return t("profile_skill_shinarar", "Shinarar");
-        case "nerkarar": return t("profile_skill_nerkarar", "Nerkarar");
-        case "plumber": return t("calc_plumbing", "Plumber");
-        case "electrician": return t("calc_electricity", "Electrician");
-        default: return skill;
-      }
-    }).join(" | ");
+    return skills.map(getLocalizedSkillName).join(" | ");
   };
 
   const { items: masters, totalPages } = data?.masters || { items: [], totalPages: 1 };
@@ -98,19 +101,19 @@ export default function SearchPage() {
   const selectedRegion = armeniaRegions.find((r) => r.id === regionId);
 
   return (
-    <div className="flex-1 w-full bg-white min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="flex-1 w-full bg-white dark:bg-background dark:text-foreground min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-6xl mx-auto">
 
         {/* Top Search Bar */}
         <div className="mb-8 flex justify-center">
-          <div className="relative w-full max-w-2xl border border-gray-300 rounded-lg shadow-sm flex items-center px-4 h-14 bg-white transition-shadow focus-within:ring-2 focus-within:ring-brand/20 focus-within:border-brand">
+          <div className="relative w-full max-w-2xl border border-gray-300 dark:border-border rounded-lg shadow-sm flex items-center px-4 h-14 bg-white dark:bg-card transition-shadow focus-within:ring-2 focus-within:ring-brand/20 focus-within:border-brand">
             <Search className="w-5 h-5 text-gray-400 mr-3 shrink-0" />
             <input
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search skills, example shinarar..."
-              className="flex-1 min-w-0 bg-transparent border-none focus:outline-none text-base text-gray-900"
+              className="flex-1 min-w-0 bg-transparent border-none focus:outline-none text-base text-gray-900 dark:text-foreground placeholder-gray-400"
             />
             {searchInput && (
               <button onClick={() => setSearchInput("")} className="text-gray-400 hover:text-gray-600 focus:outline-none p-1 shrink-0">
@@ -125,9 +128,9 @@ export default function SearchPage() {
           {/* Left Sidebar */}
           <div className="w-full lg:w-64 shrink-0 space-y-8">
             <div>
-              <h3 className="font-semibold text-lg text-gray-900 mb-4 flex items-center">
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-foreground mb-4 flex items-center">
                 Talent badge
-                <div className="ml-2 w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center text-[10px] text-gray-500 font-bold cursor-help" title="These badges help you identify the best talent.">?</div>
+                <div className="ml-2 w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-[10px] text-gray-500 dark:text-gray-400 font-bold cursor-help" title="These badges help you identify the best talent.">?</div>
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
@@ -136,7 +139,7 @@ export default function SearchPage() {
                     checked={topRated}
                     onCheckedChange={(c) => { setTopRated(c === true); setPage(1); }}
                   />
-                  <Label htmlFor="top-rated" className="flex items-center cursor-pointer text-gray-700 font-medium">
+                  <Label htmlFor="top-rated" className="flex items-center cursor-pointer text-gray-700 dark:text-gray-300 font-medium">
                     <Star className="w-4 h-4 text-orange-500 fill-orange-500 mr-2" />
                     Top Rated
                   </Label>
@@ -147,7 +150,7 @@ export default function SearchPage() {
                     checked={availableNow}
                     onCheckedChange={(c) => { setAvailableNow(c === true); setPage(1); }}
                   />
-                  <Label htmlFor="available-now" className="flex items-center cursor-pointer text-gray-700 font-medium">
+                  <Label htmlFor="available-now" className="flex items-center cursor-pointer text-gray-700 dark:text-gray-300 font-medium">
                     <CheckCircle2 className="w-4 h-4 text-green-600 mr-2" />
                     Available now
                   </Label>
@@ -156,7 +159,7 @@ export default function SearchPage() {
             </div>
 
             <div>
-              <h3 className="font-semibold text-lg text-gray-900 mb-4">Location</h3>
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-foreground mb-4">Location</h3>
               <div className="space-y-4">
                 <div>
                   <Select
@@ -167,7 +170,7 @@ export default function SearchPage() {
                       setPage(1);
                     }}
                   >
-                    <SelectTrigger className="w-full bg-white border-gray-300">
+                    <SelectTrigger className="w-full bg-white dark:bg-card border-gray-300 dark:border-border">
                       <SelectValue placeholder="Regions" />
                     </SelectTrigger>
                     <SelectContent>
@@ -187,7 +190,7 @@ export default function SearchPage() {
                       value={cityId}
                       onValueChange={(val) => { setCityId(val === "all" ? "" : val); setPage(1); }}
                     >
-                      <SelectTrigger className="w-full bg-white border-gray-300">
+                      <SelectTrigger className="w-full bg-white dark:bg-card border-gray-300 dark:border-border">
                         <SelectValue placeholder="City" />
                       </SelectTrigger>
                       <SelectContent>
@@ -216,8 +219,8 @@ export default function SearchPage() {
                 Failed to load search results.
               </div>
             ) : masters.length === 0 ? (
-              <div className="bg-gray-50 border border-gray-100 p-12 rounded-xl text-center">
-                <p className="text-gray-500 text-lg">No masters found matching your criteria.</p>
+              <div className="bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 p-12 rounded-xl text-center">
+                <p className="text-gray-500 dark:text-gray-400 text-lg">No masters found matching your criteria.</p>
               </div>
             ) : (
               <>
@@ -225,7 +228,7 @@ export default function SearchPage() {
                   const isCurrentUser = user?.id === master.id;
 
                   return (
-                    <div key={master.id} className={`bg-gray-50 rounded-xl overflow-hidden flex flex-col md:flex-row p-6 relative ${isCurrentUser ? 'ring-2 ring-brand' : ''}`}>
+                    <div key={master.id} className={`bg-gray-100 dark:bg-zinc-900 rounded-xl overflow-hidden flex flex-col md:flex-row p-6 md:p-8 relative ${isCurrentUser ? 'ring-2 ring-brand' : ''}`}>
                       {isCurrentUser && (
                         <div className="absolute top-0 right-0 bg-brand text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm">
                           {t("profile_this_is_you", "Your Profile")}
@@ -235,7 +238,7 @@ export default function SearchPage() {
                       {/* Profile Image */}
                       <div className="w-full md:w-48 shrink-0 flex flex-col items-center mb-6 md:mb-0 md:mr-6">
                         <div className="relative">
-                          <Link to={`/masters/${master.id}`} className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden block shadow-sm bg-white border border-gray-200 hover:opacity-90 transition-opacity">
+                          <Link to={`/masters/${master.id}`} className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden block shadow-sm bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 hover:opacity-90 transition-opacity">
                             <img
                               src={master.avatarUrl ? `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                               alt={master.name || "Master"}
@@ -253,14 +256,14 @@ export default function SearchPage() {
                       {/* Profile Info */}
                       <div className="flex-1 flex flex-col justify-center">
                         <Link to={`/masters/${master.id}`} className="block w-max hover:text-brand transition-colors">
-                          <h2 className="text-xl font-bold text-gray-900 mb-1">
+                          <h2 className="text-xl font-bold text-gray-900 dark:text-foreground mb-1">
                             {master.name || "Unnamed Master"}
                           </h2>
                         </Link>
-                        <p className="text-gray-700 font-medium mb-3">
+                        <p className="text-gray-700 dark:text-gray-300 font-medium mb-3">
                           {getLocalizedSkills(master.userInfo?.skills) || "No specific skills listed"}
                           {master.userInfo?.regionId && (
-                            <span className="text-gray-500 ml-2 font-normal">
+                            <span className="text-gray-500 dark:text-gray-400 ml-2 font-normal">
                               {getLocalizedLocation(master.userInfo?.regionId, master.userInfo?.cityId)}
                             </span>
                           )}
@@ -268,7 +271,7 @@ export default function SearchPage() {
 
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm mb-4">
                           {master.userInfo?.priceValue && (
-                            <div className="text-gray-600 font-medium">
+                            <div className="text-gray-600 dark:text-gray-400 font-medium">
                               Minimal price {master.userInfo.priceValue} AMD/{master.userInfo.pricingFormat === 'daily' ? 'day' : master.userInfo.pricingFormat === 'sqm' ? 'sqm' : 'hr'}
                             </div>
                           )}
@@ -288,8 +291,8 @@ export default function SearchPage() {
                         {master.userInfo?.skills && master.userInfo.skills.length > 0 && (
                           <div className="flex flex-wrap gap-2 mb-4">
                             {master.userInfo.skills.slice(0, 6).map((skill: string) => (
-                              <span key={skill} className="bg-gray-200 text-gray-700 text-xs px-2.5 py-1 rounded-md font-medium">
-                                {skill}
+                              <span key={skill} className="bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 text-xs px-2.5 py-1 rounded-md font-medium">
+                                {getLocalizedSkillName(skill)}
                               </span>
                             ))}
                             {master.userInfo.skills.length > 6 && (
@@ -300,9 +303,9 @@ export default function SearchPage() {
                           </div>
                         )}
 
-                        <div className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
-                          <h3 className="font-semibold text-gray-900 text-sm mb-1">About me</h3>
-                          <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                        <div className="bg-white dark:bg-zinc-800/50 rounded-lg p-4 border border-gray-100 dark:border-zinc-700 shadow-sm">
+                          <h3 className="font-semibold text-gray-900 dark:text-foreground text-sm mb-1">About me</h3>
+                          <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed line-clamp-3">
                             {master.userInfo?.about || "Research and brainstorm. Think about your background, education, awards, skills and other attributes..."}
                           </p>
                         </div>

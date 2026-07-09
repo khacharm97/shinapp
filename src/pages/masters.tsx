@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2, MapPin, Star, CheckCircle2, Phone, Mail, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { useGetMastersQuery } from "@/store/api/authApi";
@@ -21,8 +21,17 @@ const MANAGER_EMAIL = "info@shinapp.am";
 export default function MastersPage() {
   const { t, i18n } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
   const limit = 5;
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   const { data, isLoading, isError } = useGetMastersQuery({ page, limit });
 
@@ -81,10 +90,23 @@ export default function MastersPage() {
   return (
     <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-8">
-        <div>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <h1 className="text-3xl font-bold tracking-tight text-brand">
             {t("nav_masters", "Masters")}
           </h1>
+          
+          <form onSubmit={handleSearch} className="flex w-full md:w-[400px] bg-white p-1.5 rounded-xl shadow-sm border border-slate-200 items-center">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('search_placeholder', 'Search...')}
+              className="flex-1 min-w-0 h-10 bg-transparent border-none px-3 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:ring-0"
+            />
+            <Button type="submit" className="h-10 px-4 rounded-lg bg-brand text-white hover:bg-brand/90 text-sm font-semibold shrink-0">
+              {t('search_button', 'Search')}
+            </Button>
+          </form>
         </div>
 
         {masters.length === 0 ? (

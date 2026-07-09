@@ -222,5 +222,8 @@
   "about_mission_title": "Our Mission",
   "about_mission_1": "We believe that right collaborations begin with the right connections.",
   "about_mission_2": "ShinApp's mission is to create a platform where every client finds a reliable specialist, and every specialist finds new opportunities.",
-  "about_mission_3": "We are building not just a technological platform, but a community where professional experience, honest work, and long-term partnerships are valued."
+  "about_mission_3": "We are building not just a technological platform, but a community where professional experience, honest work, and long-term partnerships are valued.",
+  "auth_error_user_exists": "User with this email or phone already exists",
+  "auth_error_invalid_credentials": "Invalid email/phone or password",
+  "auth_error_user_blocked": "You are blocked. Contact support."
 }

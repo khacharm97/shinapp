@@ -88,7 +88,7 @@ export default function SignupPage() {
         <form className="flex flex-col gap-5" onSubmit={handleSignupSubmit}>
           {isError && (
             <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm font-medium">
-              {(error as any)?.data?.message || t("auth_error", "An error occurred during registration.")}
+              {t((error as any)?.data?.message || "auth_error", "An error occurred during registration.")}
             </div>
           )}
           {validationError && (
@@ -106,7 +106,7 @@ export default function SignupPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="John Doe"
-              className="h-12 border-gray-300 focus-visible:ring-brand"
+              className="h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand"
               required
             />
           </div>
@@ -121,7 +121,7 @@ export default function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="example@gmail.com"
-              className="h-12 border-gray-300 focus-visible:ring-brand"
+              className="h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand"
               required
             />
           </div>
@@ -136,7 +136,7 @@ export default function SignupPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+374 __ __ __ __"
-              className="h-12 border-gray-300 focus-visible:ring-brand"
+              className="h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand"
               required
             />
           </div>
@@ -152,7 +152,7 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="h-12 border-gray-300 focus-visible:ring-brand pr-10"
+                className="h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand pr-10"
                 required
               />
               <button
@@ -176,7 +176,7 @@ export default function SignupPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
-                className="h-12 border-gray-300 focus-visible:ring-brand pr-10"
+                className="h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand pr-10"
                 required
               />
               <button
@@ -215,7 +215,7 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <Button variant="outline" asChild className="w-full h-12 border-gray-200 hover:bg-gray-50 flex items-center justify-center gap-3 font-medium text-foreground">
+        <Button variant="outline" asChild className="w-full h-12 border-gray-200 dark:border-border hover:bg-gray-50 dark:hover:bg-zinc-900 flex items-center justify-center gap-3 font-medium text-foreground">
           <a href={`${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}/auth/google${selectedRole ? `?role=${selectedRole}` : ''}`}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-6 h-6">
               <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
@@ -228,7 +228,7 @@ export default function SignupPage() {
         </Button>
 
         <div className="mt-8 text-center text-sm">
-          <span className="text-gray-500">
+          <span className="text-gray-500 dark:text-gray-400">
             {t("auth_have_account", "Already have an account?")}{" "}
           </span>
           <Link to="/login" className="text-brand font-bold hover:underline transition-all">
@@ -252,19 +252,19 @@ export default function SignupPage() {
             {/* Master Option */}
             <button
               onClick={() => setSelectedRole('master')}
-              className="bg-white rounded-xl shadow-xl w-full max-w-[280px] aspect-video flex flex-col items-center justify-center gap-4 hover:scale-105 transition-transform duration-300 group"
+              className="bg-white dark:bg-card dark:text-foreground rounded-xl shadow-xl w-full max-w-[280px] aspect-video flex flex-col items-center justify-center gap-4 hover:scale-105 transition-transform duration-300 group"
             >
               <Briefcase className="w-12 h-12 text-brand group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
-              <span className="text-xl font-medium text-gray-900">{t("role_master", "Es masnaget em.")}</span>
+              <span className="text-xl font-medium text-gray-900 dark:text-foreground">{t("role_master", "Es masnaget em.")}</span>
             </button>
 
             {/* Customer Option */}
             <button
               onClick={() => setSelectedRole('customer')}
-              className="bg-white rounded-xl shadow-xl w-full max-w-[280px] aspect-video flex flex-col items-center justify-center gap-4 hover:scale-105 transition-transform duration-300 group"
+              className="bg-white dark:bg-card dark:text-foreground rounded-xl shadow-xl w-full max-w-[280px] aspect-video flex flex-col items-center justify-center gap-4 hover:scale-105 transition-transform duration-300 group"
             >
               <UserCheck className="w-12 h-12 text-brand group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
-              <span className="text-xl font-medium text-gray-900">{t("role_customer", "Es hachaxord em.")}</span>
+              <span className="text-xl font-medium text-gray-900 dark:text-foreground">{t("role_customer", "Es hachaxord em.")}</span>
             </button>
           </div>
         </div>

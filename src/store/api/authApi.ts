@@ -20,6 +20,13 @@ const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
   let result = await baseQuery(args, api, extraOptions);
   if (result.error && result.error.status === 401) {
     api.dispatch(logout());
+  } else if (result.error && result.error.status === 403) {
+    // If blocked, 403 is returned
+    const errorData = result.error.data as any;
+    if (errorData?.message === 'auth_error_user_blocked' || result.error.status === 403) {
+      api.dispatch(logout());
+      window.location.href = '/login?error=auth_error_user_blocked';
+    }
   }
   return result;
 };
@@ -67,6 +74,7 @@ export const authApi = createApi({
         method: 'PUT',
         body: profileData,
       }),
+      invalidatesTags: ['Profile'],
     }),
     login: builder.mutation({
       query: (credentials) => ({
@@ -88,6 +96,32 @@ export const authApi = createApi({
         method: 'POST',
         body: formData,
       }),
+      invalidatesTags: ['Profile'],
+    }),
+    getSkills: builder.query({
+      query: () => 'skills',
+    }),
+    suggestSkill: builder.mutation({
+      query: (skillData) => ({
+        url: 'skills/suggest',
+        method: 'POST',
+        body: skillData,
+      }),
+    }),
+    createPortfolio: builder.mutation({
+      query: (formData: FormData) => ({
+        url: 'profile/portfolio',
+        method: 'POST',
+        body: formData,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    deletePortfolio: builder.mutation({
+      query: (id: string) => ({
+        url: `profile/portfolio/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Profile'],
     }),
   }),
 });
@@ -101,5 +135,9 @@ export const {
   useGetMasterByIdQuery,
   useGetHomeMastersQuery,
   useUpdateProfileMutation,
-  useUploadAvatarMutation
+  useUploadAvatarMutation,
+  useGetSkillsQuery,
+  useSuggestSkillMutation,
+  useCreatePortfolioMutation,
+  useDeletePortfolioMutation
 } = authApi;

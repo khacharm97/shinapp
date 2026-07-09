@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, MapPin, Star, CheckCircle2, Phone, Mail, ArrowLeft } from "lucide-react";
-import { useGetMasterByIdQuery } from "@/store/api/authApi";
+import { Loader2, MapPin, Star, CheckCircle2, Phone, Mail, ArrowLeft, ImagePlus } from "lucide-react";
+import { useGetMasterByIdQuery, useGetSkillsQuery } from "@/store/api/authApi";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
 
@@ -15,6 +15,7 @@ export default function MasterDetailsPage() {
   const { data: master, isLoading, isError } = useGetMasterByIdQuery(id as string, {
     skip: !id,
   });
+  const { data: skillsData } = useGetSkillsQuery(undefined);
 
   const getLocalizedLocation = (regionId?: string | null, cityId?: string | null) => {
     if (!regionId) return "";
@@ -37,14 +38,13 @@ export default function MasterDetailsPage() {
     return loc;
   };
 
-  const getSkillTranslation = (skill: string) => {
-    switch (skill) {
-      case "shinarar": return t("profile_skill_shinarar", "Shinarar");
-      case "nerkarar": return t("profile_skill_nerkarar", "Nerkarar");
-      case "plumber": return t("calc_plumbing", "Plumber");
-      case "electrician": return t("calc_electricity", "Electrician");
-      default: return skill;
-    }
+  const getSkillTranslation = (skillKey: string) => {
+    if (!skillsData) return skillKey;
+    const skill = skillsData.find((s: any) => s.key === skillKey);
+    if (!skill) return skillKey;
+    if (i18n.language === "am") return skill.nameAm;
+    if (i18n.language === "ru") return skill.nameRu;
+    return skill.nameEn;
   };
 
   if (isLoading) {
@@ -68,7 +68,7 @@ export default function MasterDetailsPage() {
 
   return (
     <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto space-y-8">
+      <div className="max-w-5xl mx-auto space-y-8">
         <div>
           <Button asChild variant="ghost" className="mb-4 text-slate-500 hover:text-slate-900 -ml-4">
             <Link to="/masters">
@@ -80,7 +80,7 @@ export default function MasterDetailsPage() {
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
           {/* Header Section */}
-          <div className="bg-brand/5 border-b border-slate-100 p-4 flex flex-col md:flex-row items-center md:items-start gap-8">
+          <div className="bg-brand/5 border-b border-slate-100 p-8 md:p-12 flex flex-col md:flex-row items-center md:items-start gap-8">
             <div className="flex-1 text-center md:text-left space-y-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex gap-4">
@@ -195,6 +195,42 @@ export default function MasterDetailsPage() {
                   </span>
                 </div>
                 <p className="text-sm text-slate-500 mt-2">Prices are estimates and may vary based on project requirements.</p>
+              </section>
+            )}
+
+            {/* Portfolios */}
+            {master.portfolios && master.portfolios.length > 0 && (
+              <section className="pt-8 border-t border-slate-100">
+                <h2 className="text-2xl font-bold text-slate-900 mb-6">Portfolios</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {master.portfolios.map((port: any) => (
+                    <div key={port.id} className="border border-slate-200 rounded-xl overflow-hidden group bg-white shadow-sm hover:shadow-md transition-all">
+                      <div className="aspect-video bg-slate-100 relative">
+                        {port.imageUrls?.[0] ? (
+                          <img src={`${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${port.imageUrls[0]}`} className="w-full h-full object-cover" alt={port.title} />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-400">
+                            <ImagePlus className="w-8 h-8" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-semibold text-slate-900 line-clamp-1">{port.title}</h3>
+                        <p className="text-sm text-slate-500 mt-1 line-clamp-2">{port.description}</p>
+                        
+                        {port.imageUrls && port.imageUrls.length > 1 && (
+                          <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
+                            {port.imageUrls.slice(1).map((url: string, i: number) => (
+                              <div key={i} className="w-12 h-12 rounded-md overflow-hidden bg-slate-100">
+                                <img src={`${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${url}`} className="w-full h-full object-cover" alt="" />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </section>
             )}
 
