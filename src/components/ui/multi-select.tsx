@@ -2,7 +2,6 @@ import * as React from "react"
 import { ChevronsUpDown, X, Search } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -40,8 +39,8 @@ export function MultiSelect({
   }
 
   const filteredOptions = options.filter(o => o.label.toLowerCase().includes(searchQuery.toLowerCase()))
-  
-  const showCreate = searchQuery.trim().length > 0 && 
+
+  const showCreate = searchQuery.trim().length > 0 &&
     !options.some(o => o.label.toLowerCase() === searchQuery.toLowerCase()) &&
     !selected.includes(searchQuery.trim());
 
@@ -107,10 +106,10 @@ export function MultiSelect({
       <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] p-0" align="start">
         <div className="p-2 border-b flex items-center gap-2" onClick={handleInputClick}>
           <Search className="w-4 h-4 text-muted-foreground" />
-          <Input 
+          <Input
             autoFocus
-            className="h-8 border-0 focus-visible:ring-0 shadow-none p-0" 
-            placeholder="Search or type to create..." 
+            className="h-8 border-0 focus-visible:ring-0 shadow-none p-0"
+            placeholder="Search or type to create..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

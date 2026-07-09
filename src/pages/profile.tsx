@@ -122,7 +122,7 @@ export default function ProfilePage() {
   };
 
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
+    resolver: zodResolver(profileSchema) as any,
     defaultValues: {
       fullName: "",
       phone: "",
