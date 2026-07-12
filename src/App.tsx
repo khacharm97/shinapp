@@ -7,6 +7,7 @@ import ProfilePage from '@/pages/profile'
 import MastersPage from '@/pages/masters'
 import MasterDetailsPage from '@/pages/master-details'
 import AboutPage from '@/pages/about'
+import ContactPage from '@/pages/contact'
 import SearchPage from '@/pages/search'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: "about",
         element: <AboutPage />,
+      },
+      {
+        path: "contact",
+        element: <ContactPage />,
       },
       {
         element: <AuthLayout />,

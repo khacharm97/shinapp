@@ -80,7 +80,6 @@ const formSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   email: z.string().optional(),
-  notes: z.string().optional(),
 })
 
 export function Calculator() {
@@ -113,16 +112,14 @@ export function Calculator() {
       plumb_fixtures: false, plumb_fixtures_count: 0,
       firstName: "",
       lastName: "",
-      notes: "",
       email: "",
     },
   })
 
-  const [submitMode, setSubmitMode] = useState<'basic' | 'email' | 'contact' | null>(null)
-  const [activeFormSection, setActiveFormSection] = useState<'email' | 'contact' | null>(null)
+  const [submitMode, setSubmitMode] = useState<'basic' | 'email' | null>(null)
+  const [activeFormSection, setActiveFormSection] = useState<'email' | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [emailStatus, setEmailStatus] = useState<'success' | 'error' | null>(null)
-  const [contactStatus, setContactStatus] = useState<'success' | 'error' | 'already_sent' | null>(null)
 
   // We rely on onSubmit to ignore area/count values if their respective checkboxes are unchecked,
   // which prevents infinite render loops from form.setValue in a useEffect.
@@ -132,7 +129,6 @@ export function Calculator() {
     setActiveFormSection(null)
     setSubmitMode('basic')
     setEmailStatus(null)
-    setContactStatus(null)
     form.handleSubmit(onSubmit)()
   }
 
@@ -141,16 +137,8 @@ export function Calculator() {
     setActiveFormSection('email')
     setSubmitMode(null)
     setEmailStatus(null)
-    setContactStatus(null)
   }
 
-  function onContactSubmit(e: React.MouseEvent) {
-    e.preventDefault()
-    setActiveFormSection('contact')
-    setSubmitMode(null)
-    setEmailStatus(null)
-    setContactStatus(null)
-  }
 
   const generateEstimateReport = (values: z.infer<typeof formSchema>) => {
     let baseCostMin = 0
@@ -309,102 +297,71 @@ export function Calculator() {
     if (hasError) return
 
     const email = (emailValue ?? '').trim()
-    const notesValue = form.getValues('notes') || ''
     const values = form.getValues()
 
-    if (activeFormSection === 'contact' || activeFormSection === 'email') {
+    if (activeFormSection === 'email') {
       setIsSubmitting(true)
       setEmailStatus(null)
-      setContactStatus(null)
       try {
         const { error: insertError } = await insertContactRequest({
           email,
-          notes: notesValue,
+          notes: '',
           first_name: firstNameValue,
           last_name: lastNameValue,
-          contact: activeFormSection === 'contact',
+          contact: false,
         })
         if (insertError) throw insertError
 
-        if (activeFormSection === 'email') {
-          const { items } = generateEstimateReport(values)
-          const messageParts = [
-          ].filter(Boolean)
+        const { items } = generateEstimateReport(values)
+        const messageParts = [
+        ].filter(Boolean)
 
-          let colService = 'Service'
-          let colQty = 'Quantity / Area'
-          let colMin = 'Min Cost'
-          let colMax = 'Max Cost'
+        let colService = 'Service'
+        let colQty = 'Quantity / Area'
+        let colMin = 'Min Cost'
+        let colMax = 'Max Cost'
 
-          if (i18n.language === 'ru') {
-            colService = 'Услуга'
-            colQty = 'Количество / Площадь'
-            colMin = 'Мин. цена'
-            colMax = 'Макс. цена'
-          } else if (i18n.language === 'am') {
-            colService = 'Ծառայություն'
-            colQty = 'Քանակ / Մակերես'
-            colMin = 'Նվազ. արժեք'
-            colMax = 'Առավ. արժեք'
-          }
-
-          const payload = {
-            recipients: [email],
-            subject: t('calc_email_subject', 'Your Repair Estimate from ShinApp'),
-            message: messageParts.join('\n\n'),
-            firstName: firstNameValue,
-            lastName: lastNameValue,
-            columns: [colService, colQty, colMin, colMax],
-            rows: items,
-            lang: i18n.language
-          }
-
-          const response = await fetch(`${apiUrl}/contact-requests/email/estimate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          })
-
-          if (!response.ok) {
-            console.error('Error invoking backend email function:', await response.text())
-            setEmailStatus('error')
-          } else {
-            setEmailStatus('success')
-          }
+        if (i18n.language === 'ru') {
+          colService = 'Услуга'
+          colQty = 'Количество / Площадь'
+          colMin = 'Мин. цена'
+          colMax = 'Макс. цена'
+        } else if (i18n.language === 'am') {
+          colService = 'Ծառայություն'
+          colQty = 'Քանակ / Մակերես'
+          colMin = 'Նվազ. արժեք'
+          colMax = 'Առավ. արժեք'
         }
 
-        if (activeFormSection === 'contact') {
-          const payload = {
-            recipients: [email],
-            firstName: firstNameValue,
-            lastName: lastNameValue,
-            lang: i18n.language
-          }
+        const payload = {
+          recipients: [email],
+          subject: t('calc_email_subject', 'Your Repair Estimate from ShinApp'),
+          message: messageParts.join('\n\n'),
+          firstName: firstNameValue,
+          lastName: lastNameValue,
+          columns: [colService, colQty, colMin, colMax],
+          rows: items,
+          lang: i18n.language
+        }
 
-          const response = await fetch(`${apiUrl}/contact-requests/email/contact`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          })
+        const response = await fetch(`${apiUrl}/contact-requests/email/estimate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
 
-          if (!response.ok) {
-            console.error('Error invoking send-contact-email:', await response.text())
-            setContactStatus('error')
-          } else {
-            setContactStatus('success')
-          }
+        if (!response.ok) {
+          console.error('Error invoking backend email function:', await response.text())
+          setEmailStatus('error')
+        } else {
+          setEmailStatus('success')
         }
 
         setSubmitMode(activeFormSection)
         form.handleSubmit(onSubmit)()
       } catch (err) {
         console.error('Error submitting to Supabase:', err)
-        if (activeFormSection === 'email') {
-          setEmailStatus('error')
-        }
-        if (activeFormSection === 'contact') {
-          setContactStatus('error')
-        }
+        setEmailStatus('error')
       } finally {
         setIsSubmitting(false)
       }
@@ -593,22 +550,19 @@ export function Calculator() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
               <Button type="button" onClick={onBasicSubmit} size="lg" variant="outline" className="w-full text-base shadow-sm hover:shadow-md transition-all">
                 {t('calc_submit_basic')}
               </Button>
               <Button type="button" onClick={onEmailSubmit} size="lg" variant="outline" className="w-full text-base shadow-sm hover:shadow-md transition-all">
                 {t('calc_submit_email')}
               </Button>
-              <Button type="button" onClick={onContactSubmit} size="lg" variant="outline" className="w-full text-base shadow-sm hover:shadow-md transition-all">
-                {t('calc_submit_contact')}
-              </Button>
             </div>
 
             {activeFormSection && (
               <div className="mt-8 p-6 bg-muted/20 border border-primary/20 rounded-xl space-y-6 animate-in fade-in slide-in-from-top-4">
                 <h4 className="font-semibold text-xl text-primary">
-                  {activeFormSection === 'email' ? t('calc_submit_email') : t('calc_submit_contact')}
+                  {t('calc_submit_email')}
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="firstName" render={({ field }) => (
@@ -639,46 +593,15 @@ export function Calculator() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <FormField control={form.control} name="notes" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('calc_notes')}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={t(activeFormSection === 'contact' ? 'calc_contact_notes_placeholder' : 'calc_notes_placeholder')}
-                        className="resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                {activeFormSection === 'contact' && contactStatus === 'already_sent' && (
-                  <div className="rounded-lg bg-amber-500/10 border border-amber-500/30 p-4 text-sm text-center text-amber-800 dark:text-amber-300">
-                    {t('calc_contact_already_sent')}
-                  </div>
-                )}
                 <Button type="button" onClick={onSecondarySubmit} disabled={isSubmitting} size="lg" variant="brand" className="w-full text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center">
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {activeFormSection === 'email' ? t('calc_send') : t('calc_send_contact')}
+                  {t('calc_send')}
                 </Button>
               </div>
             )}
           </form>
         </Form>
 
-        {submitMode === 'contact' && contactStatus === 'success' && (
-          <div className="mt-8 p-6 rounded-xl bg-secondary/30 border border-secondary text-center animate-in fade-in slide-in-from-top-4 duration-500">
-            <h4 className="text-xl font-bold text-primary mb-4">{t('calc_contact_success')}</h4>
-          </div>
-        )}
-
-        {submitMode === 'contact' && contactStatus === 'error' && (
-          <div className="mt-8 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-center animate-in fade-in duration-300">
-            <p className="text-sm font-medium text-red-700 dark:text-red-400">
-              {t('calc_contact_error')}
-            </p>
-          </div>
-        )}
 
         {submitMode === 'email' && estimatedCost !== null && emailStatus === 'success' && (
           <div className="mt-8 p-4 rounded-lg bg-green-500/10 border border-green-500/30 text-center animate-in fade-in duration-300">
@@ -696,7 +619,7 @@ export function Calculator() {
           </div>
         )}
 
-        {(submitMode === 'basic' || submitMode === 'email' || submitMode === 'contact') && estimatedCost !== null && (
+        {(submitMode === 'basic' || submitMode === 'email') && estimatedCost !== null && (
           <div className="mt-8 p-8 rounded-xl bg-white dark:bg-primary/10 border border-zinc-100 dark:border-primary/20 text-center animate-in fade-in zoom-in duration-500 shadow-xl dark:shadow-inner">
             <p className="text-sm font-semibold text-zinc-500 dark:text-muted-foreground mb-3">
               {t('calc_result')}
