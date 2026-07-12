@@ -2,11 +2,10 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGetSkillsQuery } from "@/store/api/authApi";
 import * as LucideIcons from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
 export function FeaturedSkillsSection() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const { data: skills, isLoading } = useGetSkillsQuery(undefined);
 
   if (isLoading) return null;
@@ -30,8 +29,8 @@ export function FeaturedSkillsSection() {
             const IconComponent = !isUrl ? (LucideIcons as any)[skill.icon] : null;
 
             return (
-              <Link 
-                key={skill.id} 
+              <Link
+                key={skill.id}
                 to={`/search?q=${encodeURIComponent(skill.key)}`}
                 className="group flex flex-col items-center justify-center w-24 gap-3 animate-in fade-in zoom-in"
                 style={{ animationDelay: `${index * 50}ms` }}
@@ -39,7 +38,7 @@ export function FeaturedSkillsSection() {
                 <div className="relative w-14 h-14 flex items-center justify-center">
                   {/* Hover Blob Background */}
                   <div className="absolute inset-0 bg-brand/10 rounded-[40%_60%_70%_30%/40%_50%_60%_50%] scale-0 group-hover:scale-125 transition-transform duration-300 ease-out origin-center opacity-0 group-hover:opacity-100"></div>
-                  
+
                   {/* Icon */}
                   <div className="relative z-10 text-gray-500 dark:text-gray-400 group-hover:text-brand transition-colors duration-300">
                     {IconComponent ? (
