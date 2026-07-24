@@ -26,10 +26,10 @@ export function HeroSection() {
       <div className="relative z-10 w-full max-w-[1100px] p-8 md:p-14 rounded-[2rem] bg-background/60 backdrop-blur-md shadow-2xl border border-border/40 text-center mx-4 my-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 bg-transparent">
 
         <h1 className="text-4xl md:text-6xl font-semibold leading-tight mb-12 tracking-tight">
-          <span className="text-brand">Home </span>
-          <span className="text-foreground">improvment, </span><br />
-          <span className="text-foreground">made </span>
-          <span className="text-brand">easy.</span>
+          <span className="text-brand">{t('hero_title_brand_1')} </span>
+          <span className="text-foreground">{t('hero_title_rest_1')} </span><br />
+          <span className="text-foreground">{t('hero_title_rest_2')} </span>
+          <span className="text-brand">{t('hero_title_brand_2')}</span>
         </h1>
 
         {/* Badges container */}

@@ -225,5 +225,11 @@
   "about_mission_3": "We are building not just a technological platform, but a community where professional experience, honest work, and long-term partnerships are valued.",
   "auth_error_user_exists": "User with this email or phone already exists",
   "auth_error_invalid_credentials": "Invalid email/phone or password",
-  "auth_error_user_blocked": "You are blocked. Contact support."
+  "auth_error_user_blocked": "You are blocked. Contact support.",
+  "nav_contact_us": "Contact us",
+  "contact_desc": "We would love to hear from you. Fill out the form below and we will get back to you as soon as possible.",
+  "hero_title_brand_1": "Home",
+  "hero_title_rest_1": "improvement,",
+  "hero_title_rest_2": "made",
+  "hero_title_brand_2": "easy."
 }
