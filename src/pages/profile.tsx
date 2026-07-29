@@ -173,7 +173,8 @@ export default function ProfilePage() {
   const citiesOptions = currentRegion?.cities || [];
 
   const getLocalizedName = (item: any) => {
-    if (i18n.language === "am") return item.nameAm;
+    if (i18n.language === "fa") return item.nameFa;
+      if (i18n.language === "am") return item.nameAm;
     if (i18n.language === "ru") return item.nameRu;
     return item.nameEn;
   };
@@ -236,7 +237,7 @@ export default function ProfilePage() {
 
         {/* Profile Card Header */}
         <div className="flex items-center gap-6 p-6 bg-white dark:bg-card border border-transparent dark:border-border rounded-2xl shadow-sm transition-all hover:shadow-md relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-2 h-full bg-brand"></div>
+          <div className="absolute top-0 start-0 w-2 h-full bg-brand"></div>
 
           <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
             <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center border-2 border-dashed border-slate-300 dark:border-zinc-600 group-hover:border-blue-500 transition-colors overflow-hidden">
@@ -575,7 +576,7 @@ export default function ProfilePage() {
                 </div>
               )}
               <Button disabled={isUpdating || isUploadingAvatar} type="submit" className="w-full sm:w-auto mt-8 h-12 px-8 text-base font-semibold">
-                {(isUpdating || isUploadingAvatar) ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
+                {(isUpdating || isUploadingAvatar) ? <Loader2 className="w-5 h-5 animate-spin me-2" /> : null}
                 {t("profile_save")}
               </Button>
             </form>
@@ -588,7 +589,7 @@ export default function ProfilePage() {
               <h2 className="text-xl font-bold text-slate-900 dark:text-foreground">{t("profile_portfolios", "Portfolios")}</h2>
               <Dialog open={portfolioOpen} onOpenChange={setPortfolioOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline"><Plus className="w-4 h-4 mr-2" /> {t("profile_add_portfolio", "Add Portfolio")}</Button>
+                  <Button variant="outline"><Plus className="w-4 h-4 me-2" /> {t("profile_add_portfolio", "Add Portfolio")}</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
@@ -621,7 +622,7 @@ export default function ProfilePage() {
                   <DialogFooter>
                     <Button variant="ghost" onClick={() => setPortfolioOpen(false)}>{t("cancel", "Cancel")}</Button>
                     <Button onClick={handlePortfolioSubmit} disabled={!portfolioTitle || portfolioFiles.length === 0 || isCreatingPortfolio}>
-                      {isCreatingPortfolio && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} {t("profile_portfolio_save", "Save Portfolio")}
+                      {isCreatingPortfolio && <Loader2 className="w-4 h-4 me-2 animate-spin" />} {t("profile_portfolio_save", "Save Portfolio")}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -643,7 +644,7 @@ export default function ProfilePage() {
                       <button 
                         disabled={isDeletingPortfolio}
                         onClick={() => deletePortfolio(port.id)}
-                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                        className="absolute top-2 end-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

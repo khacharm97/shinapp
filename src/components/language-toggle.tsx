@@ -29,6 +29,9 @@ export function LanguageToggle() {
         <DropdownMenuItem onClick={() => i18n.changeLanguage("am")}>
           Հայերեն
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => i18n.changeLanguage("fa")}>
+          فارسی
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -94,12 +94,12 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••" 
-              className={`h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand pr-10 ${hasError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+              className={`h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand pe-10 ${hasError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
               required
             />
             <button
               type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}

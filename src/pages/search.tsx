@@ -67,6 +67,7 @@ export default function SearchPage() {
     if (!region) return "";
 
     const getLocName = (item: any) => {
+      if (i18n.language === "fa") return item.nameFa;
       if (i18n.language === "am") return item.nameAm;
       if (i18n.language === "ru") return item.nameRu;
       return item.nameEn;
@@ -86,7 +87,8 @@ export default function SearchPage() {
     if (!skillsData) return skillKey;
     const skill = skillsData.find((s: any) => s.key === skillKey);
     if (!skill) return skillKey;
-    if (i18n.language === "am") return skill.nameAm;
+    if (i18n.language === "fa") return skill.nameFa;
+      if (i18n.language === "am") return skill.nameAm;
     if (i18n.language === "ru") return skill.nameRu;
     return skill.nameEn;
   };
@@ -107,7 +109,7 @@ export default function SearchPage() {
         {/* Top Search Bar */}
         <div className="mb-8 flex justify-center">
           <div className="relative w-full max-w-2xl border border-gray-300 dark:border-border rounded-lg shadow-sm flex items-center px-4 h-14 bg-white dark:bg-card transition-shadow focus-within:ring-2 focus-within:ring-brand/20 focus-within:border-brand">
-            <Search className="w-5 h-5 text-gray-400 mr-3 shrink-0" />
+            <Search className="w-5 h-5 text-gray-400 me-3 shrink-0" />
             <input
               type="text"
               value={searchInput}
@@ -130,7 +132,7 @@ export default function SearchPage() {
             <div>
               <h3 className="font-semibold text-lg text-gray-900 dark:text-foreground mb-4 flex items-center">
                 {t("search_talent_badge", "Talent badge")}
-                <div className="ml-2 w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-[10px] text-gray-500 dark:text-gray-400 font-bold cursor-help" title={t("search_talent_badge_tooltip", "These badges help you identify the best talent.")}>?</div>
+                <div className="ms-2 w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-[10px] text-gray-500 dark:text-gray-400 font-bold cursor-help" title={t("search_talent_badge_tooltip", "These badges help you identify the best talent.")}>?</div>
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
@@ -140,7 +142,7 @@ export default function SearchPage() {
                     onCheckedChange={(c) => { setTopRated(c === true); setPage(1); }}
                   />
                   <Label htmlFor="top-rated" className="flex items-center cursor-pointer text-gray-700 dark:text-gray-300 font-medium">
-                    <Star className="w-4 h-4 text-orange-500 fill-orange-500 mr-2" />
+                    <Star className="w-4 h-4 text-orange-500 fill-orange-500 me-2" />
                     {t("search_top_rated", "Top Rated")}
                   </Label>
                 </div>
@@ -151,7 +153,7 @@ export default function SearchPage() {
                     onCheckedChange={(c) => { setAvailableNow(c === true); setPage(1); }}
                   />
                   <Label htmlFor="available-now" className="flex items-center cursor-pointer text-gray-700 dark:text-gray-300 font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-green-600 mr-2" />
+                    <CheckCircle2 className="w-4 h-4 text-green-600 me-2" />
                     {t("search_available_now", "Available now")}
                   </Label>
                 </div>
@@ -177,7 +179,7 @@ export default function SearchPage() {
                       <SelectItem value="all">{t("search_all_regions", "All Regions")}</SelectItem>
                       {armeniaRegions.map(r => (
                         <SelectItem key={r.id} value={r.id}>
-                          {i18n.language === 'am' ? r.nameAm : r.nameEn}
+                          {i18n.language === 'fa' ? r.nameFa : i18n.language === 'am' ? r.nameAm : r.nameEn}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -197,7 +199,7 @@ export default function SearchPage() {
                         <SelectItem value="all">{t("search_all_cities", "All Cities")}</SelectItem>
                         {selectedRegion.cities.map(c => (
                           <SelectItem key={c.id} value={c.id}>
-                            {i18n.language === 'am' ? c.nameAm : c.nameEn}
+                            {i18n.language === 'fa' ? c.nameFa : i18n.language === 'am' ? c.nameAm : c.nameEn}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -230,13 +232,13 @@ export default function SearchPage() {
                   return (
                     <div key={master.id} className={`bg-gray-100 dark:bg-zinc-900 rounded-xl overflow-hidden flex flex-col md:flex-row p-6 md:p-8 relative ${isCurrentUser ? 'ring-2 ring-brand' : ''}`}>
                       {isCurrentUser && (
-                        <div className="absolute top-0 right-0 bg-brand text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm">
+                        <div className="absolute top-0 end-0 bg-brand text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm">
                           {t("profile_this_is_you", "Your Profile")}
                         </div>
                       )}
 
                       {/* Profile Image */}
-                      <div className="w-full md:w-48 shrink-0 flex flex-col items-center mb-6 md:mb-0 md:mr-6">
+                      <div className="w-full md:w-48 shrink-0 flex flex-col items-center mb-6 md:mb-0 md:me-6">
                         <div className="relative">
                           <Link to={`/masters/${master.id}`} className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden block shadow-sm bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 hover:opacity-90 transition-opacity">
                             <img
@@ -249,7 +251,7 @@ export default function SearchPage() {
                             />
                           </Link>
                           {/* Online Indicator Dot */}
-                          <div className="absolute top-2 left-2 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                          <div className="absolute top-2 start-2 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                         </div>
                       </div>
 
@@ -263,7 +265,7 @@ export default function SearchPage() {
                         <p className="text-gray-700 dark:text-gray-300 font-medium mb-3">
                           {getLocalizedSkills(master.userInfo?.skills) || t("search_no_skills", "No specific skills listed")}
                           {master.userInfo?.regionId && (
-                            <span className="text-gray-500 dark:text-gray-400 ml-2 font-normal">
+                            <span className="text-gray-500 dark:text-gray-400 ms-2 font-normal">
                               {getLocalizedLocation(master.userInfo?.regionId, master.userInfo?.cityId)}
                             </span>
                           )}
@@ -277,12 +279,12 @@ export default function SearchPage() {
                           )}
 
                           <div className="flex items-center text-orange-500 font-medium">
-                            <Star className="w-4 h-4 fill-current mr-1" />
+                            <Star className="w-4 h-4 fill-current me-1" />
                             {t("search_top_rated", "Top Rated")}
                           </div>
 
                           <div className="flex items-center text-green-600 font-medium">
-                            <CheckCircle2 className="w-4 h-4 mr-1" />
+                            <CheckCircle2 className="w-4 h-4 me-1" />
                             {t("search_available_now", "Available now")}
                           </div>
                         </div>

@@ -35,7 +35,7 @@ const FOOTER_PHONE_HREF = "tel:+37493233402"
 const FOOTER_EMAIL = "shinapp.support@gmail.com"
 
 export default function RootLayout() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -49,6 +49,12 @@ export default function RootLayout() {
       dispatch(updateUser(profile))
     }
   }, [profile, isSuccess, dispatch])
+
+  useEffect(() => {
+    const dir = i18n.language === 'fa' ? 'rtl' : 'ltr'
+    document.documentElement.dir = dir
+    document.documentElement.lang = i18n.language
+  }, [i18n.language])
 
   // Combine redux user state with fetched profile (fetched profile takes precedence if loaded)
   const user = reduxUser || profile;
@@ -90,7 +96,7 @@ export default function RootLayout() {
 
   const getDesktopNavLinkClass = ({ isActive }: { isActive: boolean }) =>
     `relative py-1 transition-colors hover:text-brand ${isActive ? "text-brand after:scale-x-100" : "text-foreground/80 after:scale-x-0"
-    } after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-full after:origin-left after:bg-brand after:transition-transform after:duration-300`
+    } after:absolute after:-bottom-1 after:start-0 after:h-[2px] after:w-full after:origin-left after:bg-brand after:transition-transform after:duration-300`
 
   const getMobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
     `transition-colors hover:text-brand ${isActive ? "text-brand font-semibold" : "text-foreground/80"
@@ -134,12 +140,12 @@ export default function RootLayout() {
                     <DropdownMenuContent className="w-56" align="end" forceMount>
                       <DropdownMenuItem asChild>
                         <Link to="/profile" className="cursor-pointer flex items-center">
-                          <User className="mr-2 h-4 w-4" />
+                          <User className="me-2 h-4 w-4" />
                           <span>{user?.name || t("nav_profile", "Profile")}</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600">
-                        <LogOut className="mr-2 h-4 w-4" />
+                        <LogOut className="me-2 h-4 w-4" />
                         <span>{t("nav_logout", "Log out")}</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -180,10 +186,10 @@ export default function RootLayout() {
                       {isLoggedIn ? (
                         <>
                           <Button variant="outline" size="sm" asChild className="w-full justify-start">
-                            <Link to="/profile"><User className="mr-2 h-4 w-4" /> {user?.name || t("nav_profile", "Profile")}</Link>
+                            <Link to="/profile"><User className="me-2 h-4 w-4" /> {user?.name || t("nav_profile", "Profile")}</Link>
                           </Button>
                           <Button variant="destructive" size="sm" onClick={handleLogout} className="w-full justify-start">
-                            <LogOut className="mr-2 h-4 w-4" /> {t("nav_logout", "Log out")}
+                            <LogOut className="me-2 h-4 w-4" /> {t("nav_logout", "Log out")}
                           </Button>
                         </>
                       ) : (
@@ -225,7 +231,7 @@ export default function RootLayout() {
                 <img src={logo} alt="ShinApp Logo" className="h-6 w-auto object-contain" />
               </Link>
 
-              <div className="text-center sm:text-left space-y-3">
+              <div className="text-center sm:text-start space-y-3">
                 <h3 className="text-sm font-semibold text-primary">
                   {t("footer_contact")}
                 </h3>

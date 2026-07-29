@@ -101,8 +101,8 @@ export default function ContactPage() {
 
         <div className="bg-card shadow-2xl rounded-3xl p-8 md:p-10 border border-primary/10 relative overflow-hidden">
           {/* Decorative background elements */}
-          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-brand/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 end-0 -me-16 -mt-16 w-64 h-64 bg-brand/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 start-0 -ms-16 -mb-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
           
           <div className="relative z-10">
             <Form {...form}>
@@ -114,8 +114,8 @@ export default function ContactPage() {
                       <FormLabel className="text-foreground/80 font-semibold">{t('calc_first_name', 'First Name')}</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground/50" />
-                          <Input className="pl-10 h-12 bg-background/50 focus-visible:bg-background transition-colors" placeholder={t('calc_first_name_placeholder', 'John')} {...field} />
+                          <User className="absolute start-3 top-2.5 h-5 w-5 text-muted-foreground/50" />
+                          <Input className="ps-10 h-12 bg-background/50 focus-visible:bg-background transition-colors" placeholder={t('calc_first_name_placeholder', 'John')} {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -126,8 +126,8 @@ export default function ContactPage() {
                       <FormLabel className="text-foreground/80 font-semibold">{t('calc_last_name', 'Last Name')}</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground/50" />
-                          <Input className="pl-10 h-12 bg-background/50 focus-visible:bg-background transition-colors" placeholder={t('calc_last_name_placeholder', 'Doe')} {...field} />
+                          <User className="absolute start-3 top-2.5 h-5 w-5 text-muted-foreground/50" />
+                          <Input className="ps-10 h-12 bg-background/50 focus-visible:bg-background transition-colors" placeholder={t('calc_last_name_placeholder', 'Doe')} {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -140,8 +140,8 @@ export default function ContactPage() {
                     <FormLabel className="text-foreground/80 font-semibold">{t('calc_email', 'Email Address')}</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground/50" />
-                        <Input className="pl-10 h-12 bg-background/50 focus-visible:bg-background transition-colors" type="email" placeholder={t('calc_email_placeholder', 'john.doe@example.com')} {...field} />
+                        <Mail className="absolute start-3 top-2.5 h-5 w-5 text-muted-foreground/50" />
+                        <Input className="ps-10 h-12 bg-background/50 focus-visible:bg-background transition-colors" type="email" placeholder={t('calc_email_placeholder', 'john.doe@example.com')} {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -153,9 +153,9 @@ export default function ContactPage() {
                     <FormLabel className="text-foreground/80 font-semibold">{t('calc_notes', 'Your Message')}</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <MessageSquare className="absolute left-3 top-3 h-5 w-5 text-muted-foreground/50" />
+                        <MessageSquare className="absolute start-3 top-3 h-5 w-5 text-muted-foreground/50" />
                         <Textarea 
-                          className="pl-10 min-h-[150px] resize-none bg-background/50 focus-visible:bg-background transition-colors" 
+                          className="ps-10 min-h-[150px] resize-none bg-background/50 focus-visible:bg-background transition-colors" 
                           placeholder={t('calc_contact_notes_placeholder', 'How can we help you?')} 
                           {...field} 
                         />
@@ -172,7 +172,7 @@ export default function ContactPage() {
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      <Loader2 className="me-2 h-5 w-5 animate-spin" />
                       {t('calc_send_contact', 'Sending...')}
                     </>
                   ) : (

@@ -78,7 +78,7 @@ export default function SignupPage() {
           <p className="text-foreground/70 text-lg">
             {t("auth_signup_subtitle", "Create your account")}
             {selectedRole && (
-              <span className="ml-2 text-sm px-2 py-1 bg-brand/10 text-brand rounded-full">
+              <span className="ms-2 text-sm px-2 py-1 bg-brand/10 text-brand rounded-full">
                 {selectedRole === 'master' ? t("role_master", "Es masnaget em.") : t("role_customer", "Es hachaxord em.")}
               </span>
             )}
@@ -152,12 +152,12 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand pr-10"
+                className="h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand pe-10"
                 required
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -176,12 +176,12 @@ export default function SignupPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
-                className="h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand pr-10"
+                className="h-12 border-gray-300 dark:border-border dark:bg-background focus-visible:ring-brand pe-10"
                 required
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -243,7 +243,7 @@ export default function SignupPage() {
           {/* Close button (Navigates back if they cancel signup) */}
           <button
             onClick={() => navigate(-1)}
-            className="absolute top-6 right-6 sm:top-8 sm:right-12 flex items-center gap-2 text-white/70 hover:text-white transition-colors z-10"
+            className="absolute top-6 end-6 sm:top-8 sm:end-12 flex items-center gap-2 text-white/70 hover:text-white transition-colors z-10"
           >
             <X className="w-6 h-6" />
           </button>

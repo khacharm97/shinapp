@@ -41,6 +41,7 @@ export default function MastersPage() {
     if (!region) return "";
 
     const getLocName = (item: any) => {
+      if (i18n.language === "fa") return item.nameFa;
       if (i18n.language === "am") return item.nameAm;
       if (i18n.language === "ru") return item.nameRu;
       return item.nameEn;
@@ -121,7 +122,7 @@ export default function MastersPage() {
               return (
               <div key={master.id} className={`bg-white rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md relative ${isCurrentUser ? 'border-2 border-brand' : 'border border-slate-100'}`}>
                 {isCurrentUser && (
-                  <div className="absolute top-0 right-0 bg-brand text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm">
+                  <div className="absolute top-0 end-0 bg-brand text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm">
                     {t("profile_this_is_you", "Your Profile")}
                   </div>
                 )}
@@ -155,7 +156,7 @@ export default function MastersPage() {
                     <div className="flex flex-wrap items-center gap-4 text-sm mb-4">
                       {master.userInfo?.regionId && (
                         <div className="flex items-center text-slate-500">
-                          <MapPin className="w-4 h-4 mr-1" />
+                          <MapPin className="w-4 h-4 me-1" />
                           {getLocalizedLocation(master.userInfo?.regionId, master.userInfo?.cityId)}
                         </div>
                       )}
@@ -167,12 +168,12 @@ export default function MastersPage() {
                       )}
 
                       <div className="flex items-center text-orange-500 font-medium">
-                        <Star className="w-4 h-4 mr-1 fill-current" />
+                        <Star className="w-4 h-4 me-1 fill-current" />
                         Top Rated
                       </div>
 
                       <div className="flex items-center text-green-600 font-medium">
-                        <CheckCircle2 className="w-4 h-4 mr-1" />
+                        <CheckCircle2 className="w-4 h-4 me-1" />
                         Available now
                       </div>
                     </div>
@@ -197,11 +198,11 @@ export default function MastersPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="start" className="w-56">
                         <DropdownMenuItem onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="cursor-pointer">
-                          <Phone className="mr-2 h-4 w-4" />
+                          <Phone className="me-2 h-4 w-4" />
                           <span>{MANAGER_PHONE_DISPLAY}</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => window.location.href = `mailto:${MANAGER_EMAIL}`} className="cursor-pointer">
-                          <Mail className="mr-2 h-4 w-4" />
+                          <Mail className="me-2 h-4 w-4" />
                           <span>Email Manager</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>

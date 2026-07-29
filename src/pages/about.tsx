@@ -16,8 +16,8 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="relative px-4 py-20 md:py-32 overflow-hidden flex flex-col items-center">
         <div className="absolute inset-0 bg-gradient-to-br from-brand/10 via-background to-blue-500/10 -z-10" />
-        <div className="absolute top-10 left-10 w-72 h-72 bg-brand/20 rounded-full blur-3xl opacity-50 -z-10 animate-pulse" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl opacity-50 -z-10 animate-pulse" />
+        <div className="absolute top-10 start-10 w-72 h-72 bg-brand/20 rounded-full blur-3xl opacity-50 -z-10 animate-pulse" />
+        <div className="absolute bottom-10 end-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl opacity-50 -z-10 animate-pulse" />
 
         <div className="max-w-4xl mx-auto space-y-6">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-brand text-center">

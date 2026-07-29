@@ -391,7 +391,7 @@ export function Calculator() {
           </FormItem>
         )} />
         {isChecked && inputId && (
-          <div className="pl-7 pt-2 pb-1 animate-in fade-in slide-in-from-top-1 duration-200">
+          <div className="ps-7 pt-2 pb-1 animate-in fade-in slide-in-from-top-1 duration-200">
             <FormField control={form.control} name={inputId as any} render={({ field }) => (
               <FormItem className="flex flex-col gap-1.5 mt-1">
                 <FormLabel className="text-sm text-muted-foreground font-medium w-full">
@@ -410,7 +410,7 @@ export function Calculator() {
   }
 
   return (
-    <Card className="w-full max-w-4xl mx-auto shadow-lg text-left">
+    <Card className="w-full max-w-4xl mx-auto shadow-lg text-start">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl">{t('calc_title')}</CardTitle>
         <CardDescription>{t('calc_desc')}</CardDescription>
@@ -593,7 +593,7 @@ export function Calculator() {
                   </FormItem>
                 )} />
                 <Button type="button" onClick={onSecondarySubmit} disabled={isSubmitting} size="lg" variant="brand" className="w-full text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center">
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isSubmitting && <Loader2 className="me-2 h-4 w-4 animate-spin" />}
                   {t('calc_send')}
                 </Button>
               </div>

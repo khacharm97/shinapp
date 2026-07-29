@@ -23,6 +23,7 @@ export default function MasterDetailsPage() {
     if (!region) return "";
 
     const getLocName = (item: any) => {
+      if (i18n.language === "fa") return item.nameFa;
       if (i18n.language === "am") return item.nameAm;
       if (i18n.language === "ru") return item.nameRu;
       return item.nameEn;
@@ -42,7 +43,8 @@ export default function MasterDetailsPage() {
     if (!skillsData) return skillKey;
     const skill = skillsData.find((s: any) => s.key === skillKey);
     if (!skill) return skillKey;
-    if (i18n.language === "am") return skill.nameAm;
+    if (i18n.language === "fa") return skill.nameFa;
+      if (i18n.language === "am") return skill.nameAm;
     if (i18n.language === "ru") return skill.nameRu;
     return skill.nameEn;
   };
@@ -70,9 +72,9 @@ export default function MasterDetailsPage() {
     <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-8">
         <div>
-          <Button asChild variant="ghost" className="mb-4 text-slate-500 hover:text-slate-900 -ml-4">
+          <Button asChild variant="ghost" className="mb-4 text-slate-500 hover:text-slate-900 -ms-4">
             <Link to="/masters">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 me-2" />
               Back to Masters
             </Link>
           </Button>
@@ -81,7 +83,7 @@ export default function MasterDetailsPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
           {/* Header Section */}
           <div className="bg-brand/5 border-b border-slate-100 p-8 md:p-12 flex flex-col md:flex-row items-center md:items-start gap-8">
-            <div className="flex-1 text-center md:text-left space-y-4">
+            <div className="flex-1 text-center md:text-start space-y-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex gap-4">
                   <div>
@@ -100,25 +102,25 @@ export default function MasterDetailsPage() {
                     <h1 className="text-xl font-bold text-slate-900 mb-2">
                       {master.name || "Unnamed Master"}
                       {master.isVerified && (
-                        <span className="inline-block ml-2 text-blue-500">
+                        <span className="inline-block ms-2 text-blue-500">
                           {/* Assuming there is a verified icon somewhere, just omitting for now as it's not strictly requested, but removing the skill is. */}
                         </span>
                       )}
                     </h1>
                     {master.userInfo?.regionId && (
                       <div className="flex items-center text-slate-500">
-                        <MapPin className="w-4 h-4 mr-1" />
+                        <MapPin className="w-4 h-4 me-1" />
                         {getLocalizedLocation(master.userInfo?.regionId, master.userInfo?.cityId)}
                       </div>
                     )}
                     <div className="flex gap-4">
                       <div className="flex items-center text-orange-500 font-medium bg-orange-50 px-0 py-1 rounded-md">
-                        <Star className="w-4 h-4 mr-1 fill-current" />
+                        <Star className="w-4 h-4 me-1 fill-current" />
                         Top Rated
                       </div>
 
                       <div className="flex items-center text-green-600 font-medium bg-green-50 px-2 py-1 rounded-md">
-                        <CheckCircle2 className="w-4 h-4 mr-1" />
+                        <CheckCircle2 className="w-4 h-4 me-1" />
                         Available now
                       </div>
                     </div>
@@ -127,11 +129,11 @@ export default function MasterDetailsPage() {
 
                 <div className="flex flex-col gap-3 shrink-0">
                   <Button onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
-                    <Phone className="w-4 h-4 mr-2" />
+                    <Phone className="w-4 h-4 me-2" />
                     Call Manager
                   </Button>
                   <Button variant="outline" onClick={() => window.location.href = `mailto:${MANAGER_EMAIL}`} className="w-full md:w-auto">
-                    <Mail className="w-4 h-4 mr-2" />
+                    <Mail className="w-4 h-4 me-2" />
                     Email Manager
                   </Button>
                 </div>

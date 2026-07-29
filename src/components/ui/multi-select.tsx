@@ -69,7 +69,7 @@ export function MultiSelect({
                 <Badge
                   variant="secondary"
                   key={item}
-                  className="mr-1 mb-1 font-normal"
+                  className="me-1 mb-1 font-normal"
                   onClick={(e) => {
                     e.stopPropagation()
                     handleUnselect(item)
@@ -78,7 +78,7 @@ export function MultiSelect({
                   {label}
                   <button
                     type="button"
-                    className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    className="ms-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         handleUnselect(item)
