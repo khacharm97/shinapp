@@ -112,7 +112,7 @@ export default function SearchPage() {
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search skills, example shinarar..."
+              placeholder={t("search_skills_placeholder", "Search skills, example shinarar...")}
               className="flex-1 min-w-0 bg-transparent border-none focus:outline-none text-base text-gray-900 dark:text-foreground placeholder-gray-400"
             />
             {searchInput && (
@@ -129,8 +129,8 @@ export default function SearchPage() {
           <div className="w-full lg:w-64 shrink-0 space-y-8">
             <div>
               <h3 className="font-semibold text-lg text-gray-900 dark:text-foreground mb-4 flex items-center">
-                Talent badge
-                <div className="ml-2 w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-[10px] text-gray-500 dark:text-gray-400 font-bold cursor-help" title="These badges help you identify the best talent.">?</div>
+                {t("search_talent_badge", "Talent badge")}
+                <div className="ml-2 w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-[10px] text-gray-500 dark:text-gray-400 font-bold cursor-help" title={t("search_talent_badge_tooltip", "These badges help you identify the best talent.")}>?</div>
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
@@ -141,7 +141,7 @@ export default function SearchPage() {
                   />
                   <Label htmlFor="top-rated" className="flex items-center cursor-pointer text-gray-700 dark:text-gray-300 font-medium">
                     <Star className="w-4 h-4 text-orange-500 fill-orange-500 mr-2" />
-                    Top Rated
+                    {t("search_top_rated", "Top Rated")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -152,14 +152,14 @@ export default function SearchPage() {
                   />
                   <Label htmlFor="available-now" className="flex items-center cursor-pointer text-gray-700 dark:text-gray-300 font-medium">
                     <CheckCircle2 className="w-4 h-4 text-green-600 mr-2" />
-                    Available now
+                    {t("search_available_now", "Available now")}
                   </Label>
                 </div>
               </div>
             </div>
 
             <div>
-              <h3 className="font-semibold text-lg text-gray-900 dark:text-foreground mb-4">Location</h3>
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-foreground mb-4">{t("search_location", "Location")}</h3>
               <div className="space-y-4">
                 <div>
                   <Select
@@ -171,10 +171,10 @@ export default function SearchPage() {
                     }}
                   >
                     <SelectTrigger className="w-full bg-white dark:bg-card border-gray-300 dark:border-border">
-                      <SelectValue placeholder="Regions" />
+                      <SelectValue placeholder={t("search_regions_placeholder", "Regions")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Regions</SelectItem>
+                      <SelectItem value="all">{t("search_all_regions", "All Regions")}</SelectItem>
                       {armeniaRegions.map(r => (
                         <SelectItem key={r.id} value={r.id}>
                           {i18n.language === 'am' ? r.nameAm : r.nameEn}
@@ -191,10 +191,10 @@ export default function SearchPage() {
                       onValueChange={(val) => { setCityId(val === "all" ? "" : val); setPage(1); }}
                     >
                       <SelectTrigger className="w-full bg-white dark:bg-card border-gray-300 dark:border-border">
-                        <SelectValue placeholder="City" />
+                        <SelectValue placeholder={t("search_city_placeholder", "City")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Cities</SelectItem>
+                        <SelectItem value="all">{t("search_all_cities", "All Cities")}</SelectItem>
                         {selectedRegion.cities.map(c => (
                           <SelectItem key={c.id} value={c.id}>
                             {i18n.language === 'am' ? c.nameAm : c.nameEn}
@@ -216,11 +216,11 @@ export default function SearchPage() {
               </div>
             ) : isError ? (
               <div className="bg-red-50 text-red-600 p-4 rounded-lg text-center">
-                Failed to load search results.
+                {t("search_failed", "Failed to load search results.")}
               </div>
             ) : masters.length === 0 ? (
               <div className="bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 p-12 rounded-xl text-center">
-                <p className="text-gray-500 dark:text-gray-400 text-lg">No masters found matching your criteria.</p>
+                <p className="text-gray-500 dark:text-gray-400 text-lg">{t("search_no_results", "No masters found matching your criteria.")}</p>
               </div>
             ) : (
               <>
@@ -257,11 +257,11 @@ export default function SearchPage() {
                       <div className="flex-1 flex flex-col justify-center">
                         <Link to={`/masters/${master.id}`} className="block w-max hover:text-brand transition-colors">
                           <h2 className="text-xl font-bold text-gray-900 dark:text-foreground mb-1">
-                            {master.name || "Unnamed Master"}
+                            {master.name || t("search_unnamed_master", "Unnamed Master")}
                           </h2>
                         </Link>
                         <p className="text-gray-700 dark:text-gray-300 font-medium mb-3">
-                          {getLocalizedSkills(master.userInfo?.skills) || "No specific skills listed"}
+                          {getLocalizedSkills(master.userInfo?.skills) || t("search_no_skills", "No specific skills listed")}
                           {master.userInfo?.regionId && (
                             <span className="text-gray-500 dark:text-gray-400 ml-2 font-normal">
                               {getLocalizedLocation(master.userInfo?.regionId, master.userInfo?.cityId)}
@@ -272,18 +272,18 @@ export default function SearchPage() {
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm mb-4">
                           {master.userInfo?.priceValue && (
                             <div className="text-gray-600 dark:text-gray-400 font-medium">
-                              Minimal price {master.userInfo.priceValue} AMD/{master.userInfo.pricingFormat === 'daily' ? 'day' : master.userInfo.pricingFormat === 'sqm' ? 'sqm' : 'hr'}
+                              {t("search_minimal_price", "Minimal price")} {master.userInfo.priceValue} {t("currency_amd", "AMD")}/{master.userInfo.pricingFormat === 'daily' ? t("search_per_day", "day") : master.userInfo.pricingFormat === 'sqm' ? t("search_per_sqm", "sqm") : t("search_per_hr", "hr")}
                             </div>
                           )}
 
                           <div className="flex items-center text-orange-500 font-medium">
                             <Star className="w-4 h-4 fill-current mr-1" />
-                            Top Rated
+                            {t("search_top_rated", "Top Rated")}
                           </div>
 
                           <div className="flex items-center text-green-600 font-medium">
                             <CheckCircle2 className="w-4 h-4 mr-1" />
-                            Available now
+                            {t("search_available_now", "Available now")}
                           </div>
                         </div>
 
@@ -304,9 +304,9 @@ export default function SearchPage() {
                         )}
 
                         <div className="bg-white dark:bg-zinc-800/50 rounded-lg p-4 border border-gray-100 dark:border-zinc-700 shadow-sm">
-                          <h3 className="font-semibold text-gray-900 dark:text-foreground text-sm mb-1">About me</h3>
+                          <h3 className="font-semibold text-gray-900 dark:text-foreground text-sm mb-1">{t("search_about_me", "About me")}</h3>
                           <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed line-clamp-3">
-                            {master.userInfo?.about || "Research and brainstorm. Think about your background, education, awards, skills and other attributes..."}
+                            {master.userInfo?.about || t("search_about_default", "Research and brainstorm. Think about your background, education, awards, skills and other attributes...")}
                           </p>
                         </div>
                       </div>

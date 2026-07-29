@@ -585,27 +585,27 @@ export default function ProfilePage() {
         {profileData?.roles?.includes('MASTER') && (
           <div className="bg-white dark:bg-card p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-border mt-8">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-foreground">Portfolios</h2>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-foreground">{t("profile_portfolios", "Portfolios")}</h2>
               <Dialog open={portfolioOpen} onOpenChange={setPortfolioOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline"><Plus className="w-4 h-4 mr-2" /> Add Portfolio</Button>
+                  <Button variant="outline"><Plus className="w-4 h-4 mr-2" /> {t("profile_add_portfolio", "Add Portfolio")}</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Add New Portfolio</DialogTitle>
-                    <DialogDescription>Showcase your best work (Max 3 images).</DialogDescription>
+                    <DialogTitle>{t("profile_add_new_portfolio", "Add New Portfolio")}</DialogTitle>
+                    <DialogDescription>{t("profile_portfolio_desc", "Showcase your best work (Max 3 images).")}</DialogDescription>
                   </DialogHeader>
                     <div className="space-y-4 py-4">
                       <div className="space-y-2">
-                        <Label>Title</Label>
-                        <Input placeholder="e.g. Modern Kitchen Renovation" value={portfolioTitle} onChange={e => setPortfolioTitle(e.target.value)} />
+                        <Label>{t("profile_portfolio_title", "Title")}</Label>
+                        <Input placeholder={t("profile_portfolio_title_placeholder", "e.g. Modern Kitchen Renovation")} value={portfolioTitle} onChange={e => setPortfolioTitle(e.target.value)} />
                       </div>
                       <div className="space-y-2">
-                        <Label>Description</Label>
-                        <Textarea placeholder="Details about this project..." value={portfolioDesc} onChange={e => setPortfolioDesc(e.target.value)} />
+                        <Label>{t("profile_portfolio_description", "Description")}</Label>
+                        <Textarea placeholder={t("profile_portfolio_desc_placeholder", "Details about this project...")} value={portfolioDesc} onChange={e => setPortfolioDesc(e.target.value)} />
                       </div>
                       <div className="space-y-2">
-                        <Label>Images ({portfolioFiles.length}/3)</Label>
+                        <Label>{t("profile_portfolio_images", "Images")} ({portfolioFiles.length}/3)</Label>
                         <Input type="file" multiple accept="image/*" onChange={handlePortfolioFileChange} disabled={portfolioFiles.length >= 3} />
                       {portfolioFiles.length > 0 && (
                         <div className="flex gap-2 mt-2 flex-wrap">
@@ -619,9 +619,9 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="ghost" onClick={() => setPortfolioOpen(false)}>Cancel</Button>
+                    <Button variant="ghost" onClick={() => setPortfolioOpen(false)}>{t("cancel", "Cancel")}</Button>
                     <Button onClick={handlePortfolioSubmit} disabled={!portfolioTitle || portfolioFiles.length === 0 || isCreatingPortfolio}>
-                      {isCreatingPortfolio && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} Save Portfolio
+                      {isCreatingPortfolio && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} {t("profile_portfolio_save", "Save Portfolio")}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -657,7 +657,7 @@ export default function ProfilePage() {
               </div>
             ) : (
               <div className="text-center p-8 bg-slate-50 dark:bg-zinc-900/50 rounded-xl border border-dashed border-slate-200 dark:border-border">
-                <p className="text-slate-500">You haven't added any portfolios yet.</p>
+                <p className="text-slate-500">{t("profile_portfolio_empty", "You haven't added any portfolios yet.")}</p>
               </div>
             )}
           </div>
