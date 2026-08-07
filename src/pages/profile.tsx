@@ -12,7 +12,7 @@ import {
   useCreatePortfolioMutation,
   useDeletePortfolioMutation
 } from "@/store/api/authApi";
-
+import { BrigadesTab } from "@/components/brigades/BrigadesTab";
 
 import {
   Form,
@@ -662,6 +662,10 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
+        )}
+
+        {profileData?.roles?.includes('MASTER') && (
+          <BrigadesTab profileData={profileData} />
         )}
 
       </div>

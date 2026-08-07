@@ -123,6 +123,36 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['Profile'],
     }),
+    getBrigades: builder.query({
+      query: () => 'profile/brigade',
+      providesTags: ['Profile'],
+    }),
+    createBrigade: builder.mutation({
+      query: (data: { name: string; invites: string[] }) => ({
+        url: 'profile/brigade',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    updateBrigade: builder.mutation({
+      query: (data: { id: string; name: string; invites: string[]; removeMemberIds: string[] }) => {
+        const { id, ...body } = data;
+        return {
+          url: `profile/brigade/${id}`,
+          method: 'PUT',
+          body,
+        };
+      },
+      invalidatesTags: ['Profile'],
+    }),
+    deleteBrigade: builder.mutation({
+      query: (id: string) => ({
+        url: `profile/brigade/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Profile'],
+    }),
   }),
 });
 
@@ -139,5 +169,9 @@ export const {
   useGetSkillsQuery,
   useSuggestSkillMutation,
   useCreatePortfolioMutation,
-  useDeletePortfolioMutation
+  useDeletePortfolioMutation,
+  useGetBrigadesQuery,
+  useCreateBrigadeMutation,
+  useUpdateBrigadeMutation,
+  useDeleteBrigadeMutation
 } = authApi;
