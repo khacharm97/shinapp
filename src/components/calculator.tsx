@@ -359,7 +359,7 @@ export function Calculator() {
         setSubmitMode(activeFormSection)
         form.handleSubmit(onSubmit)()
       } catch (err) {
-        console.error('Error submitting to Supabase:', err)
+        console.error('Error submitting to backend:', err)
         setEmailStatus('error')
       } finally {
         setIsSubmitting(false)

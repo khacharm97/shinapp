@@ -299,5 +299,19 @@
   "brigade_members": "Members",
   "brigade_no_members": "No members invited yet.",
   "brigade_empty": "You haven't created any brigades yet.",
-  "brigade_empty_desc": "Group up with other masters to showcase joint projects."
+  "brigade_empty_desc": "Group up with other masters to showcase joint projects.",
+  "role_company": "I am a Company",
+  "profile_company_details": "Company Details",
+  "profile_company_website": "Website",
+  "profile_company_itn": "ITN (Individual Taxpayer Number)",
+  "profile_company_workers_count": "Number of Workers",
+  "profile_company_working_places": "Working Places (Regions)",
+  "profile_website": "Website",
+  "profile_itn": "ITN",
+  "profile_itn_placeholder": "Individual Taxpayer Number",
+  "profile_workers_count": "Workers Count",
+  "profile_facebook": "Facebook",
+  "profile_instagram": "Instagram",
+  "profile_tiktok": "TikTok",
+  "profile_company_name": "Company Name"
 }

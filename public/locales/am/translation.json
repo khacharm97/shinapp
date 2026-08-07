@@ -299,5 +299,19 @@
   "brigade_members": "Անդամներ",
   "brigade_no_members": "Դեռևս հրավիրված անդամներ չկան:",
   "brigade_empty": "Դուք դեռևս բրիգադներ չեք ստեղծել:",
-  "brigade_empty_desc": "Միացեք այլ վարպետների հետ՝ համատեղ նախագծեր ցուցադրելու համար:"
+  "brigade_empty_desc": "Միացեք այլ վարպետների հետ՝ համատեղ նախագծեր ցուցադրելու համար:",
+  "role_company": "Ես ընկերություն եմ",
+  "profile_company_details": "Ընկերության Տվյալներ",
+  "profile_company_website": "Կայք",
+  "profile_company_itn": "ՀՎՀՀ (Հարկ Վճարողի Հաշվառման Համար)",
+  "profile_company_workers_count": "Աշխատողների քանակ",
+  "profile_company_working_places": "Աշխատանքի Վայրեր (Մարզեր)",
+  "profile_website": "Վեբ կայք",
+  "profile_itn": "ՀՎՀՀ",
+  "profile_itn_placeholder": "Հարկ Վճարողի Հաշվառման Համար",
+  "profile_workers_count": "Աշխատողների քանակ",
+  "profile_facebook": "Facebook",
+  "profile_instagram": "Instagram",
+  "profile_tiktok": "TikTok",
+  "profile_company_name": "Ընկերության Անվանում"
 }

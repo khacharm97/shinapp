@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
-import { Eye, EyeOff, Briefcase, UserCheck, X } from "lucide-react"
+import { Eye, EyeOff, Briefcase, UserCheck, X, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,7 +15,7 @@ export default function SignupPage() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [showPassword, setShowPassword] = useState(false)
-  const [selectedRole, setSelectedRole] = useState<'master' | 'customer' | null>(null)
+  const [selectedRole, setSelectedRole] = useState<'master' | 'customer' | 'company' | null>(null)
   
   // RTK Query hook
   const [register, { isLoading, isError, error }] = useRegisterMutation()
@@ -52,7 +52,7 @@ export default function SignupPage() {
 
         try {
           const payload = JSON.parse(atob(response.access_token.split('.')[1]))
-          if (payload.roles && payload.roles.includes('MASTER')) {
+          if (payload.roles && (payload.roles.includes('MASTER') || payload.roles.includes('COMPANY'))) {
             navigate("/profile")
             return
           }
@@ -79,7 +79,7 @@ export default function SignupPage() {
             {t("auth_signup_subtitle", "Create your account")}
             {selectedRole && (
               <span className="ms-2 text-sm px-2 py-1 bg-brand/10 text-brand rounded-full">
-                {selectedRole === 'master' ? t("role_master", "Es masnaget em.") : t("role_customer", "Es hachaxord em.")}
+                {selectedRole === 'master' ? t("role_master", "Es masnaget em.") : selectedRole === 'company' ? t("role_company", "Es ynkerutyun em.") : t("role_customer", "Es hachaxord em.")}
               </span>
             )}
           </p>
@@ -98,7 +98,9 @@ export default function SignupPage() {
           )}
           <div className="space-y-2">
             <Label htmlFor="name" className="text-foreground/80 font-medium">
-              {t("auth_name_label", "Full Name")}
+              {selectedRole === 'company' 
+                ? t("profile_company_name", "Company Name")
+                : t("auth_name_label", "Full Name")}
             </Label>
             <Input
               id="name"
@@ -265,6 +267,15 @@ export default function SignupPage() {
             >
               <UserCheck className="w-12 h-12 text-brand group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
               <span className="text-xl font-medium text-gray-900 dark:text-foreground">{t("role_customer", "Es hachaxord em.")}</span>
+            </button>
+
+            {/* Company Option */}
+            <button
+              onClick={() => setSelectedRole('company')}
+              className="bg-white dark:bg-card dark:text-foreground rounded-xl shadow-xl w-full max-w-[280px] aspect-video flex flex-col items-center justify-center gap-4 hover:scale-105 transition-transform duration-300 group"
+            >
+              <Building2 className="w-12 h-12 text-brand group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
+              <span className="text-xl font-medium text-gray-900 dark:text-foreground">{t("role_company", "Es ynkerutyun em.")}</span>
             </button>
           </div>
         </div>

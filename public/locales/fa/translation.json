@@ -299,5 +299,19 @@
   "brigade_members": "اعضا",
   "brigade_no_members": "هنوز عضوی دعوت نشده است.",
   "brigade_empty": "شما هنوز هیچ گروهی ایجاد نکرده‌اید.",
-  "brigade_empty_desc": "برای نمایش پروژه‌های مشترک با سایر استادکاران گروه تشکیل دهید."
+  "brigade_empty_desc": "برای نمایش پروژه‌های مشترک با سایر استادکاران گروه تشکیل دهید.",
+  "role_company": "من یک شرکت هستم",
+  "profile_company_details": "مشخصات شرکت",
+  "profile_company_website": "وب‌سایت",
+  "profile_company_itn": "کد اقتصادی",
+  "profile_company_workers_count": "تعداد کارکنان",
+  "profile_company_working_places": "مکان‌های کاری (مناطق)",
+  "profile_website": "وب‌سایت",
+  "profile_itn": "کد اقتصادی",
+  "profile_itn_placeholder": "شماره شناسایی مالیاتی",
+  "profile_workers_count": "تعداد کارکنان",
+  "profile_facebook": "فیس‌بوک",
+  "profile_instagram": "اینستاگرام",
+  "profile_tiktok": "تیک‌تاک",
+  "profile_company_name": "نام شرکت"
 }

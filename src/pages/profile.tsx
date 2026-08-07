@@ -4,15 +4,15 @@ import * as z from "zod";
 import { useTranslation } from "react-i18next";
 import { Plus, Camera, Loader2, Trash2, ImagePlus } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
-import { 
-  useGetProfileQuery, 
-  useUpdateProfileMutation, 
-  useUploadAvatarMutation, 
-  useGetSkillsQuery, 
-  useCreatePortfolioMutation,
-  useDeletePortfolioMutation
+import {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+  useUploadAvatarMutation,
+  useGetSkillsQuery,
 } from "@/store/api/authApi";
 import { BrigadesTab } from "@/components/brigades/BrigadesTab";
+import { PortfoliosTab } from "@/components/profile/PortfoliosTab";
+import { isMaster, isCompany, canHavePortfolio, hasBrigadesAccess } from "@/utils";
 
 import {
   Form,
@@ -23,7 +23,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,15 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { MultiSelect, type Option } from "@/components/ui/multi-select";
 import { armeniaRegions } from "@/lib/armenia-regions";
 
@@ -58,9 +48,18 @@ const profileSchema = z.object({
   onlinePay: z.boolean(),
   buyMaterial: z.boolean(),
   nightShift: z.boolean(),
-  pricingFormat: z.string(),
+  pricingFormat: z.string().optional(),
   priceValue: z.string().optional(),
   about: z.string().optional(),
+
+  // Company fields
+  website: z.string().optional(),
+  socialFacebook: z.string().optional(),
+  socialInstagram: z.string().optional(),
+  socialTiktok: z.string().optional(),
+  itn: z.string().optional(),
+  workersCount: z.string().optional(),
+  workingPlaces: z.array(z.string()).optional().default([]),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -78,38 +77,14 @@ export default function ProfilePage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [portfolioOpen, setPortfolioOpen] = useState(false);
-  const [portfolioTitle, setPortfolioTitle] = useState("");
-  const [portfolioDesc, setPortfolioDesc] = useState("");
-  const [portfolioFiles, setPortfolioFiles] = useState<File[]>([]);
-  const [createPortfolio, { isLoading: isCreatingPortfolio }] = useCreatePortfolioMutation();
-  const [deletePortfolio, { isLoading: isDeletingPortfolio }] = useDeletePortfolioMutation();
-
-  const handlePortfolioSubmit = async () => {
-    if (!portfolioTitle || portfolioFiles.length === 0) return;
-    const formData = new FormData();
-    formData.append('title', portfolioTitle);
-    formData.append('description', portfolioDesc);
-    portfolioFiles.forEach(f => formData.append('images', f));
-    await createPortfolio(formData).unwrap();
-    setPortfolioOpen(false);
-    setPortfolioTitle("");
-    setPortfolioDesc("");
-    setPortfolioFiles([]);
-  };
-
-  const handlePortfolioFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const filesArray = Array.from(e.target.files);
-      setPortfolioFiles(prev => [...prev, ...filesArray].slice(0, 3)); // Max 3 files
-    }
-  };
-
   // We map the backend data to our user info object
+  const isCompanyUser = isCompany(profileData?.roles);
+  const isMasterUser = isMaster(profileData?.roles);
+
   const user = {
     email: profileData?.email || "",
     name: profileData?.name || "",
-    role: profileData?.roles?.[0] === 'MASTER' ? t("role_master", "Master") : t("role_customer", "Customer"),
+    role: isCompanyUser ? t("role_company", "Company") : isMasterUser ? t("role_master", "Master") : t("role_customer", "Customer"),
     avatarUrl: profileData?.avatarUrl || null,
   };
 
@@ -138,6 +113,13 @@ export default function ProfilePage() {
       pricingFormat: "",
       priceValue: "",
       about: "",
+      website: "",
+      socialFacebook: "",
+      socialInstagram: "",
+      socialTiktok: "",
+      itn: "",
+      workersCount: "",
+      workingPlaces: [],
     },
   });
 
@@ -160,6 +142,13 @@ export default function ProfilePage() {
           pricingFormat: profileData.userInfo?.pricingFormat || "",
           priceValue: profileData.userInfo?.priceValue || "",
           about: profileData.userInfo?.about || "",
+          website: profileData.userInfo?.website || "",
+          socialFacebook: profileData.userInfo?.socialFacebook || "",
+          socialInstagram: profileData.userInfo?.socialInstagram || "",
+          socialTiktok: profileData.userInfo?.socialTiktok || "",
+          itn: profileData.userInfo?.itn || "",
+          workersCount: profileData.userInfo?.workersCount?.toString() || "",
+          workingPlaces: profileData.userInfo?.workingPlaces?.length ? profileData.userInfo.workingPlaces : [],
         });
       }, 100);
 
@@ -174,7 +163,7 @@ export default function ProfilePage() {
 
   const getLocalizedName = (item: any) => {
     if (i18n.language === "fa") return item.nameFa;
-      if (i18n.language === "am") return item.nameAm;
+    if (i18n.language === "am") return item.nameAm;
     if (i18n.language === "ru") return item.nameRu;
     return item.nameEn;
   };
@@ -209,6 +198,13 @@ export default function ProfilePage() {
         pricingFormat: data.pricingFormat,
         priceValue: data.priceValue,
         about: data.about,
+        website: data.website,
+        socialFacebook: data.socialFacebook,
+        socialInstagram: data.socialInstagram,
+        socialTiktok: data.socialTiktok,
+        itn: data.itn,
+        workersCount: data.workersCount ? parseInt(data.workersCount, 10) : null,
+        workingPlaces: data.workingPlaces,
       }).unwrap();
       setSubmitStatus('success');
       setTimeout(() => setSubmitStatus('idle'), 3000);
@@ -388,161 +384,165 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="skills"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("profile_skills")}</FormLabel>
-                      <FormControl>
-                        <MultiSelect
-                          options={skillOptions}
-                          selected={field.value}
-                          onChange={field.onChange}
-                          placeholder={t("profile_skills_placeholder")}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              {!isCompanyUser && (
+                <>
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="skills"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("profile_skills")}</FormLabel>
+                          <FormControl>
+                            <MultiSelect
+                              options={skillOptions}
+                              selected={field.value}
+                              onChange={field.onChange}
+                              placeholder={t("profile_skills_placeholder")}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-              {/* Preferences / Toggles */}
-              <div className="space-y-4 pt-4 border-t border-slate-100">
-                <FormField
-                  control={form.control}
-                  name="largeScale"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base font-medium">{t("profile_large_scale")}</FormLabel>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                  {/* Preferences / Toggles */}
+                  <div className="space-y-4 pt-4 border-t border-slate-100">
+                    <FormField
+                      control={form.control}
+                      name="largeScale"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base font-medium">{t("profile_large_scale")}</FormLabel>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="urgentOrders"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base font-medium">{t("profile_urgent")}</FormLabel>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="urgentOrders"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base font-medium">{t("profile_urgent")}</FormLabel>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="onlinePay"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base font-medium">{t("profile_online_pay")}</FormLabel>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="onlinePay"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base font-medium">{t("profile_online_pay")}</FormLabel>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="buyMaterial"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base font-medium">{t("profile_buy_material")}</FormLabel>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                    <FormField
+                      control={form.control}
+                      name="buyMaterial"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base font-medium">{t("profile_buy_material")}</FormLabel>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
 
-                <FormField
-                  control={form.control}
-                  name="nightShift"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base font-medium">{t("profile_night_shift")}</FormLabel>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
+                    <FormField
+                      control={form.control}
+                      name="nightShift"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base font-medium">{t("profile_night_shift")}</FormLabel>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-              {/* Pricing Format */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
-                <FormField
-                  control={form.control}
-                  name="pricingFormat"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("profile_pricing_format")}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl className="w-full">
-                          <SelectTrigger>
-                            <SelectValue placeholder={t("profile_pricing_placeholder")} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="daily">{t("profile_price_daily")}</SelectItem>
-                          <SelectItem value="sqm">{t("profile_price_sqm")}</SelectItem>
-                          <SelectItem value="contract">{t("profile_price_contract")}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  {/* Pricing Format */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                    <FormField
+                      control={form.control}
+                      name="pricingFormat"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("profile_pricing_format")}</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl className="w-full">
+                              <SelectTrigger>
+                                <SelectValue placeholder={t("profile_pricing_placeholder")} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="daily">{t("profile_price_daily")}</SelectItem>
+                              <SelectItem value="sqm">{t("profile_price_sqm")}</SelectItem>
+                              <SelectItem value="contract">{t("profile_price_contract")}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                {(watchPricingFormat === "daily" || watchPricingFormat === "sqm") && (
-                  <FormField
-                    control={form.control}
-                    name="priceValue"
-                    render={({ field }) => (
-                      <FormItem className="animate-in fade-in slide-in-from-top-2">
-                        <FormLabel>{t("profile_price_value")}</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder={t("profile_price_value_placeholder")} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                    {(watchPricingFormat === "daily" || watchPricingFormat === "sqm") && (
+                      <FormField
+                        control={form.control}
+                        name="priceValue"
+                        render={({ field }) => (
+                          <FormItem className="animate-in fade-in slide-in-from-top-2">
+                            <FormLabel>{t("profile_price_value")}</FormLabel>
+                            <FormControl>
+                              <Input type="number" placeholder={t("profile_price_value_placeholder")} {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     )}
-                  />
-                )}
-              </div>
+                  </div>
+                </>
+              )}
 
               {/* About Textarea */}
               <div className="pt-4 border-t border-slate-100">
@@ -565,6 +565,100 @@ export default function ProfilePage() {
                 />
               </div>
 
+              {isCompanyUser && (
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <h3 className="font-semibold text-slate-900 dark:text-foreground">{t("profile_company_details", "Company Details")}</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="website"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("profile_website", "Website")}</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://example.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="itn"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("profile_itn", "ITN")}</FormLabel>
+                          <FormControl>
+                            <Input placeholder={t("profile_itn_placeholder", "Individual Taxpayer Number")} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="workersCount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("profile_workers_count", "Workers Count")}</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="10" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="socialFacebook"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("profile_facebook", "Facebook")}</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://facebook.com/..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="socialInstagram"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("profile_instagram", "Instagram")}</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://instagram.com/..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="socialTiktok"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("profile_tiktok", "TikTok")}</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://tiktok.com/..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+
               {submitStatus === 'success' && (
                 <div className="p-3 bg-green-50 text-green-700 rounded-md text-sm font-medium">
                   {t("profile_update_success", "Profile updated successfully!")}
@@ -583,88 +677,11 @@ export default function ProfilePage() {
           </Form>
         </div>
 
-        {profileData?.roles?.includes('MASTER') && (
-          <div className="bg-white dark:bg-card p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-border mt-8">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-foreground">{t("profile_portfolios", "Portfolios")}</h2>
-              <Dialog open={portfolioOpen} onOpenChange={setPortfolioOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline"><Plus className="w-4 h-4 me-2" /> {t("profile_add_portfolio", "Add Portfolio")}</Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>{t("profile_add_new_portfolio", "Add New Portfolio")}</DialogTitle>
-                    <DialogDescription>{t("profile_portfolio_desc", "Showcase your best work (Max 3 images).")}</DialogDescription>
-                  </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label>{t("profile_portfolio_title", "Title")}</Label>
-                        <Input placeholder={t("profile_portfolio_title_placeholder", "e.g. Modern Kitchen Renovation")} value={portfolioTitle} onChange={e => setPortfolioTitle(e.target.value)} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>{t("profile_portfolio_description", "Description")}</Label>
-                        <Textarea placeholder={t("profile_portfolio_desc_placeholder", "Details about this project...")} value={portfolioDesc} onChange={e => setPortfolioDesc(e.target.value)} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>{t("profile_portfolio_images", "Images")} ({portfolioFiles.length}/3)</Label>
-                        <Input type="file" multiple accept="image/*" onChange={handlePortfolioFileChange} disabled={portfolioFiles.length >= 3} />
-                      {portfolioFiles.length > 0 && (
-                        <div className="flex gap-2 mt-2 flex-wrap">
-                          {portfolioFiles.map((f, i) => (
-                            <div key={i} className="relative w-20 h-20 rounded-md overflow-hidden bg-slate-100">
-                              <img src={URL.createObjectURL(f)} className="w-full h-full object-cover" alt="preview" />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="ghost" onClick={() => setPortfolioOpen(false)}>{t("cancel", "Cancel")}</Button>
-                    <Button onClick={handlePortfolioSubmit} disabled={!portfolioTitle || portfolioFiles.length === 0 || isCreatingPortfolio}>
-                      {isCreatingPortfolio && <Loader2 className="w-4 h-4 me-2 animate-spin" />} {t("profile_portfolio_save", "Save Portfolio")}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            {profileData.portfolios && profileData.portfolios.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {profileData.portfolios.map((port: any) => (
-                  <div key={port.id} className="border border-slate-200 dark:border-border rounded-xl overflow-hidden group">
-                    <div className="aspect-video bg-slate-100 relative">
-                      {port.imageUrls?.[0] ? (
-                        <img src={`${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${port.imageUrls[0]}`} className="w-full h-full object-cover" alt={port.title} />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-400">
-                          <ImagePlus className="w-8 h-8" />
-                        </div>
-                      )}
-                      <button 
-                        disabled={isDeletingPortfolio}
-                        onClick={() => deletePortfolio(port.id)}
-                        className="absolute top-2 end-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-slate-900 dark:text-foreground line-clamp-1">{port.title}</h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{port.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center p-8 bg-slate-50 dark:bg-zinc-900/50 rounded-xl border border-dashed border-slate-200 dark:border-border">
-                <p className="text-slate-500">{t("profile_portfolio_empty", "You haven't added any portfolios yet.")}</p>
-              </div>
-            )}
-          </div>
+        {canHavePortfolio(profileData?.roles) && (
+          <PortfoliosTab profileData={profileData} />
         )}
 
-        {profileData?.roles?.includes('MASTER') && (
+        {hasBrigadesAccess(profileData?.roles) && (
           <BrigadesTab profileData={profileData} />
         )}
 

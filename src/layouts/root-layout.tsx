@@ -5,6 +5,7 @@ import { Mail, Phone, Menu, User, LogOut } from "lucide-react"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ModeToggle } from "@/components/mode-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
+import { isMaster, isCompany } from "@/utils"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -63,9 +64,10 @@ export default function RootLayout() {
   // We consider them logged in if there's a token
   const isLoggedIn = !!token
 
-  const isMaster = user?.roles?.includes('MASTER')
+  const isMasterUser = isMaster(user?.roles)
+  const isCompanyUser = isCompany(user?.roles)
   const isVerified = !!user?.verifiedAt
-  const showCompleteProfileBanner = isLoggedIn && isMaster && !isVerified && location.pathname !== '/profile'
+  const showCompleteProfileBanner = isLoggedIn && (isMasterUser || isCompanyUser) && !isVerified && location.pathname !== '/profile'
 
   const [showNavbar, setShowNavbar] = useState(true)
 

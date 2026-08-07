@@ -299,5 +299,19 @@
   "brigade_members": "Участники",
   "brigade_no_members": "Пока нет приглашенных участников.",
   "brigade_empty": "Вы еще не создали ни одной бригады.",
-  "brigade_empty_desc": "Объединяйтесь с другими мастерами для совместных проектов."
+  "brigade_empty_desc": "Объединяйтесь с другими мастерами для совместных проектов.",
+  "role_company": "Я - Компания",
+  "profile_company_details": "Данные Компании",
+  "profile_company_website": "Веб-сайт",
+  "profile_company_itn": "ИНН",
+  "profile_company_workers_count": "Количество сотрудников",
+  "profile_company_working_places": "Места работы (Регионы)",
+  "profile_website": "Веб-сайт",
+  "profile_itn": "ИНН",
+  "profile_itn_placeholder": "Идентификационный Номер Налогоплательщика",
+  "profile_workers_count": "Количество сотрудников",
+  "profile_facebook": "Facebook",
+  "profile_instagram": "Instagram",
+  "profile_tiktok": "TikTok",
+  "profile_company_name": "Название Компании"
 }
