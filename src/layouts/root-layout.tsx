@@ -29,6 +29,7 @@ import { useGetProfileQuery } from "@/store/api/authApi"
 import { useAppSelector, useAppDispatch } from "@/store/hooks"
 import { logout, updateUser } from "@/store/slices/authSlice"
 import { useEffect, useState } from "react"
+import { NotificationsMenu } from "@/components/notifications/NotificationsMenu"
 
 const FOOTER_PHONE = "+374(93)-23-34-02"
 const FOOTER_PHONE_HREF = "tel:+37493233402"
@@ -127,6 +128,7 @@ export default function RootLayout() {
               <LanguageToggle />
               <ModeToggle />
               <div className="hidden md:flex items-center gap-2">
+                {isLoggedIn && <NotificationsMenu />}
                 {isLoggedIn ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -182,6 +184,9 @@ export default function RootLayout() {
                       <NavLink to="/about" className={getMobileNavLinkClass}>{t("nav_about_us")}</NavLink>
                       <NavLink to="/contact" className={getMobileNavLinkClass}>{t("nav_contact_us", "Contact us")}</NavLink>
                     </nav>
+                    
+                    {isLoggedIn && <NotificationsMenu isMobile={true} />}
+
                     <div className="mt-auto flex flex-col gap-2 pt-6 border-t pb-2">
                       {isLoggedIn ? (
                         <>

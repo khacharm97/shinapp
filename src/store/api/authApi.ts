@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../index';
 import { logout } from '../slices/authSlice';
+import { io } from 'socket.io-client';
 
 const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
 const baseUrl = backendUrl.startsWith('http') ? `${backendUrl}/auth/` : `https://${backendUrl}/auth/`;
@@ -153,6 +154,83 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['Profile'],
     }),
+    getNotifications: builder.query({
+      query: () => 'notifications',
+      providesTags: ['Profile'],
+      async onCacheEntryAdded(
+        _arg,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved, getState, dispatch }
+      ) {
+        // create a socket connection when the cache subscription starts
+        const state = getState() as RootState;
+        const token = state.auth.token;
+        if (!token) return;
+
+        const wsUrl = backendUrl.startsWith('http') ? backendUrl : `http://${backendUrl}`;
+        const socket = io(wsUrl, {
+          extraHeaders: {
+            authorization: `Bearer ${token}`
+          }
+        });
+
+        try {
+          // wait for the initial query to resolve before proceeding
+          await cacheDataLoaded;
+
+          // when data is received from the socket connection to the server,
+          // update our query result with the received message
+          socket.on('new_notification', (notification) => {
+            updateCachedData((draft: any) => {
+              if (draft.notifications) {
+                draft.notifications.unshift(notification);
+              }
+            });
+
+            // Browser Push Notification
+            if (Notification.permission === 'granted') {
+              new Notification(notification.title, { body: notification.message });
+            } else if (Notification.permission !== 'denied') {
+              Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                  new Notification(notification.title, { body: notification.message });
+                }
+              });
+            }
+          });
+
+          // Listen for brigade_updated events
+          socket.on('brigade_updated', () => {
+            // Invalidate 'Profile' to refetch brigades and other relevant profile info
+            dispatch(authApi.util.invalidateTags(['Profile']));
+          });
+        } catch {}
+
+        // perform cleanup steps once the `cacheEntryRemoved` promise resolves
+        await cacheEntryRemoved;
+        socket.disconnect();
+      },
+    }),
+    markNotificationRead: builder.mutation({
+      query: (id: string) => ({
+        url: `notifications/${id}/read`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Profile'], // Or a specific tag if preferred
+    }),
+    acceptBrigadeInvite: builder.mutation({
+      query: (brigadeId: string) => ({
+        url: `profile/brigade/invite/${brigadeId}/accept`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    rejectBrigadeInvite: builder.mutation({
+      query: (brigadeId: string) => ({
+        url: `profile/brigade/invite/${brigadeId}/reject`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Profile'],
+    }),
   }),
 });
 
@@ -173,5 +251,9 @@ export const {
   useGetBrigadesQuery,
   useCreateBrigadeMutation,
   useUpdateBrigadeMutation,
-  useDeleteBrigadeMutation
+  useDeleteBrigadeMutation,
+  useGetNotificationsQuery,
+  useMarkNotificationReadMutation,
+  useAcceptBrigadeInviteMutation,
+  useRejectBrigadeInviteMutation,
 } = authApi;
