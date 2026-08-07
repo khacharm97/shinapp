@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslation } from "react-i18next";
-import { Plus, Camera, Loader2, Trash2, ImagePlus } from "lucide-react";
+import { Plus, Camera, Loader2 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import {
   useGetProfileQuery,
@@ -568,7 +568,7 @@ export default function ProfilePage() {
               {isCompanyUser && (
                 <div className="space-y-4 pt-4 border-t border-slate-100">
                   <h3 className="font-semibold text-slate-900 dark:text-foreground">{t("profile_company_details", "Company Details")}</h3>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
@@ -583,7 +583,7 @@ export default function ProfilePage() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="itn"
