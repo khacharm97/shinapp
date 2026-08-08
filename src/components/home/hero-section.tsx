@@ -17,13 +17,18 @@ export function HeroSection() {
   }
 
   return (
-    <div
-      className="relative w-full min-h-[700px] bg-cover bg-center flex items-center justify-center animate-in fade-in duration-1000"
-      style={{ backgroundImage: `url(${homeBanner})` }}
-    >
-      <div className="absolute inset-0 bg-background/5 backdrop-blur-[2px]" />
+    <div className="relative w-full min-h-[700px] flex items-center justify-center animate-in fade-in duration-1000 overflow-hidden">
+      {/* Explicit image tag for LCP discoverability */}
+      <img 
+        src={homeBanner} 
+        alt="ShinApp Hero Banner" 
+        className="absolute inset-0 w-full h-full object-cover z-0" 
+        fetchPriority="high"
+        loading="eager"
+      />
+      <div className="absolute inset-0 bg-background/5 backdrop-blur-[2px] z-10" />
 
-      <div className="relative z-10 w-full max-w-[1100px] p-8 md:p-14 rounded-[2rem] bg-background/60 backdrop-blur-md shadow-2xl border border-border/40 text-center mx-4 my-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 bg-transparent">
+      <div className="relative z-20 w-full max-w-[1100px] p-8 md:p-14 rounded-[2rem] bg-background/60 backdrop-blur-md shadow-2xl border border-border/40 text-center mx-4 my-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150 bg-transparent">
 
         <h1 className="text-4xl md:text-6xl font-semibold leading-tight mb-12 tracking-tight">
           <span className="text-brand">{t('hero_title_brand_1')} </span>
