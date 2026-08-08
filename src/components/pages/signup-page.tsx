@@ -1,3 +1,4 @@
+import { SEO } from '@/components/seo'
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
@@ -70,6 +71,7 @@ export default function SignupPageContent() {
 
   return (
     <>
+      <SEO title={t('signup', 'Sign Up')} />
       <div className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-brand mb-2">

@@ -14,6 +14,7 @@ import {
 import { useAppSelector } from "@/store/hooks";
 import type { LocalizedString, Master } from "@/types";
 import { getLocalizedName } from "@/utils";
+import { SEO } from "@/components/seo";
 
 // Manager contact details
 const MANAGER_PHONE = "+37493233402";
@@ -87,6 +88,7 @@ export default function MastersPageContent() {
 
   return (
     <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
+      <SEO title={t('nav_masters', 'Masters')} />
       <div className="max-w-5xl mx-auto space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <h1 className="text-3xl font-bold tracking-tight text-brand">

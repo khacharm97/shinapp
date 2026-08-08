@@ -6,6 +6,7 @@ import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
 import type { LocalizedString, Skill, Portfolio } from "@/types";
 import { getLocalizedName } from "@/utils";
+import { SEO } from '@/components/seo';
 
 const MANAGER_PHONE = "+37493233402";
 const MANAGER_EMAIL = "info@shinapp.am";
@@ -54,6 +55,7 @@ export default function MasterDetailsPageContent() {
   if (isError || !master) {
     return (
       <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex flex-col items-center justify-center gap-4">
+        <SEO title={t("error_not_found", "Master not found")} />
         <p className="text-slate-500">Master not found or an error occurred.</p>
         <Button asChild variant="outline">
           <Link to="/masters">Back to Masters</Link>

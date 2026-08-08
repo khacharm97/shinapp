@@ -1,3 +1,4 @@
+import { SEO } from '@/components/seo'
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
@@ -47,6 +48,7 @@ export default function LoginPageContent() {
 
   return (
     <div className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <SEO title={t('login', 'Login')} />
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-brand mb-2">
           {t("welcome_back", "Welcome back!")}

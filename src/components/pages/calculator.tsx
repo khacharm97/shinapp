@@ -1,3 +1,4 @@
+import { SEO } from '@/components/seo'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -403,6 +404,7 @@ export function Calculator() {
 
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-lg text-start">
+      <SEO title={t('calc_title')} description={t('calc_desc')} />
       <CardHeader className="text-center">
         <CardTitle className="text-2xl">{t('calc_title')}</CardTitle>
         <CardDescription>{t('calc_desc')}</CardDescription>
