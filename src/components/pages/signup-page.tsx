@@ -236,7 +236,7 @@ export default function SignupPageContent() {
             {t("auth_have_account", "Already have an account?")}{" "}
           </span>
           <Link to="/login" className="text-brand font-bold hover:underline transition-all">
-            {t("nav_login", "Log in.")}
+            {t("nav_login", "Log in")}
           </Link>
         </div>
       </div>
