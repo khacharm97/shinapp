@@ -15,6 +15,7 @@ import {
   useAcceptBrigadeInviteMutation,
   useRejectBrigadeInviteMutation,
 } from '@/store/api/authApi';
+import type { Notification as AppNotification } from '@/types';
 import { cn } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
 
@@ -29,7 +30,7 @@ export function NotificationsMenu({ isMobile = false }: { isMobile?: boolean }) 
   const [open, setOpen] = useState(false);
 
   const notifications = data?.notifications || [];
-  const unreadCount = notifications.filter((n: any) => !n.isRead).length;
+  const unreadCount = notifications.filter((n: AppNotification) => !n.isRead).length;
 
   const handleMarkAsRead = async (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -40,29 +41,31 @@ export function NotificationsMenu({ isMobile = false }: { isMobile?: boolean }) 
     }
   };
 
-  const handleAccept = async (notification: any, e: React.MouseEvent) => {
+  const handleAccept = async (notification: AppNotification, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await acceptInvite(notification.metadata.brigadeId).unwrap();
+      await acceptInvite(notification.metadata?.brigadeId as string).unwrap();
       toast.success(t('invite_accepted', 'Invitation accepted!'));
       await handleMarkAsRead(notification.id);
-    } catch (err: any) {
-      toast.error(err?.data?.message || t('error_accepting_invite', 'Failed to accept invite'));
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } };
+      toast.error(e?.data?.message || t('error_accepting_invite', 'Failed to accept invite'));
     }
   };
 
-  const handleReject = async (notification: any, e: React.MouseEvent) => {
+  const handleReject = async (notification: AppNotification, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await rejectInvite(notification.metadata.brigadeId).unwrap();
+      await rejectInvite(notification.metadata?.brigadeId as string).unwrap();
       toast.success(t('invite_rejected', 'Invitation rejected.'));
       await handleMarkAsRead(notification.id);
-    } catch (err: any) {
-      toast.error(err?.data?.message || t('error_rejecting_invite', 'Failed to reject invite'));
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } };
+      toast.error(e?.data?.message || t('error_rejecting_invite', 'Failed to reject invite'));
     }
   };
 
-  const renderNotificationContent = (notification: any) => {
+  const renderNotificationContent = (notification: AppNotification) => {
     return (
       <div
         key={notification.id}

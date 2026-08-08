@@ -1,15 +1,17 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { authApi } from './api/authApi';
+import { publicApi } from './api/publicApi';
 import authReducer from './slices/authSlice';
-import type { AnyAction } from '@reduxjs/toolkit';
+import type { UnknownAction } from '@reduxjs/toolkit';
 
 const appReducer = combineReducers({
   auth: authReducer,
   [authApi.reducerPath]: authApi.reducer,
+  [publicApi.reducerPath]: publicApi.reducer,
 });
 
-const rootReducer = (state: any, action: AnyAction) => {
+const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: UnknownAction) => {
   if (action.type === 'auth/logout') {
     // Reset the entire store on logout to clear user-specific RTK Query caches
     state = undefined;
@@ -20,7 +22,7 @@ const rootReducer = (state: any, action: AnyAction) => {
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware),
+    getDefaultMiddleware().concat(authApi.middleware, publicApi.middleware),
 });
 
 setupListeners(store.dispatch);

@@ -4,6 +4,7 @@ import { CheckCircle2, Loader2 } from 'lucide-react'
 import masterImg from '@/assets/master.png'
 import { InfiniteSliderSection } from './infinite-slider-section'
 import { useGetHomeMastersQuery } from '@/store/api/authApi'
+import type { Master } from '@/types'
 
 export function OurMastersSection() {
   const { t } = useTranslation()
@@ -30,7 +31,7 @@ export function OurMastersSection() {
     )
   }
 
-  const masters: any[] = (data as any)?.items || []
+  const masters: Master[] = data?.items || []
 
   if (masters.length === 0) {
     return null;
@@ -42,7 +43,7 @@ export function OurMastersSection() {
       items={masters}
       exploreLink="/masters"
       exploreText={t('explore_more')}
-      renderItem={(master: any, index: number) => (
+      renderItem={(master: Master, index: number) => (
         <Link 
           to={`/masters/${master.id}`} 
           key={`${master.id}-${index}`} 

@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '@/store/hooks';
+import type { User } from '@/types';
 import { setCredentials } from '@/store/slices/authSlice';
 import { authApi } from '@/store/api/authApi';
 
 export default function AuthCallbackPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const dispatch: any = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -19,14 +20,14 @@ export default function AuthCallbackPage() {
       // Fetch the user profile using the token
       dispatch(authApi.endpoints.getProfile.initiate(undefined))
         .unwrap()
-        .then((user: any) => {
+        .then((user: User) => {
           // Update credentials with the full user object
           dispatch(setCredentials({ token, user }));
 
           // Check roles and navigate accordingly
           navigate('/');
         })
-        .catch((error: any) => {
+        .catch((error: unknown) => {
           console.error('Failed to fetch user profile:', error);
           navigate('/login');
         });

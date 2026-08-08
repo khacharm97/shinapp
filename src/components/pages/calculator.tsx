@@ -1,13 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, type Resolver, type Path } from 'react-hook-form'
 import * as z from 'zod'
 import { Loader2 } from 'lucide-react'
-import { insertContactRequest } from '@/lib/contact-requests'
-
-const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
-const apiUrl = backendUrl.startsWith('http') ? backendUrl : `https://${backendUrl}`;
+import { useInsertContactRequestMutation, useSendEstimateEmailMutation } from '@/store/api/publicApi'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -84,10 +81,11 @@ const formSchema = z.object({
 export function Calculator() {
   const { t, i18n } = useTranslation()
   const [estimatedCost, setEstimatedCost] = useState<[number, number] | null>(null)
+  const [insertContactRequest] = useInsertContactRequestMutation();
+  const [sendEstimateEmail] = useSendEstimateEmailMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resolver: zodResolver(formSchema) as any,
+    resolver: zodResolver(formSchema) as unknown as Resolver<z.infer<typeof formSchema>>,
     defaultValues: {
       repair: "cosmetic",
       material: "standard",
@@ -302,14 +300,13 @@ export function Calculator() {
       setIsSubmitting(true)
       setEmailStatus(null)
       try {
-        const { error: insertError } = await insertContactRequest({
+        await insertContactRequest({
           email,
           notes: '',
-          first_name: firstNameValue,
-          last_name: lastNameValue,
+          firstName: firstNameValue,
+          lastName: lastNameValue,
           contact: false,
-        })
-        if (insertError) throw insertError
+        }).unwrap()
 
         const { items } = generateEstimateReport(values)
         const messageParts = [
@@ -343,17 +340,12 @@ export function Calculator() {
           lang: i18n.language
         }
 
-        const response = await fetch(`${apiUrl}/contact-requests/email/estimate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
-
-        if (!response.ok) {
-          console.error('Error invoking backend email function:', await response.text())
-          setEmailStatus('error')
-        } else {
+        try {
+          await sendEstimateEmail(payload).unwrap();
           setEmailStatus('success')
+        } catch (e) {
+          console.error('Error invoking backend email function:', e)
+          setEmailStatus('error')
         }
 
         setSubmitMode(activeFormSection)
@@ -380,7 +372,7 @@ export function Calculator() {
 
     return (
       <div key={id} className="mb-2">
-        <FormField control={form.control} name={id as any} render={({ field }) => (
+        <FormField control={form.control} name={id as Path<z.infer<typeof formSchema>>} render={({ field }) => (
           <FormItem className="flex flex-row items-center space-x-3 space-y-0">
             <FormControl>
               <Checkbox checked={field.value as boolean} onCheckedChange={field.onChange} />
@@ -392,13 +384,13 @@ export function Calculator() {
         )} />
         {isChecked && inputId && (
           <div className="ps-7 pt-2 pb-1 animate-in fade-in slide-in-from-top-1 duration-200">
-            <FormField control={form.control} name={inputId as any} render={({ field }) => (
+            <FormField control={form.control} name={inputId as Path<z.infer<typeof formSchema>>} render={({ field }) => (
               <FormItem className="flex flex-col gap-1.5 mt-1">
                 <FormLabel className="text-sm text-muted-foreground font-medium w-full">
                   {overrideLabelKey ? t(overrideLabelKey) : `${t(langKey)} ${t(isCount ? "calc_count_input" : "calc_area_input").toLowerCase()}`}
                 </FormLabel>
                 <FormControl>
-                  <Input type="number" min="0" step="any" placeholder="" {...field} value={field.value || ""} className="h-8 w-full shadow-none" />
+                  <Input type="number" min="0" step="any" placeholder="" {...field} value={(field.value as string | number) || ""} className="h-8 w-full shadow-none" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

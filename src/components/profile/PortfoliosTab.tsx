@@ -15,9 +15,10 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useCreatePortfolioMutation, useDeletePortfolioMutation } from "@/store/api/authApi";
+import type { User, Portfolio } from "@/types";
 
 interface PortfoliosTabProps {
-  profileData: any;
+  profileData: User;
 }
 
 export function PortfoliosTab({ profileData }: PortfoliosTabProps) {
@@ -98,7 +99,7 @@ export function PortfoliosTab({ profileData }: PortfoliosTabProps) {
 
       {profileData.portfolios && profileData.portfolios.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {profileData.portfolios.map((port: any) => (
+          {profileData.portfolios.map((port: Portfolio) => (
             <div key={port.id} className="border border-slate-200 dark:border-border rounded-xl overflow-hidden group">
               <div className="aspect-video bg-slate-100 relative">
                 {port.imageUrls?.[0] ? (

@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useGetSkillsQuery } from "@/store/api/authApi";
 import * as LucideIcons from "lucide-react";
 import { Search } from "lucide-react";
+import { getLocalizedName } from "@/utils";
+import type { Skill } from "@/types";
 
 export function FeaturedSkillsSection() {
   const { i18n } = useTranslation();
@@ -10,23 +12,17 @@ export function FeaturedSkillsSection() {
 
   if (isLoading) return null;
 
-  const featuredSkills = skills?.filter((skill: any) => skill.icon) || [];
+  const featuredSkills = skills?.filter((skill: Skill) => skill.icon) || [];
 
   if (featuredSkills.length === 0) return null;
-
-  const getLocalizedSkillName = (skill: any) => {
-    if (i18n.language === "am") return skill.nameAm;
-    if (i18n.language === "ru") return skill.nameRu;
-    return skill.nameEn;
-  };
 
   return (
     <section className="w-full py-10 bg-white dark:bg-background border-b border-gray-100 dark:border-zinc-800">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap justify-center items-start gap-8 md:gap-12 lg:gap-16">
-          {featuredSkills.map((skill: any, index: number) => {
-            const isUrl = skill.icon.startsWith('http') || skill.icon.startsWith('/');
-            const IconComponent = !isUrl ? (LucideIcons as any)[skill.icon] : null;
+          {featuredSkills.map((skill: Skill, index: number) => {
+            const isUrl = skill.icon?.startsWith('http') || skill.icon?.startsWith('/');
+            const IconComponent = !isUrl && skill.icon ? (LucideIcons[skill.icon as keyof typeof LucideIcons] as React.ElementType) : null;
 
             return (
               <Link
@@ -51,7 +47,7 @@ export function FeaturedSkillsSection() {
                   </div>
                 </div>
                 <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300 text-center group-hover:text-brand group-hover:font-semibold transition-all duration-300 leading-tight">
-                  {getLocalizedSkillName(skill)}
+                  {getLocalizedName(skill, i18n.language)}
                 </h3>
               </Link>
             );

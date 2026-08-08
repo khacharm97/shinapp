@@ -7,6 +7,7 @@ import {
   useUpdateBrigadeMutation,
   useDeleteBrigadeMutation
 } from "@/store/api/authApi";
+import type { User, Brigade, BrigadeMember } from "@/types";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +33,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export function BrigadesTab({ profileData }: { profileData: any }) {
+export function BrigadesTab({ profileData }: { profileData: User }) {
   const { t } = useTranslation();
   const { data: brigades, isLoading: isLoadingBrigades } = useGetBrigadesQuery(undefined);
   const [createBrigade, { isLoading: isCreating }] = useCreateBrigadeMutation();
@@ -46,7 +47,7 @@ export function BrigadesTab({ profileData }: { profileData: any }) {
   const [inviteInput, setInviteInput] = useState("");
   const [invites, setInvites] = useState<string[]>([]); // New invites
   
-  const [existingMembers, setExistingMembers] = useState<any[]>([]); // Members already in brigade
+  const [existingMembers, setExistingMembers] = useState<BrigadeMember[]>([]); // Members already in brigade
   const [removeMemberIds, setRemoveMemberIds] = useState<string[]>([]); // IDs of existing members to remove
   
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -66,7 +67,7 @@ export function BrigadesTab({ profileData }: { profileData: any }) {
     setIsOpen(true);
   };
 
-  const handleOpenEdit = (brigade: any) => {
+  const handleOpenEdit = (brigade: Brigade) => {
     resetForm();
     setEditBrigadeId(brigade.id);
     setName(brigade.name);
@@ -109,9 +110,10 @@ export function BrigadesTab({ profileData }: { profileData: any }) {
       }
       setIsOpen(false);
       resetForm();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      const msg = err?.data?.message || err?.error || t("brigade_error", "Failed to save brigade");
+      const e = err as { data?: { message?: string }; error?: string };
+      const msg = e?.data?.message || e?.error || t("brigade_error", "Failed to save brigade");
       setErrorMsg(msg);
     }
   };
@@ -250,7 +252,7 @@ export function BrigadesTab({ profileData }: { profileData: any }) {
         </div>
       ) : brigades && brigades.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {brigades.map((brigade: any) => (
+          {brigades.map((brigade: Brigade) => (
             <div key={brigade.id} className="border border-slate-200 dark:border-border rounded-xl p-5 group hover:shadow-md transition-all">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -297,7 +299,7 @@ export function BrigadesTab({ profileData }: { profileData: any }) {
                 
                 {brigade.members && brigade.members.length > 0 ? (
                   <div className="space-y-2">
-                    {brigade.members.map((member: any) => (
+                    {brigade.members.map((member: BrigadeMember) => (
                       <div key={member.id} className="flex items-center justify-between p-2 rounded-md bg-slate-50 dark:bg-zinc-900/50">
                         <div className="flex flex-col">
                           <span className="text-sm font-medium text-slate-800 dark:text-slate-200">

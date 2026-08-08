@@ -1,12 +1,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import type { BaseQueryApi, FetchArgs } from '@reduxjs/toolkit/query';
 import type { RootState } from '../index';
 import { logout } from '../slices/authSlice';
 import { io } from 'socket.io-client';
+import type { Notification as AppNotification, MastersQueryArgs, Master } from '@/types';
 
 const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
 const baseUrl = backendUrl.startsWith('http') ? `${backendUrl}/auth/` : `https://${backendUrl}/auth/`;
 
-const baseQuery = fetchBaseQuery({ 
+const baseQuery = fetchBaseQuery({
   baseUrl, // Ensure api-gateway runs on 3000
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
@@ -17,13 +19,13 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
-  let result = await baseQuery(args, api, extraOptions);
+const baseQueryWithReauth = async (args: string | FetchArgs, api: BaseQueryApi, extraOptions: object) => {
+  const result = await baseQuery(args, api, extraOptions);
   if (result.error && result.error.status === 401) {
     api.dispatch(logout());
   } else if (result.error && result.error.status === 403) {
     // If blocked, 403 is returned
-    const errorData = result.error.data as any;
+    const errorData = result.error.data as { message?: string } | undefined;
     if (errorData?.message === 'auth_error_user_blocked' || result.error.status === 403) {
       api.dispatch(logout());
       window.location.href = '/login?error=auth_error_user_blocked';
@@ -42,7 +44,7 @@ export const authApi = createApi({
       providesTags: ['Profile'],
     }),
     getMasters: builder.query({
-      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow }: any) => {
+      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow }: MastersQueryArgs) => {
         let qs = `masters?page=${page}&limit=${limit}`;
         if (search) qs += `&search=${encodeURIComponent(search)}`;
         if (regionId) qs += `&regionId=${encodeURIComponent(regionId)}`;
@@ -53,7 +55,7 @@ export const authApi = createApi({
       },
     }),
     globalSearch: builder.query({
-      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow }: any) => {
+      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow }: MastersQueryArgs) => {
         let qs = `search?page=${page}&limit=${limit}`;
         if (search) qs += `&search=${encodeURIComponent(search)}`;
         if (regionId) qs += `&regionId=${encodeURIComponent(regionId)}`;
@@ -66,8 +68,8 @@ export const authApi = createApi({
     getMasterById: builder.query({
       query: (id: string) => `masters/${id}`,
     }),
-    getHomeMasters: builder.query({
-      query: ({ limit = 6 }: any = {}) => `masters?limit=${limit}`,
+    getHomeMasters: builder.query<{ items: Master[], total: number }, { limit?: number }>({
+      query: ({ limit = 6 }) => `masters?limit=${limit}`,
     }),
     updateProfile: builder.mutation({
       query: (profileData) => ({
@@ -154,7 +156,7 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['Profile'],
     }),
-    getNotifications: builder.query({
+    getNotifications: builder.query<{ notifications: AppNotification[] }, void>({
       query: () => 'notifications',
       providesTags: ['Profile'],
       async onCacheEntryAdded(
@@ -179,8 +181,8 @@ export const authApi = createApi({
 
           // when data is received from the socket connection to the server,
           // update our query result with the received message
-          socket.on('new_notification', (notification) => {
-            updateCachedData((draft: any) => {
+          socket.on('new_notification', (notification: AppNotification) => {
+            updateCachedData((draft: { notifications?: AppNotification[] }) => {
               if (draft.notifications) {
                 draft.notifications.unshift(notification);
               }
@@ -203,7 +205,9 @@ export const authApi = createApi({
             // Invalidate 'Profile' to refetch brigades and other relevant profile info
             dispatch(authApi.util.invalidateTags(['Profile']));
           });
-        } catch {}
+        } catch { 
+          console.log('Something went wrong')
+        }
 
         // perform cleanup steps once the `cacheEntryRemoved` promise resolves
         await cacheEntryRemoved;
