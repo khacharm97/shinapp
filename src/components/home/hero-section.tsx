@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import homeBanner from '@/assets/home_bunner.png'
+import homeBanner from '@/assets/home_bunner.webp'
 
 export function HeroSection() {
   const { t } = useTranslation()

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { CheckCircle2, Loader2 } from 'lucide-react'
-import masterImg from '@/assets/master.png'
+import masterImg from '@/assets/master.webp'
 import { InfiniteSliderSection } from './infinite-slider-section'
 import { useGetHomeMastersQuery } from '@/store/api/authApi'
 import type { Master } from '@/types'

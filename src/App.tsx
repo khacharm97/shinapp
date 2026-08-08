@@ -1,20 +1,22 @@
+import { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { Loader2 } from 'lucide-react'
 import RootLayout from '@/layouts/root-layout'
-import HomePage from '@/pages/home'
-import ComingSoonPage from '@/pages/coming-soon'
-import CalculatorPage from '@/pages/calculator'
-import ProfilePage from '@/pages/profile'
-import MastersPage from '@/pages/masters'
-import MasterDetailsPage from '@/pages/master-details'
-import AboutPage from '@/pages/about'
-import ContactPage from '@/pages/contact'
-import SearchPage from '@/pages/search'
+import AuthLayout from '@/layouts/auth-layout'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
-import AuthLayout from '@/layouts/auth-layout'
-import LoginPage from '@/pages/login'
-import SignupPage from '@/pages/signup'
-import AuthCallbackPage from '@/pages/auth-callback'
+const HomePage = lazy(() => import('@/pages/home'))
+const ComingSoonPage = lazy(() => import('@/pages/coming-soon'))
+const CalculatorPage = lazy(() => import('@/pages/calculator'))
+const ProfilePage = lazy(() => import('@/pages/profile'))
+const MastersPage = lazy(() => import('@/pages/masters'))
+const MasterDetailsPage = lazy(() => import('@/pages/master-details'))
+const AboutPage = lazy(() => import('@/pages/about'))
+const ContactPage = lazy(() => import('@/pages/contact'))
+const SearchPage = lazy(() => import('@/pages/search'))
+const LoginPage = lazy(() => import('@/pages/login'))
+const SignupPage = lazy(() => import('@/pages/signup'))
+const AuthCallbackPage = lazy(() => import('@/pages/auth-callback'))
 
 const router = createBrowserRouter([
   {
@@ -84,7 +86,11 @@ const router = createBrowserRouter([
 ])
 
 function App() {
-  return <RouterProvider router={router} />
+  return (
+    <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="w-10 h-10 animate-spin text-brand" /></div>}>
+      <RouterProvider router={router} />
+    </Suspense>
+  )
 }
 
 export default App

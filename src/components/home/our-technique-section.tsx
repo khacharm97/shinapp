@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import techniqueImg from '@/assets/technique.png'
+import techniqueImg from '@/assets/technique.webp'
 import { InfiniteSliderSection } from './infinite-slider-section'
 
 const mockTechnique = [
