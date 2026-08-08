@@ -140,6 +140,7 @@ export function InfiniteSliderSection<T>({
           <div className="flex gap-2">
             <Button 
               size="icon" 
+              aria-label="Previous"
               onClick={() => scroll('left')}
               className="bg-brand text-white hover:bg-brand/90 w-10 h-10 rounded-lg"
             >
@@ -147,6 +148,7 @@ export function InfiniteSliderSection<T>({
             </Button>
             <Button 
               size="icon" 
+              aria-label="Next"
               onClick={() => scroll('right')}
               className="bg-brand text-white hover:bg-brand/90 w-10 h-10 rounded-lg"
             >

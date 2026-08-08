@@ -152,7 +152,7 @@ export default function LoginPageContent() {
           {t("auth_no_account", "Don't have an account?")}{" "}
         </span>
         <Link to="/signup" className="text-brand font-bold hover:underline transition-all">
-          {t("nav_signup", "Sign up.")}
+          {t("nav_signup", "Sign up")}
         </Link>
       </div>
     </div>
