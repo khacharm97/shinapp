@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/utils';
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { CheckCircle2, Loader2 } from 'lucide-react'
@@ -51,7 +52,7 @@ export function OurMastersSection() {
         >
           <div className="overflow-hidden rounded-md mb-2">
             <img 
-              src={master.avatarUrl ? `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${master.avatarUrl}` : masterImg} 
+              src={master.avatarUrl ? getImageUrl(master.avatarUrl) || "" : masterImg} 
               alt={master.name || "Master"} 
               className="w-full h-[240px] md:h-[300px] object-cover bg-gray-100 dark:bg-gray-800 transition-transform duration-300 group-hover:scale-105"
               onError={(e) => {

@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/utils';
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Loader2, Trash2, ImagePlus } from "lucide-react";
@@ -103,7 +104,7 @@ export function PortfoliosTab({ profileData }: PortfoliosTabProps) {
             <div key={port.id} className="border border-slate-200 dark:border-border rounded-xl overflow-hidden group">
               <div className="aspect-video bg-slate-100 relative">
                 {port.imageUrls?.[0] ? (
-                  <img src={`${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${port.imageUrls[0]}`} className="w-full h-full object-cover" alt={port.title} />
+                  <img src={getImageUrl(port.imageUrls[0]) || ""} className="w-full h-full object-cover" alt={port.title} />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-400">
                     <ImagePlus className="w-8 h-8" />

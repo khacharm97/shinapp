@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/utils';
 import { useForm, type Resolver, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -244,7 +245,7 @@ export default function ProfilePageContent() {
             <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center border-2 border-dashed border-slate-300 dark:border-zinc-600 group-hover:border-blue-500 transition-colors overflow-hidden">
               {(previewUrl || user.avatarUrl) ? (
                 <img
-                  src={previewUrl || `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${user.avatarUrl}`}
+                  src={previewUrl || getImageUrl(user.avatarUrl) || ""}
                   alt="Avatar"
                   className="w-full h-full object-cover"
                   onError={(e) => {
