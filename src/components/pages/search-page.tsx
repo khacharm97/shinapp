@@ -1,3 +1,4 @@
+import { SEO } from '@/components/seo'
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -98,6 +99,7 @@ export default function SearchPageContent() {
 
   return (
     <div className="flex-1 w-full bg-white dark:bg-background dark:text-foreground min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8 font-sans">
+      <SEO title={t('search')} />
       <div className="max-w-6xl mx-auto">
 
         {/* Top Search Bar */}

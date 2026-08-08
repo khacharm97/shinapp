@@ -7,11 +7,14 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
+import { SEO } from '@/components/seo'
+
 export default function AboutPageContent() {
   const { t } = useTranslation()
 
   return (
     <div className="w-full min-h-screen bg-background text-foreground animate-in fade-in duration-700">
+      <SEO title={t('about_title')} />
 
       {/* Hero Section */}
       <section className="relative px-4 py-20 md:py-32 overflow-hidden flex flex-col items-center">

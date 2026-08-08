@@ -6,11 +6,14 @@ import { OurMastersSection } from '@/components/home/our-masters-section'
 import { WhyTrustUsSection } from '@/components/home/why-trust-us-section'
 import { useAppSelector } from '@/store/hooks'
 
+import { SEO } from '@/components/seo'
+
 export default function HomePageContent() {
   const token = useAppSelector((state) => state.auth.token)
 
   return (
     <div className="flex flex-col items-center justify-start w-full flex-1">
+      <SEO title="Home" />
       <HeroSection />
       {!token && <WhoAreWeSection />}
       <FeaturedSkillsSection />

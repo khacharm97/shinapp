@@ -6,10 +6,14 @@ import './i18n' // import i18n configuration
 import App from './App.tsx'
 import { store } from './store'
 
+import { HelmetProvider } from 'react-helmet-async'
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </HelmetProvider>
   </StrictMode>,
 )

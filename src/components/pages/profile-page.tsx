@@ -4,6 +4,7 @@ import * as z from "zod";
 import { useTranslation } from "react-i18next";
 import { Plus, Camera, Loader2 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
+import { SEO } from '@/components/seo';
 import {
   useGetProfileQuery,
   useUpdateProfileMutation,
@@ -226,7 +227,8 @@ export default function ProfilePageContent() {
   }
 
   return (
-    <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-col items-center justify-start w-full bg-slate-50/50 min-h-[calc(100vh-14rem)] py-8 animate-in fade-in duration-500">
+      <SEO title={t('profile')} />
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-foreground">
