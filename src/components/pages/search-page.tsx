@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/utils';
 import { SEO } from '@/components/seo'
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -238,7 +239,7 @@ export default function SearchPageContent() {
                         <div className="relative">
                           <Link to={`/masters/${master.id}`} className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden block shadow-sm bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 hover:opacity-90 transition-opacity">
                             <img
-                              src={master.avatarUrl ? `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
+                              src={master.avatarUrl ? getImageUrl(master.avatarUrl) || "" : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                               alt={master.name || "Master"}
                               className="w-full h-full object-cover"
                               onError={(e) => {

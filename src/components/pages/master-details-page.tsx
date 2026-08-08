@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/utils';
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2, MapPin, Star, CheckCircle2, Phone, Mail, ArrowLeft, ImagePlus } from "lucide-react";
@@ -85,7 +86,7 @@ export default function MasterDetailsPageContent() {
                   <div>
                     <div className="w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-slate-200 shrink-0">
                       <img
-                        src={master.avatarUrl ? `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
+                        src={master.avatarUrl ? getImageUrl(master.avatarUrl) || "" : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                         alt={master.name || "Master"}
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -205,7 +206,7 @@ export default function MasterDetailsPageContent() {
                     <div key={port.id} className="border border-slate-200 rounded-xl overflow-hidden group bg-white shadow-sm hover:shadow-md transition-all">
                       <div className="aspect-video bg-slate-100 relative">
                         {port.imageUrls?.[0] ? (
-                          <img src={`${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${port.imageUrls[0]}`} className="w-full h-full object-cover" alt={port.title} />
+                          <img src={getImageUrl(port.imageUrls[0]) || ""} className="w-full h-full object-cover" alt={port.title} />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-slate-400">
                             <ImagePlus className="w-8 h-8" />
@@ -220,7 +221,7 @@ export default function MasterDetailsPageContent() {
                           <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
                             {port.imageUrls.slice(1).map((url: string, i: number) => (
                               <div key={i} className="w-12 h-12 rounded-md overflow-hidden bg-slate-100">
-                                <img src={`${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${url}`} className="w-full h-full object-cover" alt="" />
+                                <img src={getImageUrl(url) || ""} className="w-full h-full object-cover" alt="" />
                               </div>
                             ))}
                           </div>

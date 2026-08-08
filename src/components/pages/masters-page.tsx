@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/utils';
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -130,7 +131,7 @@ export default function MastersPageContent() {
                 <div className="w-full md:w-72 md:min-w-72 p-6 md:p-8 flex items-center justify-center bg-slate-50/50 relative shrink-0 border-b md:border-b-0 md:border-r border-slate-100">
                   <Link to={`/masters/${master.id}`} className={`w-48 h-48 md:w-52 md:h-52 rounded-full border-4 shadow-sm overflow-hidden bg-slate-200 block transition-transform hover:scale-[1.02] ${isCurrentUser ? 'border-brand/20' : 'border-white'}`}>
                     <img
-                      src={master.avatarUrl ? `${import.meta.env.VITE_BACK_URL || 'http://localhost:3000'}${master.avatarUrl}` : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
+                      src={master.avatarUrl ? getImageUrl(master.avatarUrl) || "" : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                       alt={master.name || "Master"}
                       className="w-full h-full object-cover"
                       onError={(e) => {
