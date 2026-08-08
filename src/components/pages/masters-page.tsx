@@ -104,7 +104,7 @@ export default function MastersPageContent() {
               placeholder={t('search_placeholder', 'Search...')}
               className="flex-1 min-w-0 h-10 bg-transparent border-none px-3 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:ring-0"
             />
-            <Button type="submit" className="h-10 px-4 rounded-lg bg-brand text-white hover:bg-brand/90 text-sm font-semibold shrink-0">
+            <Button type="submit" className="h-10 px-4 rounded-lg bg-brand text-white hover:bg-brand/90 text-[16px] font-bold shrink-0">
               {t('search_button', 'Search')}
             </Button>
           </form>

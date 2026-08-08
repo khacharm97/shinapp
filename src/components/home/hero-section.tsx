@@ -61,7 +61,7 @@ export function HeroSection() {
             placeholder={t('search_placeholder')}
             className="flex-1 min-w-0 h-10 md:h-12 bg-transparent border-none px-3 md:px-4 text-sm md:text-lg text-black placeholder:text-gray-400 focus:outline-none focus:ring-0"
           />
-          <Button type="submit" className="h-10 md:h-12 px-4 md:px-8 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 text-sm md:text-base font-semibold shrink-0">
+          <Button type="submit" className="h-10 md:h-12 px-4 md:px-8 rounded-lg bg-brand text-brand-foreground hover:bg-brand/90 text-base md:text-[18px] font-bold shrink-0">
             {t('search_button')}
           </Button>
         </form>

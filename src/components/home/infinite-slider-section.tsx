@@ -132,7 +132,7 @@ export function InfiniteSliderSection<T>({
         <div className="flex justify-between items-center mt-6">
           <Button 
             onClick={() => navigate(exploreLink)} 
-            className="bg-brand hover:bg-brand/90 text-white rounded-lg px-6"
+            className="bg-brand hover:bg-brand/90 text-white rounded-lg px-6 font-bold text-[16px]"
           >
             {exploreText}
           </Button>
