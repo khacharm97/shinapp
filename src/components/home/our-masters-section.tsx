@@ -55,6 +55,7 @@ export function OurMastersSection() {
               src={master.avatarUrl ? getImageUrl(master.avatarUrl) || "" : masterImg} 
               alt={master.name || "Master"} 
               className="w-full h-[240px] md:h-[300px] object-cover bg-gray-100 dark:bg-gray-800 transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
               onError={(e) => {
                 e.currentTarget.src = masterImg;
               }}

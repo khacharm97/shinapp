@@ -134,6 +134,7 @@ export default function MastersPageContent() {
                       src={master.avatarUrl ? getImageUrl(master.avatarUrl) || "" : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                       alt={master.name || "Master"}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                       onError={(e) => {
                         e.currentTarget.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600";
                       }}

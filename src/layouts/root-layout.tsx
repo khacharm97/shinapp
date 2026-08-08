@@ -116,7 +116,7 @@ export default function RootLayout() {
           <div className="container mx-auto flex h-16 items-center justify-between px-4">
             <div className="flex items-center gap-4 md:gap-10">
               <Link to="/" className="flex items-center">
-                <img src={logoMini} alt="ShinApp Logo" className="h-8 w-auto object-contain animate-in fade-in duration-500" />
+                <img src={logoMini} width={44} height={56} alt="ShinApp Logo" className="h-8 w-auto object-contain animate-in fade-in duration-500" />
               </Link>
               <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
                 <NavLink to="/" end className={getDesktopNavLinkClass}>{t("nav_home")}</NavLink>
@@ -176,7 +176,7 @@ export default function RootLayout() {
                   <SheetContent side="right" className="flex flex-col p-6 sm:max-w-xs">
                     <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                     <div className="flex items-center gap-3 mb-8 mt-2 border-b pb-6">
-                      <img src={logoMini} alt="ShinApp Logo" className="h-8 w-auto object-contain" />
+                      <img src={logoMini} width={44} height={56} alt="ShinApp Logo" className="h-8 w-auto object-contain" />
                       <span className="font-bold text-xl tracking-tight">ShinApp</span>
                     </div>
                     <nav className="flex flex-col gap-6 text-base font-medium flex-1 overflow-y-auto">
@@ -236,7 +236,7 @@ export default function RootLayout() {
           <div className="container mx-auto px-4">
             <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start sm:justify-between">
               <Link to="/" className="flex items-center opacity-70 hover:opacity-100 transition-opacity shrink-0">
-                <img src={logo} alt="ShinApp Logo" className="h-6 w-auto object-contain" />
+                <img src={logo} width={125} height={42} alt="ShinApp Logo" className="h-6 w-auto object-contain" />
               </Link>
 
               <div className="text-center sm:text-start space-y-3">
