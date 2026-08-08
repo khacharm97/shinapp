@@ -235,6 +235,36 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['Profile'],
     }),
+    getMyAnnouncements: builder.query({
+      query: () => 'profile/announcements',
+      providesTags: ['Profile'],
+    }),
+    createMyAnnouncement: builder.mutation({
+      query: (data) => ({
+        url: 'profile/announcements',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    updateMyAnnouncement: builder.mutation({
+      query: (data: { id: string; [key: string]: any }) => {
+        const { id, ...body } = data;
+        return {
+          url: `profile/announcements/${id}`,
+          method: 'PUT',
+          body,
+        };
+      },
+      invalidatesTags: ['Profile'],
+    }),
+    deleteMyAnnouncement: builder.mutation({
+      query: (id: string) => ({
+        url: `profile/announcements/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Profile'],
+    }),
   }),
 });
 
@@ -260,4 +290,8 @@ export const {
   useMarkNotificationReadMutation,
   useAcceptBrigadeInviteMutation,
   useRejectBrigadeInviteMutation,
+  useGetMyAnnouncementsQuery,
+  useCreateMyAnnouncementMutation,
+  useUpdateMyAnnouncementMutation,
+  useDeleteMyAnnouncementMutation,
 } = authApi;

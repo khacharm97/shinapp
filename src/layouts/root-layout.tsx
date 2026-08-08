@@ -149,6 +149,14 @@ export default function RootLayout() {
                           <span>{user?.name || t("nav_profile", "Profile")}</span>
                         </Link>
                       </DropdownMenuItem>
+                      {isCompanyUser && isVerified && (
+                        <DropdownMenuItem asChild>
+                          <Link to="/my-announcements" className="cursor-pointer flex items-center">
+                            <span className="me-2 h-4 w-4">📢</span>
+                            <span>{t("nav_my_announcements", "My Announcements")}</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600">
                         <LogOut className="me-2 h-4 w-4" />
                         <span>{t("nav_logout", "Log out")}</span>
@@ -196,6 +204,11 @@ export default function RootLayout() {
                           <Button variant="outline" size="sm" asChild className="w-full justify-start">
                             <Link to="/profile"><User className="me-2 h-4 w-4" /> {user?.name || t("nav_profile", "Profile")}</Link>
                           </Button>
+                          {isCompanyUser && isVerified && (
+                            <Button variant="outline" size="sm" asChild className="w-full justify-start">
+                              <Link to="/my-announcements"><span className="me-2 h-4 w-4">📢</span> {t("nav_my_announcements", "My Announcements")}</Link>
+                            </Button>
+                          )}
                           <Button variant="destructive" size="sm" onClick={handleLogout} className="w-full justify-start">
                             <LogOut className="me-2 h-4 w-4" /> {t("nav_logout", "Log out")}
                           </Button>
