@@ -29,7 +29,13 @@ export const publicApi = createApi({
         body: payload,
       }),
     }),
+    getAnnouncements: builder.query<{ items: any[], total: number, page: number, totalPages: number }, { page?: number, limit?: number }>({
+      query: ({ page = 1, limit = 10 }) => ({
+        url: `/announcements?page=${page}&limit=${limit}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useInsertContactRequestMutation, useSendEstimateEmailMutation, useSendContactEmailMutation } = publicApi;
+export const { useInsertContactRequestMutation, useSendEstimateEmailMutation, useSendContactEmailMutation, useGetAnnouncementsQuery } = publicApi;

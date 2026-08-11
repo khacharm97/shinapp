@@ -121,6 +121,7 @@ export default function RootLayout() {
               <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
                 <NavLink to="/" end className={getDesktopNavLinkClass}>{t("nav_home")}</NavLink>
                 <NavLink to="/search" className={getDesktopNavLinkClass}>{t("nav_masters")}</NavLink>
+                <NavLink to="/announcements" className={getDesktopNavLinkClass}>{t("nav_announcements", "Announcements")}</NavLink>
                 {/* <NavLink to="/technique" className={getDesktopNavLinkClass}>{t("nav_technique")}</NavLink> */}
                 <NavLink to="/calculator" className={getDesktopNavLinkClass}>{t("nav_calculator")}</NavLink>
                 <NavLink to="/about" className={getDesktopNavLinkClass}>{t("nav_about_us")}</NavLink>
@@ -190,6 +191,7 @@ export default function RootLayout() {
                     <nav className="flex flex-col gap-6 text-base font-medium flex-1 overflow-y-auto">
                       <NavLink to="/" end className={getMobileNavLinkClass}>{t("nav_home")}</NavLink>
                       <NavLink to="/search" className={getMobileNavLinkClass}>{t("nav_masters")}</NavLink>
+                      <NavLink to="/announcements" className={getMobileNavLinkClass}>{t("nav_announcements", "Announcements")}</NavLink>
                       {/* <NavLink to="/technique" className={getMobileNavLinkClass}>{t("nav_technique")}</NavLink> */}
                       <NavLink to="/calculator" className={getMobileNavLinkClass}>{t("nav_calculator")}</NavLink>
                       <NavLink to="/about" className={getMobileNavLinkClass}>{t("nav_about_us")}</NavLink>

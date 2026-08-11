@@ -18,6 +18,7 @@ const SearchPage = lazy(() => import('@/pages/search'))
 const LoginPage = lazy(() => import('@/pages/login'))
 const SignupPage = lazy(() => import('@/pages/signup'))
 const AuthCallbackPage = lazy(() => import('@/pages/auth-callback'))
+const AnnouncementsPage = lazy(() => import('@/pages/announcements'))
 
 const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       {
         path: "masters/:id",
         element: <MasterDetailsPage />,
+      },
+      {
+        path: "announcements",
+        element: <AnnouncementsPage />,
       },
       {
         path: "search",

@@ -352,5 +352,18 @@
   "master_details_about": "Short info",
   "seo_default_title": "ShinApp | Shin & Construction Masters in Armenia",
   "seo_default_desc": "Find the best construction (shin) masters, builders, and specialists in Armenia for your next project.",
-  "seo_keywords": "shin, shinapp, շին, շինարարություն, masters, armenia, construction, builders, վերանորոգում"
+  "seo_keywords": "shin, shinapp, շին, շինարարություն, masters, armenia, construction, builders, վերանորոգում",
+  "nav_announcements": "Announcements",
+  "announcements_meta_desc": "Browse the latest construction and renovation announcements in Armenia.",
+  "announcements_title": "Latest Announcements",
+  "announcements_subtitle": "Discover the newest construction projects, job openings, and services from top companies.",
+  "loading_announcements": "Loading announcements...",
+  "error_loading": "Oops! Something went wrong",
+  "error_loading_announcements": "We couldn't load the announcements at this time. Please try again later.",
+  "try_again": "Try Again",
+  "no_announcements_title": "No Announcements Yet",
+  "no_announcements_desc": "There are currently no active announcements. Check back later for new updates!",
+  "urgent": "URGENT",
+  "company_email": "Email:",
+  "contact": "Contact"
 }
