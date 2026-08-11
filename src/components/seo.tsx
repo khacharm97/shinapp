@@ -13,18 +13,19 @@ export function SEO({
   description, 
   type = 'website' 
 }: SEOProps) {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const location = useLocation()
   
   const siteUrl = 'https://www.shinapp.am'
   const currentUrl = `${siteUrl}${location.pathname}`
   
-  const defaultTitle = 'ShinApp - Find the best masters in Armenia'
-  const defaultDescription = 'Research and brainstorm. Think about your background, education, awards, skills and other attributes that you developed or earned throughout your career or education.'
+  const defaultTitle = t('seo_default_title', 'ShinApp | Shin & Construction Masters in Armenia');
+  const defaultDescription = t('seo_default_desc', 'Find the best construction (shin) masters, builders, and specialists in Armenia. Շինարարություն և վերանորոգում ShinApp-ի հետ:');
 
   const seo = {
     title: title ? `${title} | ShinApp` : defaultTitle,
     description: description || defaultDescription,
+    keywords: t('seo_keywords', 'shin, shinapp, շին, շինարարություն, masters, armenia, construction, builders, վերանորոգում'),
     url: currentUrl,
   }
 
@@ -33,6 +34,7 @@ export function SEO({
       <html lang={i18n.language || 'hy'} />
       <title>{seo.title}</title>
       <meta name="description" content={seo.description} />
+      <meta name="keywords" content={seo.keywords} />
       <link rel="canonical" href={seo.url} />
       
       {/* Open Graph */}

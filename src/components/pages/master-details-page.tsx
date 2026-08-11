@@ -57,9 +57,9 @@ export default function MasterDetailsPageContent() {
     return (
       <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex flex-col items-center justify-center gap-4">
         <SEO title={t("error_not_found", "Master not found")} />
-        <p className="text-slate-500">Master not found or an error occurred.</p>
+        <p className="text-slate-500">{t("error_master_not_found_desc", "Master not found or an error occurred.")}</p>
         <Button asChild variant="outline">
-          <Link to="/masters">Back to Masters</Link>
+          <Link to="/masters">{t("master_details_back", "Back to Masters")}</Link>
         </Button>
       </div>
     );
@@ -72,7 +72,7 @@ export default function MasterDetailsPageContent() {
           <Button asChild variant="ghost" className="mb-4 text-slate-500 hover:text-slate-900 -ms-4">
             <Link to="/masters">
               <ArrowLeft className="w-4 h-4 me-2" />
-              Back to Masters
+              {t("master_details_back", "Back to Masters")}
             </Link>
           </Button>
         </div>
@@ -97,7 +97,7 @@ export default function MasterDetailsPageContent() {
                   </div>
                   <div className="flex flex-col items-strat justify-start md:justify-start gap-4 text-sm border-t border-slate-200/60">
                     <h1 className="text-xl font-bold text-slate-900 mb-2">
-                      {master.name || "Unnamed Master"}
+                      {master.name || t("search_unnamed_master", "Unnamed Master")}
                       {master.isVerified && (
                         <span className="inline-block ms-2 text-blue-500">
                           {/* Assuming there is a verified icon somewhere, just omitting for now as it's not strictly requested, but removing the skill is. */}
@@ -113,12 +113,12 @@ export default function MasterDetailsPageContent() {
                     <div className="flex gap-4">
                       <div className="flex items-center text-orange-500 font-medium bg-orange-50 px-0 py-1 rounded-md">
                         <Star className="w-4 h-4 me-1 fill-current" />
-                        Top Rated
+                        {t("search_top_rated", "Top Rated")}
                       </div>
 
                       <div className="flex items-center text-green-600 font-medium bg-green-50 px-2 py-1 rounded-md">
                         <CheckCircle2 className="w-4 h-4 me-1" />
-                        Available now
+                        {t("search_available_now", "Available now")}
                       </div>
                     </div>
                   </div>
@@ -127,11 +127,11 @@ export default function MasterDetailsPageContent() {
                 <div className="flex flex-col gap-3 shrink-0">
                   <Button onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
                     <Phone className="w-4 h-4 me-2" />
-                    Call Manager
+                    {t("master_details_call_manager", "Call Manager")}
                   </Button>
                   <Button variant="outline" onClick={() => window.location.href = `mailto:${MANAGER_EMAIL}`} className="w-full md:w-auto">
                     <Mail className="w-4 h-4 me-2" />
-                    Email Manager
+                    {t("master_details_email_manager", "Email Manager")}
                   </Button>
                 </div>
               </div>
@@ -155,7 +155,7 @@ export default function MasterDetailsPageContent() {
             {/* About */}
             <section>
               <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                {t("profile_about", "About Me")}
+                {t("master_details_about", "Short info")}
               </h2>
               <div className="prose prose-slate max-w-none">
                 <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">

@@ -142,7 +142,7 @@ export default function RootLayout() {
                         </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuContent className="w-auto min-w-[16rem]" align="end" forceMount>
                       <DropdownMenuItem asChild>
                         <Link to="/profile" className="cursor-pointer flex items-center">
                           <User className="me-2 h-4 w-4" />
