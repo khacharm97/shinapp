@@ -1,7 +1,7 @@
 import { SEO } from '@/components/seo'
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import { Eye, EyeOff, Briefcase, UserCheck, X, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,6 +17,12 @@ export default function SignupPageContent() {
   const dispatch = useDispatch()
   const [showPassword, setShowPassword] = useState(false)
   const [selectedRole, setSelectedRole] = useState<'master' | 'customer' | 'company' | null>(null)
+  const location = useLocation()
+
+  // Reset role selection if user clicks the signup link in navbar while already on this page
+  useEffect(() => {
+    setSelectedRole(null)
+  }, [location.key])
   
   // RTK Query hook
   const [register, { isLoading, isError, error }] = useRegisterMutation()
