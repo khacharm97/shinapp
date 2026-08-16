@@ -248,12 +248,11 @@ export const authApi = createApi({
       invalidatesTags: ['Profile'],
     }),
     updateMyAnnouncement: builder.mutation({
-      query: (data: { id: string; [key: string]: any }) => {
-        const { id, ...body } = data;
+      query: (payload: { id: string; body: any | FormData }) => {
         return {
-          url: `profile/announcements/${id}`,
+          url: `profile/announcements/${payload.id}`,
           method: 'PUT',
-          body,
+          body: payload.body,
         };
       },
       invalidatesTags: ['Profile'],

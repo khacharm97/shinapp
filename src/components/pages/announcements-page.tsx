@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Loader2, CalendarIcon, AlertCircle, ChevronLeft, ChevronRight, MoreHorizontal, Briefcase } from "lucide-react";
+import { Loader2, CalendarIcon, AlertCircle, ChevronLeft, ChevronRight, MoreHorizontal, Briefcase, ImageIcon } from "lucide-react";
 import { useGetAnnouncementsQuery } from "@/store/api/publicApi";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/seo";
@@ -85,14 +85,34 @@ export default function AnnouncementsPageContent() {
                   style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'both' }}
                 >
                   {isUrgent && (
-                    <div className="absolute top-0 right-0 overflow-hidden w-24 h-24 z-10">
+                    <div className="absolute top-0 right-0 overflow-hidden w-24 h-24 z-20 pointer-events-none">
                       <div className="absolute transform rotate-45 bg-red-500 text-white text-[10px] font-bold py-1 right-[-35px] top-[32px] w-[170px] text-center shadow-md animate-pulse">
                         {t("urgent", "URGENT")}
                       </div>
                     </div>
                   )}
 
-                  <div className="p-8 flex-1 flex flex-col">
+                  {/* Announcement Banner Image */}
+                  {announcement.imageUrls && announcement.imageUrls.length > 0 && (
+                    <div className="w-full h-48 overflow-hidden relative z-0">
+                      <img 
+                        src={getImageUrl(announcement.imageUrls[0])} 
+                        alt={announcement.title} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      {/* Gradient overlay for better text contrast if we ever put text on it, or just to make it look premium */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
+                      
+                      {announcement.imageUrls.length > 1 && (
+                        <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm shadow-sm flex items-center gap-1">
+                          <ImageIcon className="w-3 h-3" />
+                          <span>{announcement.imageUrls.length}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="p-8 flex-1 flex flex-col relative z-10 bg-white">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="w-14 h-14 rounded-2xl overflow-hidden bg-slate-100 shadow-inner flex-shrink-0 border border-slate-200">
                         {announcement.company?.avatarUrl ? (

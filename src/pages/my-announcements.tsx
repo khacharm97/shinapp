@@ -6,7 +6,7 @@ import {
   useUpdateMyAnnouncementMutation,
   useDeleteMyAnnouncementMutation,
 } from "@/store/api/authApi";
-import { PlusIcon, PencilIcon, TrashIcon, CalendarIcon, Loader2 } from "lucide-react";
+import { PlusIcon, PencilIcon, TrashIcon, CalendarIcon, Loader2, ImageIcon, X, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,6 +38,12 @@ export default function MyAnnouncements() {
 
   const [open, setOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Image states
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
   const [formData, setFormData] = useState({
     id: null as string | null,
     sphere: "",
@@ -60,7 +66,11 @@ export default function MyAnnouncements() {
       startDate: "",
       endDate: "",
     });
+    });
     setIsEditing(false);
+    setSelectedFiles([]);
+    setExistingImages([]);
+    setPreviewUrls([]);
   };
 
   const handleAddClick = () => {
@@ -79,7 +89,11 @@ export default function MyAnnouncements() {
       startDate: new Date(announcement.startDate).toISOString().split('T')[0],
       endDate: new Date(announcement.endDate).toISOString().split('T')[0],
     });
+    });
     setIsEditing(true);
+    setExistingImages(announcement.imageUrls || []);
+    setSelectedFiles([]);
+    setPreviewUrls([]);
     setOpen(true);
   };
 
@@ -91,29 +105,59 @@ export default function MyAnnouncements() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const data = new FormData();
+    data.append("sphere", formData.sphere);
+    data.append("title", formData.title);
+    data.append("description", formData.description);
+    data.append("urgent", formData.urgent.toString());
+    data.append("status", formData.status);
+    data.append("startDate", formData.startDate);
+    data.append("endDate", formData.endDate);
+    
+    selectedFiles.forEach((file) => {
+      data.append("images", file);
+    });
+    
+    existingImages.forEach((img) => {
+      data.append("existingImages", img);
+    });
+
     if (isEditing) {
       await updateAnnouncement({
         id: formData.id!,
-        sphere: formData.sphere,
-        title: formData.title,
-        description: formData.description,
-        urgent: formData.urgent,
-        status: formData.status,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
+        body: data,
       });
     } else {
-      await createAnnouncement({
-        sphere: formData.sphere,
-        title: formData.title,
-        description: formData.description,
-        urgent: formData.urgent,
-        status: formData.status,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
-      });
+      await createAnnouncement(data);
     }
     setOpen(false);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      const totalImages = existingImages.length + selectedFiles.length + filesArray.length;
+      
+      if (totalImages > 3) {
+        alert(t("my_announcements_max_images", "You can only upload up to 3 images."));
+        return;
+      }
+      
+      setSelectedFiles(prev => [...prev, ...filesArray]);
+      
+      const newPreviewUrls = filesArray.map(file => URL.createObjectURL(file));
+      setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+    }
+  };
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeSelectedFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   if (isLoading) return (
@@ -270,6 +314,59 @@ export default function MyAnnouncements() {
                     className="bg-muted/30 focus-visible:bg-background transition-colors border-border/50 min-h-[100px] resize-none"
                     required
                   />
+                </div>
+              </div>
+              
+              {/* Image Upload Section */}
+              <div className="space-y-4 bg-muted/10 p-4 rounded-xl border border-border/40">
+                <Label className="text-sm font-semibold flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-brand" />
+                  {t("my_announcements_images_label", "Images (Max 3)")}
+                </Label>
+                
+                <div className="flex flex-wrap gap-4">
+                  {/* Existing Images */}
+                  {existingImages.map((url, i) => (
+                    <div key={`existing-${i}`} className="relative group w-24 h-24 rounded-lg overflow-hidden border">
+                      <img src={url} alt={`Existing ${i}`} className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeExistingImage(i)}
+                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
+                      >
+                        <X className="w-6 h-6" />
+                      </button>
+                    </div>
+                  ))}
+                  
+                  {/* Selected New Images */}
+                  {previewUrls.map((url, i) => (
+                    <div key={`new-${i}`} className="relative group w-24 h-24 rounded-lg overflow-hidden border">
+                      <img src={url} alt={`New ${i}`} className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeSelectedFile(i)}
+                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
+                      >
+                        <X className="w-6 h-6" />
+                      </button>
+                    </div>
+                  ))}
+                  
+                  {/* Upload Button */}
+                  {(existingImages.length + selectedFiles.length) < 3 && (
+                    <label className="w-24 h-24 flex flex-col items-center justify-center border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors text-muted-foreground hover:text-brand">
+                      <UploadCloud className="w-6 h-6 mb-1" />
+                      <span className="text-xs font-medium">{t("upload", "Upload")}</span>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        multiple 
+                        className="hidden" 
+                        onChange={handleFileChange}
+                      />
+                    </label>
+                  )}
                 </div>
               </div>
               
