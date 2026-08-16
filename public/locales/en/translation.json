@@ -365,5 +365,7 @@
   "no_announcements_desc": "There are currently no active announcements. Check back later for new updates!",
   "urgent": "URGENT",
   "company_email": "Email:",
-  "contact": "Contact"
+  "contact": "Contact",
+  "wrong_email_or_password": "Invalid email/phone or password.",
+  "user_already_exists": "User already exists."
 }

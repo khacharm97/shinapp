@@ -73,7 +73,7 @@ export default function SignupPageContent() {
     <>
       <SEO title={t('signup', 'Sign Up')} />
       <div className="flex flex-col w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="mb-10">
+        <div className="mb-8">
           <h1 className="text-3xl font-bold text-brand mb-2">
             {t("welcome", "Welcome to ShinApp")}
           </h1>
@@ -87,17 +87,17 @@ export default function SignupPageContent() {
           </p>
         </div>
 
+        <div 
+          className={`grid transition-all duration-300 ease-in-out ${isError || validationError ? 'grid-rows-[1fr] opacity-100 mb-6' : 'grid-rows-[0fr] opacity-0 mb-0'}`}
+        >
+          <div className="overflow-hidden">
+            <div className="p-3 rounded-md text-sm font-medium bg-red-50 dark:bg-red-500/10 text-red-500 dark:text-red-400 flex items-center border border-red-200 dark:border-red-500/20">
+              {validationError || (isError && t((error as { data?: { message?: string } })?.data?.message || "auth_error", "An error occurred during registration."))}
+            </div>
+          </div>
+        </div>
+
         <form className="flex flex-col gap-5" onSubmit={handleSignupSubmit}>
-          {isError && (
-            <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm font-medium">
-              {t((error as { data?: { message?: string } })?.data?.message || "auth_error", "An error occurred during registration.")}
-            </div>
-          )}
-          {validationError && (
-            <div className="p-3 rounded-md bg-red-50 text-red-500 text-sm font-medium">
-              {validationError}
-            </div>
-          )}
           <div className="space-y-2">
             <Label htmlFor="name" className="text-foreground/80 font-medium">
               {selectedRole === 'company' 

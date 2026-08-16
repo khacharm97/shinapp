@@ -352,5 +352,7 @@
   "master_details_about": "اطلاعات کوتاه",
   "seo_default_title": "ShinApp | اساتید ساخت و ساز و تعمیر در ارمنستان",
   "seo_default_desc": "بهترین اساتید ساخت و ساز (shin) و متخصصان را در ارمنستان برای پروژه بعدی خود پیدا کنید.",
-  "seo_keywords": "shin, shinapp, շին, ساخت و ساز, اساتید, ارمنستان, تعمیر, سازندگان"
+  "seo_keywords": "shin, shinapp, շին, ساخت و ساز, اساتید, ارمنستان, تعمیر, سازندگان",
+  "wrong_email_or_password": "ایمیل/تلفن یا رمز عبور نامعتبر است.",
+  "user_already_exists": "کاربر از قبل وجود دارد."
 }
