@@ -216,7 +216,7 @@ export default function MasterDetailsPageContent() {
                       <div className="p-4">
                         <h3 className="font-semibold text-slate-900 line-clamp-1">{port.title}</h3>
                         <p className="text-sm text-slate-500 mt-1 line-clamp-2">{port.description}</p>
-                        
+
                         {port.imageUrls && port.imageUrls.length > 1 && (
                           <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
                             {port.imageUrls.slice(1).map((url: string, i: number) => (

@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Loader2, Users, X, Pencil, Trash2 } from "lucide-react";
 import {
   useGetBrigadesQuery,
   useCreateBrigadeMutation,
   useUpdateBrigadeMutation,
-  useDeleteBrigadeMutation
+  useDeleteBrigadeMutation,
+  useGlobalSearchQuery
 } from "@/store/api/authApi";
 import type { User, Brigade, BrigadeMember } from "@/types";
+import { getImageUrl } from "@/utils";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +35,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export function BrigadesTab({ profileData }: { profileData: User }) {
+export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: User, className?: string }) {
   const { t } = useTranslation();
   const { data: brigades, isLoading: isLoadingBrigades } = useGetBrigadesQuery(undefined);
   const [createBrigade, { isLoading: isCreating }] = useCreateBrigadeMutation();
@@ -42,15 +44,26 @@ export function BrigadesTab({ profileData }: { profileData: User }) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editBrigadeId, setEditBrigadeId] = useState<string | null>(null);
-  
+
   const [name, setName] = useState("");
   const [inviteInput, setInviteInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [invites, setInvites] = useState<string[]>([]); // New invites
-  
+
   const [existingMembers, setExistingMembers] = useState<BrigadeMember[]>([]); // Members already in brigade
   const [removeMemberIds, setRemoveMemberIds] = useState<string[]>([]); // IDs of existing members to remove
-  
+
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(inviteInput), 300);
+    return () => clearTimeout(timer);
+  }, [inviteInput]);
+
+  const { data: searchResults } = useGlobalSearchQuery(
+    { search: debouncedSearch, limit: 5 },
+    { skip: debouncedSearch.length < 2 }
+  );
 
   const resetForm = () => {
     setErrorMsg(null);
@@ -101,7 +114,7 @@ export function BrigadesTab({ profileData }: { profileData: User }) {
       setErrorMsg(t("brigade_name_required", "Brigade name is required"));
       return;
     }
-    
+
     try {
       if (editBrigadeId) {
         await updateBrigade({ id: editBrigadeId, name, invites, removeMemberIds }).unwrap();
@@ -138,22 +151,22 @@ export function BrigadesTab({ profileData }: { profileData: User }) {
   const isLoading = isCreating || isUpdating;
 
   return (
-    <div className="mt-8 bg-white dark:bg-card p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-border">
+    <div className={`w-full bg-white dark:bg-card p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-border ${className}`}>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-slate-900 dark:text-foreground">
           {t("profile_brigades", "My Brigades")}
         </h2>
-        
+
         <Dialog open={isOpen} onOpenChange={(open) => {
           setIsOpen(open);
           if (!open) resetForm();
         }}>
           <Button variant="outline" onClick={handleOpenCreate}>
-            <Plus className="w-4 h-4 me-2" /> 
+            <Plus className="w-4 h-4 me-2" />
             {t("profile_add_brigade", "Create Brigade")}
           </Button>
 
-          <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editBrigadeId ? t("brigade_edit_title", "Edit Brigade") : t("brigade_create_title", "Create a New Brigade")}
@@ -165,10 +178,10 @@ export function BrigadesTab({ profileData }: { profileData: User }) {
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label>{t("brigade_name", "Brigade Name")}</Label>
-                <Input 
-                  placeholder={t("brigade_name_placeholder", "e.g. Elite Plumbers")} 
-                  value={name} 
-                  onChange={(e) => setName(e.target.value)} 
+                <Input
+                  placeholder={t("brigade_name_placeholder", "e.g. Elite Plumbers")}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
 
@@ -181,7 +194,7 @@ export function BrigadesTab({ profileData }: { profileData: User }) {
                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                           {member.user?.name || member.user?.email || member.user?.phone}
                         </span>
-                        <button 
+                        <button
                           onClick={() => handleRemoveExistingMember(member.id)}
                           className="text-slate-400 hover:text-red-500 rounded-full focus:outline-none p-1"
                         >
@@ -194,30 +207,60 @@ export function BrigadesTab({ profileData }: { profileData: User }) {
               )}
 
               <div className="space-y-2">
-                <Label>{t("brigade_invites", "Invite New Masters (Email or Phone)")}</Label>
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder="user@example.com or +374..." 
-                    value={inviteInput}
-                    onChange={(e) => setInviteInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddInvite();
-                      }
-                    }}
-                  />
+                <Label>{t("brigade_invites", "Invite New Masters (Name, Email or Phone)")}</Label>
+                <div className="flex gap-2 relative">
+                  <div className="relative flex-1">
+                    <Input
+                      placeholder={t("brigade_invite_placeholder", "Name, user@example.com, or +374...")}
+                      value={inviteInput}
+                      onChange={(e) => setInviteInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddInvite();
+                        }
+                      }}
+                    />
+                    {inviteInput.length >= 2 && searchResults?.items && searchResults.items.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md shadow-lg z-50 max-h-48 overflow-y-auto">
+                        {searchResults.items.map((user: any) => (
+                          <div
+                            key={user.id}
+                            className="p-2 hover:bg-slate-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center gap-2 border-b border-slate-100 dark:border-zinc-800 last:border-0"
+                            onClick={() => {
+                              const identifier = user.email || user.phone || user.name;
+                              if (identifier && !invites.includes(identifier)) {
+                                setInvites([...invites, identifier]);
+                                setInviteInput("");
+                                setErrorMsg("");
+                              }
+                            }}
+                          >
+                            <div className="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0 overflow-hidden">
+                              {user.avatarUrl ? (
+                                <img src={getImageUrl(user.avatarUrl)} alt="" className="w-full h-full object-cover" />
+                              ) : null}
+                            </div>
+                            <div className="flex flex-col overflow-hidden">
+                              <span className="text-sm font-medium truncate">{user.name || 'Unnamed'}</span>
+                              <span className="text-xs text-slate-500 truncate">{user.email || user.phone}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <Button type="button" variant="secondary" onClick={handleAddInvite}>
                     {t("add", "Add")}
                   </Button>
                 </div>
-                
+
                 {invites.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3 p-3 bg-slate-50 dark:bg-zinc-900 rounded-md border border-slate-100 dark:border-zinc-800">
                     {invites.map((inv, idx) => (
                       <Badge key={idx} variant="secondary" className="px-2 py-1 text-xs font-normal flex items-center gap-1">
                         {inv}
-                        <button 
+                        <button
                           onClick={() => handleRemoveNewInvite(idx)}
                           className="text-slate-400 hover:text-red-500 rounded-full focus:outline-none"
                         >
@@ -264,12 +307,12 @@ export function BrigadesTab({ profileData }: { profileData: User }) {
                     <p className="text-xs text-slate-500">{t("brigade_owner", "Owner")}: {profileData?.name || t("you", "You")}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-blue-600" onClick={() => handleOpenEdit(brigade)}>
                     <Pencil className="w-4 h-4" />
                   </Button>
-                  
+
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-red-600" disabled={isDeleting}>
@@ -293,10 +336,10 @@ export function BrigadesTab({ profileData }: { profileData: User }) {
                   </AlertDialog>
                 </div>
               </div>
-              
+
               <div className="space-y-3 mt-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wider">{t("brigade_members", "Members")} ({brigade.members?.length || 0})</h4>
-                
+
                 {brigade.members && brigade.members.length > 0 ? (
                   <div className="space-y-2">
                     {brigade.members.map((member: BrigadeMember) => (

@@ -4,10 +4,20 @@ import { useTranslation } from "react-i18next";
 import { Loader2, MapPin, Star, CheckCircle2, ImagePlus, Settings } from "lucide-react";
 import { useGetProfileQuery, useGetSkillsQuery } from "@/store/api/authApi";
 import { armeniaRegions } from "@/lib/armenia-regions";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { LocalizedString, Skill, Portfolio } from "@/types";
 import { getLocalizedName } from "@/utils";
 import { SEO } from '@/components/seo';
+import { BrigadesTab } from "@/components/brigades/BrigadesTab";
+import { hasBrigadesAccess } from "@/utils/roles";
+import { Pencil, Check, X as XIcon, Users } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { useUpdateProfileMutation } from "@/store/api/authApi";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 export default function ProfilePageContent() {
   const { t, i18n } = useTranslation();
@@ -15,6 +25,49 @@ export default function ProfilePageContent() {
 
   const { data: profile, isLoading, isError } = useGetProfileQuery(undefined);
   const { data: skillsData } = useGetSkillsQuery(undefined);
+  const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
+
+  const [editAbout, setEditAbout] = useState(false);
+  const [aboutValue, setAboutValue] = useState("");
+
+  const [editSkills, setEditSkills] = useState(false);
+  const [skillsValue, setSkillsValue] = useState<string[]>([]);
+
+  const [editPricing, setEditPricing] = useState(false);
+  const [pricingFormat, setPricingFormat] = useState("");
+  const [priceValue, setPriceValue] = useState("");
+
+  const handleSaveAbout = async () => {
+    try {
+      await updateProfile({ about: aboutValue }).unwrap();
+      setEditAbout(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleSaveSkills = async () => {
+    try {
+      await updateProfile({ skills: skillsValue }).unwrap();
+      setEditSkills(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleSavePricing = async () => {
+    try {
+      await updateProfile({ pricingFormat, priceValue }).unwrap();
+      setEditPricing(false);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const skillOptions = skillsData?.map((s) => ({
+    label: getLocalizedName(s, i18n.language),
+    value: s.key,
+  })) || [];
 
   const getLocalizedLocation = (regionId?: string | null, cityId?: string | null) => {
     if (!regionId) return "";
@@ -108,7 +161,20 @@ export default function ProfilePageContent() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 shrink-0">
+                <div className="flex flex-row gap-3 shrink-0">
+                  {hasBrigadesAccess(profile.roles) && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="shadow-sm w-full md:w-auto border-brand text-brand hover:bg-brand/5 hover:text-brand">
+                          <Users className="w-4 h-4 me-2" />
+                          {t("profile_brigades", "My Brigades")}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-6xl w-full max-h-[90vh] overflow-y-auto p-0 border-none bg-transparent shadow-none">
+                        <BrigadesTab profileData={profile} className="mt-0" />
+                      </DialogContent>
+                    </Dialog>
+                  )}
                   <Button onClick={() => navigate('/profile/settings')} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
                     <Settings className="w-4 h-4 me-2" />
                     {t("nav_profile_settings", "Profile Settings")}
@@ -134,48 +200,153 @@ export default function ProfilePageContent() {
 
             {/* About */}
             <section>
-              <h2 className="text-3xl font-bold text-slate-900 mb-6">
-                {t("master_details_about", "Short info")}
-              </h2>
-              <div className="prose prose-slate max-w-none">
-                <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
-                  {profile.userInfo?.about || t("profile_no_about", "You haven't provided a detailed description yet.")}
-                </p>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-bold text-slate-900">
+                  {t("master_details_about", "Short info")}
+                </h2>
+                {!editAbout && (
+                  <Button variant="ghost" size="icon" onClick={() => {
+                    setAboutValue(profile.userInfo?.about || "");
+                    setEditAbout(true);
+                  }}>
+                    <Pencil className="w-4 h-4 text-brand" />
+                  </Button>
+                )}
               </div>
+              {editAbout ? (
+                <div className="space-y-4">
+                  <Textarea
+                    value={aboutValue}
+                    onChange={(e) => setAboutValue(e.target.value)}
+                    className="min-h-[120px]"
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <Button variant="outline" onClick={() => setEditAbout(false)}>
+                      <XIcon className="w-4 h-4 me-2" /> {t("cancel", "Cancel")}
+                    </Button>
+                    <Button onClick={handleSaveAbout} disabled={isUpdating}>
+                      <Check className="w-4 h-4 me-2" /> {t("save", "Save")}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="prose prose-slate max-w-none">
+                  <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
+                    {profile.userInfo?.about || t("profile_no_about", "You haven't provided a detailed description yet.")}
+                  </p>
+                </div>
+              )}
             </section>
 
             {/* Skills */}
-            {profile.userInfo?.skills && profile.userInfo.skills.length > 0 && (
-              <section className="pt-8 border-t border-slate-100">
-                <h2 className="text-2xl font-bold text-brand mb-6">
+            <section className="pt-8 border-t border-slate-100">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-brand">
                   {t("profile_skills", "Skills")}
                 </h2>
+                {!editSkills && (
+                  <Button variant="ghost" size="icon" onClick={() => {
+                    setSkillsValue(profile.userInfo?.skills || []);
+                    setEditSkills(true);
+                  }}>
+                    <Pencil className="w-4 h-4 text-brand" />
+                  </Button>
+                )}
+              </div>
+              {editSkills ? (
+                <div className="space-y-4">
+                  <MultiSelect
+                    options={skillOptions}
+                    selected={skillsValue}
+                    onChange={setSkillsValue}
+                    placeholder={t("profile_skills_placeholder")}
+                  />
+                  <div className="flex gap-2 justify-end">
+                    <Button variant="outline" onClick={() => setEditSkills(false)}>
+                      <XIcon className="w-4 h-4 me-2" /> {t("cancel", "Cancel")}
+                    </Button>
+                    <Button onClick={handleSaveSkills} disabled={isUpdating}>
+                      <Check className="w-4 h-4 me-2" /> {t("save", "Save")}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
                 <div className="flex flex-wrap gap-2">
-                  {profile.userInfo.skills.map((skill: string, index: number) => (
+                  {profile.userInfo?.skills && profile.userInfo.skills.length > 0 ? profile.userInfo.skills.map((skill: string, index: number) => (
                     <div
                       key={index}
                       className="bg-slate-100 text-slate-800 px-4 py-2 rounded-md text-sm font-medium"
                     >
                       {getSkillTranslation(skill)}
                     </div>
-                  ))}
+                  )) : (
+                    <p className="text-slate-500 italic">{t("no_skills_added", "No skills added yet.")}</p>
+                  )}
                 </div>
-              </section>
-            )}
+              )}
+            </section>
 
             {/* Pricing (if any) */}
-            {profile.userInfo?.priceValue && (
-              <section className="bg-slate-50 rounded-xl p-6 border border-slate-100">
-                <h2 className="text-lg font-bold text-slate-900 mb-2">{t("pricing_information", "Pricing Information")}</h2>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-brand">{profile.userInfo.priceValue} AMD</span>
-                  <span className="text-slate-500 font-medium">
-                    / {profile.userInfo.pricingFormat === 'daily' ? 'day' : profile.userInfo.pricingFormat === 'sqm' ? 'sqm' : 'hr'}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-500 mt-2">{t("pricing_estimate_note", "Prices are estimates and may vary based on project requirements.")}</p>
-              </section>
-            )}
+            <section className="pt-8 border-t border-slate-100">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-brand">{t("pricing_information", "Pricing Information")}</h2>
+                {!editPricing && (
+                  <Button variant="ghost" size="icon" onClick={() => {
+                    setPricingFormat(profile.userInfo?.pricingFormat || "");
+                    setPriceValue(profile.userInfo?.priceValue || "");
+                    setEditPricing(true);
+                  }}>
+                    <Pencil className="w-4 h-4 text-brand" />
+                  </Button>
+                )}
+              </div>
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-100">
+                {editPricing ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Select value={pricingFormat} onValueChange={setPricingFormat}>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("profile_pricing_placeholder")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="daily">{t("profile_price_daily")}</SelectItem>
+                          <SelectItem value="sqm">{t("profile_price_sqm")}</SelectItem>
+                          <SelectItem value="contract">{t("profile_price_contract")}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {(pricingFormat === "daily" || pricingFormat === "sqm") && (
+                        <Input
+                          type="number"
+                          placeholder={t("profile_price_value_placeholder")}
+                          value={priceValue}
+                          onChange={(e) => setPriceValue(e.target.value)}
+                        />
+                      )}
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <Button variant="outline" onClick={() => setEditPricing(false)}>
+                        <XIcon className="w-4 h-4 me-2" /> {t("cancel", "Cancel")}
+                      </Button>
+                      <Button onClick={handleSavePricing} disabled={isUpdating}>
+                        <Check className="w-4 h-4 me-2" /> {t("save", "Save")}
+                      </Button>
+                    </div>
+                  </div>
+                ) : profile.userInfo?.priceValue ? (
+                  <>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-brand">{profile.userInfo.priceValue} AMD</span>
+                      <span className="text-slate-500 font-medium">
+                        / {profile.userInfo.pricingFormat === 'daily' ? 'day' : profile.userInfo.pricingFormat === 'sqm' ? 'sqm' : 'hr'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-500 mt-2">{t("pricing_estimate_note", "Prices are estimates and may vary based on project requirements.")}</p>
+                  </>
+                ) : (
+                  <p className="text-slate-500 italic">{t("no_pricing_added", "No pricing added yet.")}</p>
+                )}
+              </div>
+            </section>
 
             {/* Portfolios */}
             {profile.portfolios && profile.portfolios.length > 0 && (

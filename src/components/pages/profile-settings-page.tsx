@@ -230,7 +230,7 @@ export default function ProfileSettingsPageContent() {
   return (
     <div className="flex flex-col items-center justify-start w-full bg-slate-50/50 min-h-[calc(100vh-14rem)] py-8 animate-in fade-in duration-500">
       <SEO title={t('profile')} />
-      <div className="max-w-3xl mx-auto space-y-8">
+      <div className="max-w-4xl w-full mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-foreground">
             {t("profile_title")}
