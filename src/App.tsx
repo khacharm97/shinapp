@@ -11,6 +11,7 @@ const CalculatorPage = lazy(() => import('@/pages/calculator'))
 const ProfilePage = lazy(() => import('@/pages/profile'))
 const ProfileSettingsPage = lazy(() => import('@/pages/profile-settings'))
 const MyAnnouncementsPage = lazy(() => import('@/pages/my-announcements'))
+const MyOrdersPage = lazy(() => import('@/pages/my-orders'))
 const MastersPage = lazy(() => import('@/pages/masters'))
 const MasterDetailsPage = lazy(() => import('@/pages/master-details'))
 const BrigadeDetailsPage = lazy(() => import('@/pages/brigade-details'))
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
           {
             path: "my-announcements",
             element: <MyAnnouncementsPage />,
+          },
+          {
+            path: "profile/orders",
+            element: <MyOrdersPage />,
           }
         ]
       },

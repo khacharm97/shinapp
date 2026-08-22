@@ -2,7 +2,7 @@ import { getImageUrl } from '@/utils';
 
 import { NavLink, Outlet, Link, useLocation, useNavigate, ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Mail, Phone, Menu, User, LogOut } from "lucide-react"
+import { Mail, Phone, Menu, User, LogOut, FileText } from "lucide-react"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ModeToggle } from "@/components/mode-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
@@ -150,6 +150,12 @@ export default function RootLayout() {
                           <span>{user?.name || t("nav_profile", "Profile")}</span>
                         </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile/orders" className="cursor-pointer flex items-center">
+                          <FileText className="me-2 h-4 w-4" />
+                          <span>{t("nav_my_orders", "My Orders")}</span>
+                        </Link>
+                      </DropdownMenuItem>
                       {isCompanyUser && isVerified && (
                         <DropdownMenuItem asChild>
                           <Link to="/my-announcements" className="cursor-pointer flex items-center">
@@ -205,6 +211,9 @@ export default function RootLayout() {
                         <>
                           <Button variant="outline" size="sm" asChild className="w-full justify-start">
                             <Link to="/profile"><User className="me-2 h-4 w-4" /> {user?.name || t("nav_profile", "Profile")}</Link>
+                          </Button>
+                          <Button variant="outline" size="sm" asChild className="w-full justify-start">
+                            <Link to="/profile/orders"><FileText className="me-2 h-4 w-4" /> {t("nav_my_orders", "My Orders")}</Link>
                           </Button>
                           {isCompanyUser && isVerified && (
                             <Button variant="outline" size="sm" asChild className="w-full justify-start">

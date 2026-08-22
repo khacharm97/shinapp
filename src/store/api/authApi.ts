@@ -37,7 +37,9 @@ const baseQueryWithReauth = async (args: string | FetchArgs, api: BaseQueryApi, 
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['Profile'],
+  tagTypes: [
+    'Reviews',
+    'Profile'],
   endpoints: (builder) => ({
     getProfile: builder.query({
       query: () => 'profile',
@@ -267,6 +269,74 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['Profile'],
     }),
+    createOrder: builder.mutation({
+      query: (data: FormData) => ({
+        url: 'orders',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    updateOrder: builder.mutation({
+      query: (payload: { id: string; body: FormData }) => ({
+        url: `orders/${payload.id}`,
+        method: 'PUT',
+        body: payload.body,
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    acceptOrder: builder.mutation({
+      query: (id: string) => ({
+        url: `orders/${id}/accept`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    rejectOrder: builder.mutation({
+      query: (id: string) => ({
+        url: `orders/${id}/reject`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Profile'],
+    }),
+    getMyOrders: builder.query({
+      query: () => 'orders',
+      providesTags: ['Profile'],
+    }),
+    getOrderById: builder.query({
+      query: (id: string) => `orders/${id}`,
+      providesTags: ['Profile'],
+    }),
+
+    requestOrderCompletion: builder.mutation<any, string>({
+      query: (orderId) => ({
+        url: `/orders/${orderId}/request-completion`,
+        method: 'POST',
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Orders', id: arg }],
+    }),
+    acceptOrderCompletion: builder.mutation<any, string>({
+      query: (orderId) => ({
+        url: `/orders/${orderId}/accept-completion`,
+        method: 'POST',
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: 'Orders', id: arg }],
+    }),
+    createReview: builder.mutation<any, any>({
+      query: (data) => ({
+        url: '/reviews',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Masters', 'Orders'],
+    }),
+    getMasterReviews: builder.query<any, string>({
+      query: (masterId) => `/reviews/master/${masterId}`,
+      providesTags: (result, error, arg) => [{ type: 'Reviews', id: arg }],
+    }),
+    getMasterBusyDates: builder.query<any, string>({
+      query: (masterId) => `/reviews/master/${masterId}/busy-dates`,
+    }),
   }),
 });
 
@@ -297,4 +367,17 @@ export const {
   useCreateMyAnnouncementMutation,
   useUpdateMyAnnouncementMutation,
   useDeleteMyAnnouncementMutation,
+  useCreateOrderMutation,
+  useUpdateOrderMutation,
+  useAcceptOrderMutation,
+  useRejectOrderMutation,
+  useGetMyOrdersQuery,
+  useGetOrderByIdQuery,
+
+  useRequestOrderCompletionMutation,
+  useAcceptOrderCompletionMutation,
+  useCreateReviewMutation,
+  useGetMasterReviewsQuery,
+  useGetMasterBusyDatesQuery,
 } = authApi;
+
