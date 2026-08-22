@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import type { LocalizedString, Skill, Portfolio } from "@/types";
 import { getLocalizedName } from "@/utils";
 import { SEO } from '@/components/seo';
-import { User as UserIcon } from "lucide-react";
 
 const MANAGER_PHONE = "+37493233402";
 const MANAGER_EMAIL = "info@shinapp.am";
