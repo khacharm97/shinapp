@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
-import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search, Filter } from "lucide-react";
+import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search   } from "lucide-react";
 import { useGetMyOrdersQuery, useGetProfileQuery } from "@/store/api/authApi";
 import { SEO } from "@/components/seo";
 import { Badge } from "@/components/ui/badge";
@@ -27,8 +27,8 @@ export default function MyOrdersPageContent() {
     );
   }
 
-  const filteredOrders = orders?.filter((order: any) => {
-    const matchesSearch = 
+  const filteredOrders = orders?.filter((order: any  ) => {
+    const matchesSearch =
       order.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.client?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.master?.name?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -39,11 +39,11 @@ export default function MyOrdersPageContent() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "PENDING":
-        return <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200"><Clock className="w-3 h-3 mr-1"/> {t("pending", "Pending")}</Badge>;
+        return <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200"><Clock className="w-3 h-3 mr-1" /> {t("pending", "Pending")}</Badge>;
       case "ACCEPTED":
-        return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200"><CheckCircle2 className="w-3 h-3 mr-1"/> {t("accepted", "Accepted")}</Badge>;
+        return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200"><CheckCircle2 className="w-3 h-3 mr-1" /> {t("accepted", "Accepted")}</Badge>;
       case "REJECTED":
-        return <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200"><XCircle className="w-3 h-3 mr-1"/> {t("rejected", "Rejected")}</Badge>;
+        return <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200"><XCircle className="w-3 h-3 mr-1" /> {t("rejected", "Rejected")}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -52,7 +52,7 @@ export default function MyOrdersPageContent() {
   return (
     <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
       <SEO title={t("my_orders", "My Orders")} />
-      
+
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -64,7 +64,7 @@ export default function MyOrdersPageContent() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <Input 
+            <Input
               placeholder={t("search_orders", "Search orders...")}
               className="pl-9"
               value={searchTerm}
@@ -73,7 +73,7 @@ export default function MyOrdersPageContent() {
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar">
             {["ALL", "PENDING", "ACCEPTED", "REJECTED"].map((status) => (
-              <Button 
+              <Button
                 key={status}
                 variant={filterStatus === status ? "default" : "outline"}
                 className={filterStatus === status ? "bg-brand hover:bg-brand/90" : ""}
@@ -96,14 +96,14 @@ export default function MyOrdersPageContent() {
               <p className="text-slate-500 mt-1 max-w-sm">{t("no_orders_found_desc", "You don't have any orders matching your criteria.")}</p>
             </div>
           ) : (
-            filteredOrders.map((order: any) => {
+            filteredOrders.map((order: any  ) => {
               const isClient = profile.id === order.clientId;
               const otherParty = isClient ? order.master : order.client;
               const roleLabel = isClient ? t("master", "Master") : t("client", "Client");
 
               return (
-                <div 
-                  key={order.id} 
+                <div
+                  key={order.id}
                   className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 hover:shadow-md transition-all cursor-pointer flex flex-col h-full group"
                   onClick={() => setSelectedOrder(order)}
                 >
@@ -111,10 +111,10 @@ export default function MyOrdersPageContent() {
                     {getStatusBadge(order.status)}
                     <span className="text-xs text-slate-400">{format(new Date(order.createdAt), "MMM d, yyyy")}</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-3 mb-4">
-                    <img 
-                      src={getImageUrl(otherParty?.avatarUrl)} 
+                    <img
+                      src={getImageUrl(otherParty?.avatarUrl)}
                       alt={otherParty?.name}
                       className="w-10 h-10 rounded-full object-cover border"
                       onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${otherParty?.name}&background=random`; }}
@@ -157,10 +157,10 @@ export default function MyOrdersPageContent() {
       </div>
 
       {selectedOrder && (
-        <OrderDetailsModal 
-          isOpen={!!selectedOrder} 
-          onClose={() => setSelectedOrder(null)} 
-          order={selectedOrder} 
+        <OrderDetailsModal
+          isOpen={!!selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          order={selectedOrder}
           currentUserId={profile.id}
         />
       )}

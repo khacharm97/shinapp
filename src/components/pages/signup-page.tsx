@@ -21,6 +21,7 @@ export default function SignupPageContent() {
 
   // Reset role selection if user clicks the signup link in navbar while already on this page
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedRole(null)
   }, [location.key])
   

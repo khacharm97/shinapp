@@ -39,6 +39,8 @@ export const authApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: [
     'Reviews',
+    'Orders',
+    'Masters',
     'Profile'],
   endpoints: (builder) => ({
     getProfile: builder.query({
@@ -210,7 +212,7 @@ export const authApi = createApi({
             // Invalidate 'Profile' to refetch brigades and other relevant profile info
             dispatch(authApi.util.invalidateTags(['Profile']));
           });
-        } catch { 
+        } catch {
           console.log('Something went wrong')
         }
 
@@ -253,7 +255,7 @@ export const authApi = createApi({
       invalidatesTags: ['Profile'],
     }),
     updateMyAnnouncement: builder.mutation({
-      query: (payload: { id: string; body: any | FormData }) => {
+      query: (payload: { id: string; body: any   | FormData }) => {
         return {
           url: `profile/announcements/${payload.id}`,
           method: 'PUT',
@@ -340,8 +342,8 @@ export const authApi = createApi({
   }),
 });
 
-export const { 
-  useLoginMutation, 
+export const {
+  useLoginMutation,
   useRegisterMutation,
   useGetProfileQuery,
   useGetMastersQuery,

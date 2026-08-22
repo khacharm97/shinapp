@@ -248,7 +248,7 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
                     />
                     {inviteInput.length >= 2 && searchResults?.items && searchResults.items.length > 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md shadow-lg z-50 max-h-48 overflow-y-auto">
-                        {searchResults.items.map((user: any) => (
+                        {searchResults.items.map((user: any  ) => (
                           <div
                             key={user.id}
                             className="p-2 hover:bg-slate-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center gap-2 border-b border-slate-100 dark:border-zinc-800 last:border-0"

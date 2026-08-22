@@ -77,7 +77,7 @@ export default function MyAnnouncements() {
     setOpen(true);
   };
 
-  const handleEditClick = (announcement: any) => {
+  const handleEditClick = (announcement: any  ) => {
     setFormData({
       id: announcement.id,
       sphere: announcement.sphere,
@@ -201,7 +201,7 @@ export default function MyAnnouncements() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {announcements?.map((announcement: any, i: number) => (
+          {announcements?.map((announcement: any  , i: number) => (
             <div
               key={announcement.id}
               className="group relative bg-card border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 hover:-translate-y-1"

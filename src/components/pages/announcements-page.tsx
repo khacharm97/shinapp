@@ -67,7 +67,7 @@ export default function AnnouncementsPageContent() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {announcements.map((announcement: any, i: number) => {
+            {announcements.map((announcement: any  , i: number) => {
               const companyName = announcement.company?.name || "Unknown Company";
               const isUrgent = announcement.urgent;
               const formattedDate = new Date(announcement.createdAt).toLocaleDateString(undefined, {

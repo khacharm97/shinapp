@@ -33,7 +33,7 @@ export function LeaveReviewModal({ isOpen, onClose, orderId, targetId }: LeaveRe
       await createReview({ orderId, targetId, rating, comment }).unwrap();
       toast.success(t("review_submitted", "Review submitted successfully!"));
       onClose();
-    } catch (error: any) {
+    } catch (error: any  ) {
       toast.error(error.data?.message || t("review_submit_failed", "Failed to submit review."));
     }
   };

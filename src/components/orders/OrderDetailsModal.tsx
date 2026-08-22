@@ -22,7 +22,7 @@ import { MapPin, Calendar, CreditCard, DollarSign } from "lucide-react";
 interface OrderDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  order: any;
+  order: any  ;
   currentUserId: string;
 }
 
@@ -58,7 +58,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
       await acceptOrder(order.id).unwrap();
       toast.success(t("order_accepted", "Order accepted successfully!"));
       onClose();
-    } catch (error) {
+    } catch (error: any  ) {  
       toast.error(t("order_accept_failed", "Failed to accept order."));
     }
   };
@@ -68,7 +68,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
       await rejectOrder(order.id).unwrap();
       toast.success(t("order_rejected", "Order rejected successfully!"));
       onClose();
-    } catch (error) {
+    } catch (error: any  ) {  
       toast.error(t("order_reject_failed", "Failed to reject order."));
     }
   };
@@ -78,7 +78,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
       await requestCompletion(order.id).unwrap();
       toast.success(t("completion_requested", "Order completion requested!"));
       onClose();
-    } catch (error) {
+    } catch (error: any  ) {  
       toast.error(t("completion_request_failed", "Failed to request completion."));
     }
   };
@@ -88,7 +88,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
       await acceptCompletion(order.id).unwrap();
       toast.success(t("completion_accepted", "Order marked as completed!"));
       onClose();
-    } catch (error) {
+    } catch (error: any  ) {  
       toast.error(t("completion_accept_failed", "Failed to accept completion."));
     }
   };
@@ -115,7 +115,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
       toast.success(t("order_updated_successfully", "Counter-offer sent successfully!"));
       setIsEditing(false);
       onClose();
-    } catch (error) {
+    } catch (error: any  ) {  
       toast.error(t("order_update_failed", "Failed to propose changes."));
     }
   };

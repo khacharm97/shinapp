@@ -2,10 +2,8 @@ import { getImageUrl } from '@/utils';
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2, ArrowLeft, Star, Phone, Mail, CheckCircle2, User as UserIcon } from "lucide-react";
-import { useGetBrigadeByIdQuery, useGetSkillsQuery } from "@/store/api/authApi";
+import { useGetBrigadeByIdQuery } from "@/store/api/authApi";
 import { Button } from "@/components/ui/button";
-import type { Skill } from "@/types";
-import { getLocalizedName } from "@/utils";
 import { SEO } from '@/components/seo';
 import brigadeBg from '@/assets/brigade.webp';
 
@@ -15,20 +13,11 @@ const MANAGER_EMAIL = "info@shinapp.am";
 
 export default function BrigadeDetailsPageContent() {
   const { id } = useParams<{ id: string }>();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const { data: brigade, isLoading, isError } = useGetBrigadeByIdQuery(id as string, {
     skip: !id,
   });
-  
-  const { data: skillsData } = useGetSkillsQuery(undefined);
-
-  const getSkillTranslation = (skillKey: string) => {
-    if (!skillsData) return skillKey;
-    const skill = skillsData.find((s: Skill) => s.key === skillKey);
-    if (!skill) return skillKey;
-    return getLocalizedName(skill, i18n.language);
-  };
 
   if (isLoading) {
     return (
@@ -55,24 +44,23 @@ export default function BrigadeDetailsPageContent() {
   if (brigade.owner?.userInfo?.skills) {
     brigade.owner.userInfo.skills.forEach((s: string) => allSkills.add(s));
   }
-  
-  const acceptedMembers = brigade.members?.filter((m: any) => m.status === 'ACCEPTED') || [];
-  
-  acceptedMembers.forEach((member: any) => {
+
+  const acceptedMembers = brigade.members?.filter((m: any  ) => m.status === 'ACCEPTED') || [];
+
+  acceptedMembers.forEach((member: any  ) => {
     if (member.user?.userInfo?.skills) {
       member.user.userInfo.skills.forEach((s: string) => allSkills.add(s));
     }
   });
 
-  const uniqueSkills = Array.from(allSkills);
 
   // Calculate total jobs (sum of portfolios length for all members)
   let totalJobs = 0;
   if (brigade.owner?.portfolios) totalJobs += brigade.owner.portfolios.length;
-  acceptedMembers.forEach((member: any) => {
+  acceptedMembers.forEach((member: any  ) => {
     if (member.user?.portfolios) totalJobs += member.user.portfolios.length;
   });
-  
+
   const totalMembers = 1 + acceptedMembers.length; // Owner + members
 
   return (
@@ -89,12 +77,12 @@ export default function BrigadeDetailsPageContent() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden relative">
-          
+
           {/* Banner image */}
           <div className="h-48 md:h-64 w-full bg-slate-200 overflow-hidden">
-            <img 
-              src={brigadeBg} 
-              alt="Brigade banner" 
+            <img
+              src={brigadeBg}
+              alt="Brigade banner"
               className="w-full h-full object-cover"
             />
           </div>
@@ -102,17 +90,17 @@ export default function BrigadeDetailsPageContent() {
           {/* Main Card Content that overlaps the banner slightly */}
           <div className="relative mx-4 md:mx-12 -mt-16 md:-mt-24 bg-white rounded-xl shadow-lg border border-slate-100 p-6 md:p-8 mb-8 z-10">
             <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-6">
-              
+
               <div className="text-center md:text-start">
                 <h1 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center justify-center md:justify-start gap-2">
                   {brigade.name}
                   <CheckCircle2 className="w-6 h-6 text-blue-500" />
                 </h1>
-                
+
                 <p className="text-slate-500 mt-2 line-clamp-2 max-w-2xl">
                   {brigade.about || brigade.owner?.userInfo?.about || ""}
                 </p>
-                
+
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-4 text-sm text-slate-600">
                   <div className="flex items-center text-orange-500 font-medium">
                     <Star className="w-4 h-4 me-1 fill-current" />
@@ -130,14 +118,14 @@ export default function BrigadeDetailsPageContent() {
               </div>
 
               <div className="flex gap-3 shrink-0">
-                 <Button onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
-                    <Phone className="w-4 h-4 me-2" />
-                    {t("master_details_call_manager", "Call Manager")}
-                  </Button>
-                  <Button variant="outline" onClick={() => window.location.href = `mailto:${MANAGER_EMAIL}`} className="w-full md:w-auto">
-                    <Mail className="w-4 h-4 me-2" />
-                    {t("master_details_email_manager", "Email Manager")}
-                  </Button>
+                <Button onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
+                  <Phone className="w-4 h-4 me-2" />
+                  {t("master_details_call_manager", "Call Manager")}
+                </Button>
+                <Button variant="outline" onClick={() => window.location.href = `mailto:${MANAGER_EMAIL}`} className="w-full md:w-auto">
+                  <Mail className="w-4 h-4 me-2" />
+                  {t("master_details_email_manager", "Email Manager")}
+                </Button>
               </div>
 
             </div>
@@ -158,9 +146,9 @@ export default function BrigadeDetailsPageContent() {
               </div>
             </div>
           </div>
-          
+
           <div className="px-8 md:px-12 pb-12 space-y-12">
-            
+
             {/* About */}
             <section>
               <h2 className="text-2xl font-bold text-brand mb-4">{t("brigade_about", "About the brigade")}</h2>
@@ -178,8 +166,8 @@ export default function BrigadeDetailsPageContent() {
                   <Link to={`/masters/${brigade.owner.id}`} className="block group">
                     <div className="bg-white border border-slate-200 rounded-xl p-4 flex gap-4 items-center hover:shadow-md transition-shadow">
                       <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-200 shrink-0">
-                        <img 
-                          src={brigade.owner.avatarUrl ? getImageUrl(brigade.owner.avatarUrl) || "" : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"} 
+                        <img
+                          src={brigade.owner.avatarUrl ? getImageUrl(brigade.owner.avatarUrl) || "" : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                           alt={brigade.owner.name || "Owner"}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -199,12 +187,12 @@ export default function BrigadeDetailsPageContent() {
                 )}
 
                 {/* Other Members */}
-                {acceptedMembers.map((member: any) => (
+                {acceptedMembers.map((member: any  ) => (
                   <Link key={member.user.id} to={`/masters/${member.user.id}`} className="block group">
                     <div className="bg-white border border-slate-200 rounded-xl p-4 flex gap-4 items-center hover:shadow-md transition-shadow">
                       <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-200 shrink-0">
-                        <img 
-                          src={member.user.avatarUrl ? getImageUrl(member.user.avatarUrl) || "" : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"} 
+                        <img
+                          src={member.user.avatarUrl ? getImageUrl(member.user.avatarUrl) || "" : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                           alt={member.user.name || "Member"}
                           className="w-full h-full object-cover"
                           onError={(e) => {

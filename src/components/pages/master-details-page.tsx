@@ -1,12 +1,12 @@
 import { getImageUrl } from '@/utils';
-import React, { useState } from "react";
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2, MapPin, Star, CheckCircle2, Phone, Mail, ArrowLeft, ImagePlus, FileText, Calendar as CalendarIcon, MessageSquare } from "lucide-react";
 import { useGetMasterByIdQuery, useGetSkillsQuery, useGetProfileQuery, useGetMasterReviewsQuery, useGetMasterBusyDatesQuery } from "@/store/api/authApi";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { format, isWithinInterval, parseISO } from "date-fns";
+import { format, isWithinInterval } from "date-fns";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
 import type { LocalizedString, Skill, Portfolio } from "@/types";
@@ -27,14 +27,14 @@ export default function MasterDetailsPageContent() {
     skip: !id,
   });
   const { data: skillsData } = useGetSkillsQuery(undefined);
-  
+
   const { data: reviewsData } = useGetMasterReviewsQuery(id as string, { skip: !id });
   const { data: busyDatesData } = useGetMasterBusyDatesQuery(id as string, { skip: !id });
 
   // Calculate disabled days based on busyDatesData
   const disabledDays = (date: Date) => {
     if (!busyDatesData) return false;
-    return busyDatesData.some((order: any) => {
+    return busyDatesData.some((order: any  ) => {
       const start = new Date(order.startDate);
       const end = new Date(order.endDate);
       start.setHours(0, 0, 0, 0);
@@ -146,17 +146,17 @@ export default function MasterDetailsPageContent() {
                   </div>
                 </div>
 
-                  <div className="flex flex-col gap-3 shrink-0">
-                    {profile && profile.id !== master.id && (
-                      <Button onClick={() => setIsOrderModalOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm w-full md:w-auto">
-                        <FileText className="w-4 h-4 me-2" />
-                        {t("propose_order", "Propose Order")}
-                      </Button>
-                    )}
-                    <Button onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
-                      <Phone className="w-4 h-4 me-2" />
-                      {t("master_details_call_manager", "Call Manager")}
+                <div className="flex flex-col gap-3 shrink-0">
+                  {profile && profile.id !== master.id && (
+                    <Button onClick={() => setIsOrderModalOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm w-full md:w-auto">
+                      <FileText className="w-4 h-4 me-2" />
+                      {t("propose_order", "Propose Order")}
                     </Button>
+                  )}
+                  <Button onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
+                    <Phone className="w-4 h-4 me-2" />
+                    {t("master_details_call_manager", "Call Manager")}
+                  </Button>
                   <Button variant="outline" onClick={() => window.location.href = `mailto:${MANAGER_EMAIL}`} className="w-full md:w-auto">
                     <Mail className="w-4 h-4 me-2" />
                     {t("master_details_email_manager", "Email Manager")}
@@ -272,7 +272,7 @@ export default function MasterDetailsPageContent() {
                 {t("reviews_title", "Reviews")}
                 {reviewsData?.count > 0 && <span className="ms-2 text-slate-500 text-lg font-normal">({reviewsData.count})</span>}
               </h2>
-              
+
               {reviewsData && reviewsData.count > 0 ? (
                 <div className="space-y-6">
                   <div className="flex items-center gap-4 mb-8">
@@ -288,7 +288,7 @@ export default function MasterDetailsPageContent() {
                   </div>
 
                   <div className="grid gap-6">
-                    {reviewsData.reviews.map((review: any) => (
+                    {reviewsData.reviews.map((review: any  ) => (
                       <div key={review.id} className="bg-slate-50 p-6 rounded-xl border border-slate-100">
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-3">
@@ -354,7 +354,7 @@ export default function MasterDetailsPageContent() {
           </div>
         </div>
         {profile && master && (
-          <CreateOrderModal 
+          <CreateOrderModal
             isOpen={isOrderModalOpen}
             onClose={() => setIsOrderModalOpen(false)}
             masterId={master.id}
