@@ -64,7 +64,7 @@ export default function ProfilePageContent() {
     }
   };
 
-  const skillOptions = skillsData?.map((s) => ({
+  const skillOptions = skillsData?.map((s: Skill) => ({
     label: getLocalizedName(s, i18n.language),
     value: s.key,
   })) || [];

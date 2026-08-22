@@ -315,14 +315,14 @@ export const authApi = createApi({
         url: `/orders/${orderId}/request-completion`,
         method: 'POST',
       }),
-      invalidatesTags: (result, error, arg) => [{ type: 'Orders', id: arg }],
+      invalidatesTags: (_result, _error, arg) => [{ type: 'Orders', id: arg }],
     }),
     acceptOrderCompletion: builder.mutation<any, string>({
       query: (orderId) => ({
         url: `/orders/${orderId}/accept-completion`,
         method: 'POST',
       }),
-      invalidatesTags: (result, error, arg) => [{ type: 'Orders', id: arg }],
+      invalidatesTags: (_result, _error, arg) => [{ type: 'Orders', id: arg }],
     }),
     createReview: builder.mutation<any, any>({
       query: (data) => ({
@@ -334,7 +334,7 @@ export const authApi = createApi({
     }),
     getMasterReviews: builder.query<any, string>({
       query: (masterId) => `/reviews/master/${masterId}`,
-      providesTags: (result, error, arg) => [{ type: 'Reviews', id: arg }],
+      providesTags: (_result, _error, arg) => [{ type: 'Reviews', id: arg }],
     }),
     getMasterBusyDates: builder.query<any, string>({
       query: (masterId) => `/reviews/master/${masterId}/busy-dates`,
