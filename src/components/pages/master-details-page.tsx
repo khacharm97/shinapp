@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import type { LocalizedString, Skill, Portfolio } from "@/types";
 import { getLocalizedName } from "@/utils";
 import { SEO } from '@/components/seo';
+import { User as UserIcon } from "lucide-react";
 
 const MANAGER_PHONE = "+37493233402";
 const MANAGER_EMAIL = "info@shinapp.am";
@@ -133,6 +134,22 @@ export default function MasterDetailsPageContent() {
                     <Mail className="w-4 h-4 me-2" />
                     {t("master_details_email_manager", "Email Manager")}
                   </Button>
+
+                  {/* Brigade Link */}
+                  {(() => {
+                    const brigade = master.ownedBrigades?.[0] || master.brigadeMemberships?.[0]?.brigade;
+                    if (!brigade) return null;
+                    return (
+                      <div className="mt-2 flex flex-col gap-1.5">
+                        <span className="text-xs text-slate-500 font-medium uppercase tracking-wider text-center md:text-start">{t("brigade_label", "Brigade")}</span>
+                        <Button asChild variant="outline" className="w-full md:w-auto border-brand text-brand hover:bg-brand/10 hover:text-brand">
+                          <Link to={`/brigades/${brigade.id}`}>
+                            {brigade.name}
+                          </Link>
+                        </Button>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -232,6 +249,7 @@ export default function MasterDetailsPageContent() {
                 </div>
               </section>
             )}
+
 
           </div>
         </div>

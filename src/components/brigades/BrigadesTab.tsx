@@ -13,6 +13,7 @@ import { getImageUrl } from "@/utils";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -46,6 +47,7 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
   const [editBrigadeId, setEditBrigadeId] = useState<string | null>(null);
 
   const [name, setName] = useState("");
+  const [about, setAbout] = useState("");
   const [inviteInput, setInviteInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [invites, setInvites] = useState<string[]>([]); // New invites
@@ -68,6 +70,7 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
   const resetForm = () => {
     setErrorMsg(null);
     setName("");
+    setAbout("");
     setInvites([]);
     setInviteInput("");
     setExistingMembers([]);
@@ -84,6 +87,7 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
     resetForm();
     setEditBrigadeId(brigade.id);
     setName(brigade.name);
+    setAbout(brigade.about || "");
     setExistingMembers(brigade.members || []);
     setIsOpen(true);
   };
@@ -117,9 +121,19 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
 
     try {
       if (editBrigadeId) {
-        await updateBrigade({ id: editBrigadeId, name, invites, removeMemberIds }).unwrap();
+        await updateBrigade({ 
+          id: editBrigadeId, 
+          name: name.trim(), 
+          about: about.trim(), 
+          invites, 
+          removeMemberIds 
+        }).unwrap();
       } else {
-        await createBrigade({ name, invites }).unwrap();
+        await createBrigade({ 
+          name: name.trim(), 
+          about: about.trim(), 
+          invites 
+        }).unwrap();
       }
       setIsOpen(false);
       resetForm();
@@ -182,6 +196,17 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
                   placeholder={t("brigade_name_placeholder", "e.g. Elite Plumbers")}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t("brigade_about", "About Brigade")}</Label>
+                <Textarea
+                  placeholder={t("brigade_about_placeholder", "Tell us about this brigade...")}
+                  value={about}
+                  onChange={(e) => setAbout(e.target.value)}
+                  className="resize-none"
+                  rows={4}
                 />
               </div>
 

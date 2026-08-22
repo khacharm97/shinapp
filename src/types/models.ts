@@ -46,8 +46,12 @@ export interface BrigadeMember {
 export interface Brigade {
   id: string;
   name: string;
+  about?: string | null;
   ownerId: string;
-  members: BrigadeMember[];
+  createdAt: string;
+  updatedAt: string;
+  members?: BrigadeMember[];
+  owner?: User; // Adding this for the GET /brigades/:id endpoint
 }
 
 export interface Notification {

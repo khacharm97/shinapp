@@ -367,5 +367,6 @@
   "company_email": "Էլ. հասցե:",
   "contact": "Կապվել",
   "wrong_email_or_password": "Սխալ էլ․ փոստ/հեռախոս կամ գաղտնաբառ",
-  "user_already_exists": "Օգտատերը արդեն գոյություն ունի:"
+  "user_already_exists": "Օգտատերը արդեն գոյություն ունի:",
+  "brigade_label": "Բրիգադ"
 }

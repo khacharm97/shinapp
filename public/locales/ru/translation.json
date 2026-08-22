@@ -367,5 +367,6 @@
   "company_email": "Эл. почта:",
   "contact": "Связаться",
   "wrong_email_or_password": "Неверный адрес электронной почты/телефон или пароль.",
-  "user_already_exists": "Пользователь уже существует."
+  "user_already_exists": "Пользователь уже существует.",
+  "brigade_label": "Бригада"
 }

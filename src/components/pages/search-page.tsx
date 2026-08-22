@@ -234,6 +234,19 @@ export default function SearchPageContent() {
                         </div>
                       )}
 
+                      {/* Brigade Badge */}
+                      {(() => {
+                        const brigade = (master as any).ownedBrigades?.[0] || (master as any).brigadeMemberships?.[0]?.brigade;
+                        if (!brigade) return null;
+                        return (
+                          <div className="absolute top-0 start-0 z-10">
+                            <Link to={`/brigades/${brigade.id}`} className="bg-brand/10 text-brand hover:bg-brand/20 text-xs font-bold px-4 py-1.5 rounded-br-lg shadow-sm transition-colors flex items-center gap-1 border-b border-r border-brand/20">
+                              <span className="uppercase text-[10px] opacity-70">{t("brigade_label", "Brigade")}:</span> <span className='text-[10px]'>{brigade.name}</span>
+                            </Link>
+                          </div>
+                        );
+                      })()}
+
                       {/* Profile Image */}
                       <div className="w-full md:w-48 shrink-0 flex flex-col items-center mb-6 md:mb-0 md:me-6">
                         <div className="relative">
