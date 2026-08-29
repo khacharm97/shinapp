@@ -42,7 +42,6 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
   const [createBrigade, { isLoading: isCreating }] = useCreateBrigadeMutation();
   const [updateBrigade, { isLoading: isUpdating }] = useUpdateBrigadeMutation();
   const [deleteBrigade, { isLoading: isDeleting }] = useDeleteBrigadeMutation();
-
   const [isOpen, setIsOpen] = useState(false);
   const [editBrigadeId, setEditBrigadeId] = useState<string | null>(null);
 
@@ -129,18 +128,18 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
 
     try {
       if (editBrigadeId) {
-        await updateBrigade({ 
-          id: editBrigadeId, 
-          name: name.trim(), 
-          about: about.trim(), 
-          invites, 
-          removeMemberIds 
+        await updateBrigade({
+          id: editBrigadeId,
+          name: name.trim(),
+          about: about.trim(),
+          invites,
+          removeMemberIds
         }).unwrap();
       } else {
-        await createBrigade({ 
-          name: name.trim(), 
-          about: about.trim(), 
-          invites 
+        await createBrigade({
+          name: name.trim(),
+          about: about.trim(),
+          invites
         }).unwrap();
       }
       setIsOpen(false);
