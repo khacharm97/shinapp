@@ -51,6 +51,11 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
   const otherParty = isClient ? order.master : order.client;
   const roleLabel = isClient ? t("master", "Master") : t("client", "Client");
 
+  // A user may leave only one review per order.
+  const hasReviewed = Array.isArray(order.reviews)
+    ? order.reviews.some((r: any) => r.authorId === currentUserId)
+    : false;
+
   const canRespond = order.status === "PENDING" && order.initiatorId !== currentUserId;
 
   const handleAccept = async () => {
@@ -87,8 +92,13 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
     try {
       await acceptCompletion(order.id).unwrap();
       toast.success(t("completion_accepted", "Order marked as completed!"));
-      onClose();
-    } catch (error: any  ) {  
+      // Completion succeeded — prompt this user to leave their review right away.
+      if (!hasReviewed) {
+        setIsReviewModalOpen(true);
+      } else {
+        onClose();
+      }
+    } catch (error: any  ) {
       toast.error(t("completion_accept_failed", "Failed to accept completion."));
     }
   };
@@ -121,8 +131,9 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      if (!open) {
+    <Dialog open={isOpen && !isReviewModalOpen} onOpenChange={(open) => {
+      // Ignore the close that fires when we hand off to the review modal.
+      if (!open && !isReviewModalOpen) {
         setIsEditing(false);
         onClose();
       }
@@ -269,8 +280,11 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
                 <Button
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white"
                   onClick={() => setIsReviewModalOpen(true)}
+                  disabled={hasReviewed}
                 >
-                  {t("leave_review", "Leave a Review")}
+                  {hasReviewed
+                    ? t("review_already_left", "Review already submitted")
+                    : t("leave_review", "Leave a Review")}
                 </Button>
               </div>
             )}
@@ -366,7 +380,10 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
       </DialogContent>
       <LeaveReviewModal
         isOpen={isReviewModalOpen}
-        onClose={() => setIsReviewModalOpen(false)}
+        onClose={() => {
+          setIsReviewModalOpen(false);
+          onClose();
+        }}
         orderId={order.id}
         targetId={otherParty?.id}
       />

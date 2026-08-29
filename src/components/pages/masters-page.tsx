@@ -2,7 +2,7 @@ import { getImageUrl } from '@/utils';
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, MapPin, Star, CheckCircle2, Phone, Mail, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { Loader2, MapPin, Star, CheckCircle2, Clock, Phone, Mail, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { useGetMastersQuery } from "@/store/api/authApi";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
@@ -173,10 +173,18 @@ export default function MastersPageContent() {
                         Top Rated
                       </div>
 
-                      <div className="flex items-center text-green-600 font-medium">
-                        <CheckCircle2 className="w-4 h-4 me-1" />
-                        Available now
-                      </div>
+                      {master.availability === "AVAILABLE" && (
+                        <div className="flex items-center text-green-600 font-medium">
+                          <CheckCircle2 className="w-4 h-4 me-1" />
+                          {t("search_available_now", "Available now")}
+                        </div>
+                      )}
+                      {master.availability === "HALF_BUSY" && (
+                        <div className="flex items-center text-amber-600 font-medium">
+                          <Clock className="w-4 h-4 me-1" />
+                          {t("search_half_busy", "Partially busy")}
+                        </div>
+                      )}
                     </div>
 
                     <div className="mb-6">

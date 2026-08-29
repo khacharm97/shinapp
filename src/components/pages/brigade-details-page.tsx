@@ -1,5 +1,5 @@
 import { getImageUrl } from '@/utils';
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2, ArrowLeft, Star, Phone, Mail, CheckCircle2, User as UserIcon } from "lucide-react";
 import { useGetBrigadeByIdQuery } from "@/store/api/authApi";
@@ -13,7 +13,18 @@ const MANAGER_EMAIL = "info@shinapp.am";
 
 export default function BrigadeDetailsPageContent() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { t } = useTranslation();
+
+  // Go back to wherever the user came from; fall back to /search when the page
+  // was opened directly with no in-app history.
+  const goBack = () => {
+    if (window.history.state?.idx > 0) {
+      navigate(-1);
+    } else {
+      navigate("/search");
+    }
+  };
 
   const { data: brigade, isLoading, isError } = useGetBrigadeByIdQuery(id as string, {
     skip: !id,
@@ -32,8 +43,8 @@ export default function BrigadeDetailsPageContent() {
       <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex flex-col items-center justify-center gap-4">
         <SEO title={t("error_not_found", "Brigade not found")} />
         <p className="text-slate-500">{t("error_brigade_not_found_desc", "Brigade not found or an error occurred.")}</p>
-        <Button asChild variant="outline">
-          <Link to="/masters">{t("master_details_back", "Back to Masters")}</Link>
+        <Button variant="outline" onClick={goBack}>
+          {t("back", "Back")}
         </Button>
       </div>
     );
@@ -68,11 +79,9 @@ export default function BrigadeDetailsPageContent() {
       <SEO title={`${brigade.name} - ShinApp`} />
       <div className="max-w-5xl mx-auto space-y-8">
         <div>
-          <Button asChild variant="ghost" className="mb-4 text-slate-500 hover:text-slate-900 -ms-4">
-            <Link to="/masters">
-              <ArrowLeft className="w-4 h-4 me-2" />
-              {t("master_details_back", "Back to Masters")}
-            </Link>
+          <Button variant="ghost" onClick={goBack} className="mb-4 text-slate-500 hover:text-slate-900 -ms-4">
+            <ArrowLeft className="w-4 h-4 me-2" />
+            {t("back", "Back")}
           </Button>
         </div>
 

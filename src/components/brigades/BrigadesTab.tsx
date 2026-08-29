@@ -6,7 +6,7 @@ import {
   useCreateBrigadeMutation,
   useUpdateBrigadeMutation,
   useDeleteBrigadeMutation,
-  useGlobalSearchQuery
+  useSearchBrigadeInviteesQuery
 } from "@/store/api/authApi";
 import type { User, Brigade, BrigadeMember } from "@/types";
 import { getImageUrl } from "@/utils";
@@ -62,10 +62,18 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
     return () => clearTimeout(timer);
   }, [inviteInput]);
 
-  const { data: searchResults } = useGlobalSearchQuery(
-    { search: debouncedSearch, limit: 5 },
-    { skip: debouncedSearch.length < 2 }
+  const { data: searchResults } = useSearchBrigadeInviteesQuery(
+    { search: debouncedSearch, brigadeId: editBrigadeId ?? undefined, limit: 5 },
+    { skip: debouncedSearch.trim().length < 2 }
   );
+
+  // The backend already excludes the current master and anyone tied to this
+  // brigade; here we only drop entries already added to the pending invite list.
+  const searchItems: any[] = (searchResults as any)?.items ?? [];
+  const filteredSearchItems = searchItems.filter((user) => {
+    const identifier = user.email || user.phone || user.name;
+    return !(identifier && invites.includes(identifier));
+  });
 
   const resetForm = () => {
     setErrorMsg(null);
@@ -246,9 +254,9 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
                         }
                       }}
                     />
-                    {inviteInput.length >= 2 && searchResults?.items && searchResults.items.length > 0 && (
+                    {inviteInput.length >= 2 && filteredSearchItems.length > 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md shadow-lg z-50 max-h-48 overflow-y-auto">
-                        {searchResults.items.map((user: any  ) => (
+                        {filteredSearchItems.map((user: any) => (
                           <div
                             key={user.id}
                             className="p-2 hover:bg-slate-50 dark:hover:bg-zinc-800 cursor-pointer flex items-center gap-2 border-b border-slate-100 dark:border-zinc-800 last:border-0"

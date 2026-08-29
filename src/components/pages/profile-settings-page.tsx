@@ -52,6 +52,7 @@ const profileSchema = z.object({
   onlinePay: z.boolean(),
   buyMaterial: z.boolean(),
   nightShift: z.boolean(),
+  multipleJobs: z.boolean(),
   pricingFormat: z.string().optional(),
   priceValue: z.string().optional(),
   about: z.string().optional(),
@@ -114,6 +115,7 @@ export default function ProfileSettingsPageContent() {
       onlinePay: false,
       buyMaterial: false,
       nightShift: false,
+      multipleJobs: false,
       pricingFormat: "",
       priceValue: "",
       about: "",
@@ -143,6 +145,7 @@ export default function ProfileSettingsPageContent() {
           onlinePay: profileData.userInfo?.onlinePay || false,
           buyMaterial: profileData.userInfo?.buyMaterial || false,
           nightShift: profileData.userInfo?.nightShift || false,
+          multipleJobs: profileData.userInfo?.multipleJobs || false,
           pricingFormat: profileData.userInfo?.pricingFormat || "",
           priceValue: profileData.userInfo?.priceValue || "",
           about: profileData.userInfo?.about || "",
@@ -200,6 +203,7 @@ export default function ProfileSettingsPageContent() {
         onlinePay: data.onlinePay,
         buyMaterial: data.buyMaterial,
         nightShift: data.nightShift,
+        multipleJobs: data.multipleJobs,
         pricingFormat: data.pricingFormat,
         priceValue: data.priceValue,
         about: data.about,
@@ -494,6 +498,24 @@ export default function ProfileSettingsPageContent() {
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
                           <div className="space-y-0.5">
                             <FormLabel className="text-base font-medium">{t("profile_night_shift")}</FormLabel>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="multipleJobs"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border dark:border-border p-4 hover:bg-slate-50 dark:hover:bg-zinc-900 transition-colors">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base font-medium">{t("profile_multiple_jobs")}</FormLabel>
                           </div>
                           <FormControl>
                             <Switch

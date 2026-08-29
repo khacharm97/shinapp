@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
-import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search   } from "lucide-react";
+import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search, Hourglass, PackageCheck } from "lucide-react";
 import { useGetMyOrdersQuery, useGetProfileQuery } from "@/store/api/authApi";
 import { SEO } from "@/components/seo";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,14 @@ export default function MyOrdersPageContent() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("ALL");
+
+  // Turn an enum-style status ("COMPLETION_REQUESTED") into a readable label ("Completion Requested").
+  const humanizeStatus = (status: string) =>
+    status
+      .toLowerCase()
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   if (isLoading || !profile) {
@@ -44,8 +52,14 @@ export default function MyOrdersPageContent() {
         return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200"><CheckCircle2 className="w-3 h-3 mr-1" /> {t("accepted", "Accepted")}</Badge>;
       case "REJECTED":
         return <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200"><XCircle className="w-3 h-3 mr-1" /> {t("rejected", "Rejected")}</Badge>;
+      case "COMPLETION_REQUESTED":
+        return <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200"><Hourglass className="w-3 h-3 mr-1" /> {t("status_completion_requested", "Completion Requested")}</Badge>;
+      case "COMPLETED":
+        return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200"><PackageCheck className="w-3 h-3 mr-1" /> {t("status_completed", "Completed")}</Badge>;
+      case "CANCELLED":
+        return <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-200"><XCircle className="w-3 h-3 mr-1" /> {t("status_cancelled", "Cancelled")}</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="outline">{humanizeStatus(status)}</Badge>;
     }
   };
 
@@ -72,7 +86,7 @@ export default function MyOrdersPageContent() {
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar">
-            {["ALL", "PENDING", "ACCEPTED", "REJECTED"].map((status) => (
+            {["ALL", "PENDING", "ACCEPTED", "COMPLETION_REQUESTED", "COMPLETED", "REJECTED"].map((status) => (
               <Button
                 key={status}
                 variant={filterStatus === status ? "default" : "outline"}
@@ -80,7 +94,7 @@ export default function MyOrdersPageContent() {
                 onClick={() => setFilterStatus(status)}
                 size="sm"
               >
-                {t(`status_${status.toLowerCase()}`, status)}
+                {t(`status_${status.toLowerCase()}`, status === "ALL" ? t("all", "All") : humanizeStatus(status))}
               </Button>
             ))}
           </div>

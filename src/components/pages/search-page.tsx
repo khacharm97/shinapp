@@ -3,7 +3,7 @@ import { SEO } from '@/components/seo'
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, Star, CheckCircle2, ChevronLeft, ChevronRight, MoreHorizontal, Search, X } from "lucide-react";
+import { Loader2, Star, CheckCircle2, Clock, ChevronLeft, ChevronRight, MoreHorizontal, Search, X } from "lucide-react";
 import { useGlobalSearchQuery, useGetSkillsQuery } from "@/store/api/authApi";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
@@ -293,10 +293,18 @@ export default function SearchPageContent() {
                             {t("search_top_rated", "Top Rated")}
                           </div>
 
-                          <div className="flex items-center text-green-600 font-medium">
-                            <CheckCircle2 className="w-4 h-4 me-1" />
-                            {t("search_available_now", "Available now")}
-                          </div>
+                          {master.availability === "AVAILABLE" && (
+                            <div className="flex items-center text-green-600 font-medium">
+                              <CheckCircle2 className="w-4 h-4 me-1" />
+                              {t("search_available_now", "Available now")}
+                            </div>
+                          )}
+                          {master.availability === "HALF_BUSY" && (
+                            <div className="flex items-center text-amber-600 font-medium">
+                              <Clock className="w-4 h-4 me-1" />
+                              {t("search_half_busy", "Partially busy")}
+                            </div>
+                          )}
                         </div>
 
                         {/* Tags */}

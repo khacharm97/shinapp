@@ -72,6 +72,13 @@ export const authApi = createApi({
     getMasterById: builder.query({
       query: (id: string) => `masters/${id}`,
     }),
+    searchBrigadeInvitees: builder.query({
+      query: ({ search, brigadeId, limit = 5 }: { search: string; brigadeId?: string; limit?: number }) => {
+        let qs = `profile/brigade/invitees?search=${encodeURIComponent(search)}&limit=${limit}`;
+        if (brigadeId) qs += `&brigadeId=${encodeURIComponent(brigadeId)}`;
+        return qs;
+      },
+    }),
     getHomeMasters: builder.query<{ items: Master[], total: number }, { limit?: number }>({
       query: ({ limit = 6 }) => `masters?limit=${limit}`,
     }),
@@ -315,14 +322,14 @@ export const authApi = createApi({
         url: `/orders/${orderId}/request-completion`,
         method: 'POST',
       }),
-      invalidatesTags: (_result, _error, arg) => [{ type: 'Orders', id: arg }],
+      invalidatesTags: (_result, _error, arg) => [{ type: 'Orders', id: arg }, 'Profile'],
     }),
     acceptOrderCompletion: builder.mutation<any, string>({
       query: (orderId) => ({
         url: `/orders/${orderId}/accept-completion`,
         method: 'POST',
       }),
-      invalidatesTags: (_result, _error, arg) => [{ type: 'Orders', id: arg }],
+      invalidatesTags: (_result, _error, arg) => [{ type: 'Orders', id: arg }, 'Profile'],
     }),
     createReview: builder.mutation<any, any>({
       query: (data) => ({
@@ -330,7 +337,7 @@ export const authApi = createApi({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Masters', 'Orders'],
+      invalidatesTags: ['Masters', 'Orders', 'Profile'],
     }),
     getMasterReviews: builder.query<any, string>({
       query: (masterId) => `/reviews/master/${masterId}`,
@@ -348,6 +355,7 @@ export const {
   useGetProfileQuery,
   useGetMastersQuery,
   useGlobalSearchQuery,
+  useSearchBrigadeInviteesQuery,
   useGetMasterByIdQuery,
   useGetHomeMastersQuery,
   useUpdateProfileMutation,

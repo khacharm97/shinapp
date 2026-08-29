@@ -83,6 +83,7 @@ export interface Master {
     onlinePay?: boolean;
     buyMaterial?: boolean;
     nightShift?: boolean;
+    multipleJobs?: boolean;
     website?: string;
     socialFacebook?: string;
     socialInstagram?: string;
@@ -96,5 +97,7 @@ export interface Master {
   brigades?: Brigade[];
   rating?: number;
   reviewsCount?: number;
+  /** Live availability derived from current in-progress orders. */
+  availability?: "AVAILABLE" | "HALF_BUSY" | "BUSY";
   [key: string]: unknown;
 }
