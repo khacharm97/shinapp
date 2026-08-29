@@ -1,6 +1,6 @@
 import { getImageUrl } from '@/utils';
 
-import { NavLink, Outlet, Link, useLocation, useNavigate, ScrollRestoration } from "react-router-dom"
+import { NavLink, Outlet, Link, useNavigate, ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { Mail, Phone, Menu, User, LogOut, FileText } from "lucide-react"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -39,7 +39,6 @@ const FOOTER_EMAIL = "shinapp.support@gmail.com"
 
 export default function RootLayout() {
   const { t, i18n } = useTranslation()
-  const location = useLocation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { token, user: reduxUser } = useAppSelector((state) => state.auth)
@@ -68,7 +67,7 @@ export default function RootLayout() {
   const isMasterUser = isMaster(user?.roles)
   const isCompanyUser = isCompany(user?.roles)
   const isVerified = !!user?.verifiedAt
-  const showCompleteProfileBanner = isLoggedIn && (isMasterUser || isCompanyUser) && !isVerified && location.pathname !== '/profile'
+  const showCompleteProfileBanner = isLoggedIn && (isMasterUser || isCompanyUser) && !isVerified
 
   const [showNavbar, setShowNavbar] = useState(true)
 

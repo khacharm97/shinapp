@@ -170,7 +170,7 @@ export default function ProfilePageContent() {
                           {t("profile_brigades", "My Brigades")}
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-6xl w-full max-h-[90vh] overflow-y-auto p-0 border-none bg-transparent shadow-none">
+                      <DialogContent className="w-[95vw] max-w-[1400px] sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-0 border-none bg-transparent shadow-none">
                         <BrigadesTab profileData={profile} className="mt-0" />
                       </DialogContent>
                     </Dialog>
