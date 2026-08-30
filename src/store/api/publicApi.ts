@@ -35,7 +35,13 @@ export const publicApi = createApi({
         method: 'GET',
       }),
     }),
+    getAnnouncementById: builder.query<any, string>({
+      query: (id) => ({
+        url: `/announcements/${id}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useInsertContactRequestMutation, useSendEstimateEmailMutation, useSendContactEmailMutation, useGetAnnouncementsQuery } = publicApi;
+export const { useInsertContactRequestMutation, useSendEstimateEmailMutation, useSendContactEmailMutation, useGetAnnouncementsQuery, useGetAnnouncementByIdQuery } = publicApi;

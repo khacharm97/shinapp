@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, CalendarIcon, AlertCircle, ChevronLeft, ChevronRight, MoreHorizontal, Briefcase, ImageIcon } from "lucide-react";
+import { Loader2, CalendarIcon, AlertCircle, ChevronLeft, ChevronRight, MoreHorizontal, Briefcase, ImageIcon, ArrowRight } from "lucide-react";
 import { useGetAnnouncementsQuery } from "@/store/api/publicApi";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/seo";
@@ -77,8 +78,9 @@ export default function AnnouncementsPageContent() {
               });
 
               return (
-                <div 
-                  key={announcement.id} 
+                <Link
+                  to={`/announcements/${announcement.id}`}
+                  key={announcement.id}
                   className={`group bg-white rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col border relative animate-in fade-in slide-in-from-bottom-8 hover:-translate-y-2
                     ${isUrgent ? 'border-red-200' : 'border-slate-100'}
                   `}
@@ -149,23 +151,14 @@ export default function AnnouncementsPageContent() {
                         <CalendarIcon className="w-4 h-4 text-brand/70" />
                         <span>{formattedDate}</span>
                       </div>
-                      
-                      {/* Contact Info (if available and needed, or a button to contact) */}
-                      <Button variant="ghost" size="sm" className="text-brand hover:bg-brand/10 hover:text-brand font-semibold rounded-full px-4"
-                        onClick={() => {
-                          if (announcement.company?.phone) {
-                            window.location.href = `tel:${announcement.company.phone}`;
-                          } else {
-                            // You could open a modal here with contact details
-                            alert(t("company_email", "Email:") + " " + announcement.company?.email);
-                          }
-                        }}
-                      >
-                        {t("contact", "Contact")}
-                      </Button>
+
+                      <span className="flex items-center gap-1 text-brand font-semibold group-hover:gap-2 transition-all">
+                        {t("view_details", "View details")}
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

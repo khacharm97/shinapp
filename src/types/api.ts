@@ -42,4 +42,5 @@ export interface MastersQueryArgs {
   cityId?: string;
   topRated?: boolean;
   availableNow?: boolean;
+  sortBy?: 'relevance' | 'rating';
 }

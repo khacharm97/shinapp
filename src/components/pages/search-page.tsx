@@ -34,6 +34,7 @@ export default function SearchPageContent() {
   const [availableNow, setAvailableNow] = useState(false);
   const [regionId, setRegionId] = useState<string>("");
   const [cityId, setCityId] = useState<string>("");
+  const [sortBy, setSortBy] = useState<"relevance" | "rating">("relevance");
 
   const limit = 10;
 
@@ -61,6 +62,7 @@ export default function SearchPageContent() {
     cityId: cityId || undefined,
     topRated: topRated || undefined,
     availableNow: availableNow || undefined,
+    sortBy,
   });
 
   const { data: skillsData } = useGetSkillsQuery(undefined);
@@ -209,6 +211,28 @@ export default function SearchPageContent() {
 
           {/* Right Content */}
           <div className="flex-1 space-y-6">
+            {/* Sort bar */}
+            <div className="flex items-center justify-end gap-3">
+              <Label htmlFor="sort-by" className="text-sm text-gray-600 dark:text-gray-400 shrink-0">
+                {t("search_sort_by", "Sort by")}
+              </Label>
+              <Select
+                value={sortBy}
+                onValueChange={(val) => {
+                  setSortBy(val === "rating" ? "rating" : "relevance");
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger id="sort-by" className="w-48 bg-white dark:bg-card border-gray-300 dark:border-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="relevance">{t("search_sort_relevance", "Relevance")}</SelectItem>
+                  <SelectItem value="rating">{t("search_sort_rating", "Highest rated")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             {isLoading ? (
               <div className="flex items-center justify-center py-20">
                 <Loader2 className="w-8 h-8 animate-spin text-brand" />
@@ -288,10 +312,25 @@ export default function SearchPageContent() {
                             </div>
                           )}
 
-                          <div className="flex items-center text-orange-500 font-medium">
-                            <Star className="w-4 h-4 fill-current me-1" />
-                            {t("search_top_rated", "Top Rated")}
-                          </div>
+                          {(master.reviewsCount ?? 0) > 0 ? (
+                            <div className="flex items-center text-orange-500 font-medium">
+                              <Star className="w-4 h-4 fill-current me-1" />
+                              {master.rating?.toFixed(1)}
+                              <span className="text-gray-500 dark:text-gray-400 ms-1 font-normal">
+                                ({master.reviewsCount})
+                              </span>
+                            </div>
+                          ) : master.userInfo?.topRated ? (
+                            <div className="flex items-center text-orange-500 font-medium">
+                              <Star className="w-4 h-4 fill-current me-1" />
+                              {t("search_top_rated", "Top Rated")}
+                            </div>
+                          ) : (
+                            <div className="flex items-center text-gray-400 font-normal">
+                              <Star className="w-4 h-4 me-1" />
+                              {t("search_no_reviews", "No reviews yet")}
+                            </div>
+                          )}
 
                           {master.availability === "AVAILABLE" && (
                             <div className="flex items-center text-green-600 font-medium">
