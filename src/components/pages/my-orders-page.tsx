@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search, Hourglass, PackageCheck } from "lucide-react";
@@ -15,6 +16,7 @@ export default function MyOrdersPageContent() {
   const { data: profile } = useGetProfileQuery(undefined);
   const { data: orders, isLoading } = useGetMyOrdersQuery(undefined);
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("ALL");
 
@@ -26,6 +28,18 @@ export default function MyOrdersPageContent() {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+
+  // Open a specific order's details when arriving from a notification link (?orderId=...).
+  useEffect(() => {
+    const orderId = searchParams.get("orderId");
+    if (!orderId || !orders) return;
+    const match = orders.find((o: any) => o.id === orderId);
+    if (match) {
+      setSelectedOrder(match);
+      searchParams.delete("orderId");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, orders, setSearchParams]);
 
   if (isLoading || !profile) {
     return (

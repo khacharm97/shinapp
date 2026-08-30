@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Bell, Check, X } from 'lucide-react';
+import { Bell, Check, CheckCheck, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,19 +12,23 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   useGetNotificationsQuery,
   useMarkNotificationReadMutation,
+  useMarkAllNotificationsReadMutation,
   useAcceptBrigadeInviteMutation,
   useRejectBrigadeInviteMutation,
 } from '@/store/api/authApi';
 import type { Notification as AppNotification } from '@/types';
 import { cn } from '@/lib/utils';
+import { getNotificationLink } from '@/lib/notification-link';
 import { toast } from 'react-hot-toast';
 
 export function NotificationsMenu({ isMobile = false }: { isMobile?: boolean }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { data, isLoading } = useGetNotificationsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
   const [markRead] = useMarkNotificationReadMutation();
+  const [markAllRead, { isLoading: isMarkingAll }] = useMarkAllNotificationsReadMutation();
   const [acceptInvite, { isLoading: isAccepting }] = useAcceptBrigadeInviteMutation();
   const [rejectInvite, { isLoading: isRejecting }] = useRejectBrigadeInviteMutation();
   const [open, setOpen] = useState(false);
@@ -38,6 +42,30 @@ export function NotificationsMenu({ isMobile = false }: { isMobile?: boolean }) 
       await markRead(id).unwrap();
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleMarkAllAsRead = async (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (unreadCount === 0) return;
+    try {
+      await markAllRead().unwrap();
+    } catch (err) {
+      console.error(err);
+      toast.error(t('error_marking_all_read', 'Failed to mark all as read'));
+    }
+  };
+
+  const handleNotificationClick = (notification: AppNotification) => {
+    // Unread brigade invites keep their inline Accept / Reject actions — don't
+    // consume them with a body click.
+    if (notification.type === 'BRIGADE_INVITE' && !notification.isRead) return;
+
+    if (!notification.isRead) handleMarkAsRead(notification.id);
+    const link = getNotificationLink(notification);
+    if (link) {
+      setOpen(false);
+      navigate(link);
     }
   };
 
@@ -70,12 +98,10 @@ export function NotificationsMenu({ isMobile = false }: { isMobile?: boolean }) 
       <div
         key={notification.id}
         className={cn(
-          "flex flex-col gap-2 p-3 text-sm rounded-md transition-colors",
+          "flex flex-col gap-2 p-3 text-sm rounded-md transition-colors cursor-pointer",
           !notification.isRead ? "bg-primary/10 dark:bg-primary/20" : "hover:bg-muted"
         )}
-        onClick={() => {
-          if (!notification.isRead) handleMarkAsRead(notification.id);
-        }}
+        onClick={() => handleNotificationClick(notification)}
       >
         <div className="flex justify-between items-start gap-2">
           <span className="font-semibold">{notification.title}</span>
@@ -116,14 +142,28 @@ export function NotificationsMenu({ isMobile = false }: { isMobile?: boolean }) 
       <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
         <div className="flex items-center justify-between px-2 mb-2">
           <h3 className="font-semibold text-lg flex items-center gap-2">
-            <Bell className="w-5 h-5" /> 
+            <Bell className="w-5 h-5" />
             {t('notifications', 'Notifications')}
           </h3>
-          {unreadCount > 0 && (
-            <span className="bg-destructive text-destructive-foreground text-xs font-bold px-2 py-0.5 rounded-full">
-              {unreadCount}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {unreadCount > 0 && (
+              <span className="bg-destructive text-destructive-foreground text-xs font-bold px-2 py-0.5 rounded-full">
+                {unreadCount}
+              </span>
+            )}
+            {unreadCount > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-brand"
+                disabled={isMarkingAll}
+                onClick={handleMarkAllAsRead}
+              >
+                <CheckCheck className="w-4 h-4 mr-1" />
+                {t('mark_all_read', 'Mark all read')}
+              </Button>
+            )}
+          </div>
         </div>
         <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto px-2">
           {isLoading ? (
@@ -154,9 +194,16 @@ export function NotificationsMenu({ isMobile = false }: { isMobile?: boolean }) 
         <div className="flex items-center justify-between px-4 py-3 border-b">
           <span className="font-semibold">{t('notifications', 'Notifications')}</span>
           {unreadCount > 0 && (
-            <span className="text-xs text-muted-foreground">
-              {unreadCount} {t('unread', 'unread')}
-            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs text-brand"
+              disabled={isMarkingAll}
+              onClick={handleMarkAllAsRead}
+            >
+              <CheckCheck className="w-4 h-4 mr-1" />
+              {t('mark_all_read', 'Mark all read')}
+            </Button>
           )}
         </div>
         <ScrollArea className="h-[350px]">
@@ -175,7 +222,7 @@ export function NotificationsMenu({ isMobile = false }: { isMobile?: boolean }) 
         </ScrollArea>
         <div className="border-t p-2">
           <Button variant="ghost" className="w-full text-xs text-brand h-8" asChild>
-            <Link to="/profile" onClick={() => setOpen(false)}>
+            <Link to="/profile/notifications" onClick={() => setOpen(false)}>
               {t('view_all_notifications', 'View all activity')}
             </Link>
           </Button>

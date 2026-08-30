@@ -12,6 +12,7 @@ const ProfilePage = lazy(() => import('@/pages/profile'))
 const ProfileSettingsPage = lazy(() => import('@/pages/profile-settings'))
 const MyAnnouncementsPage = lazy(() => import('@/pages/my-announcements'))
 const MyOrdersPage = lazy(() => import('@/pages/my-orders'))
+const NotificationsPage = lazy(() => import('@/pages/notifications'))
 const MastersPage = lazy(() => import('@/pages/masters'))
 const MasterDetailsPage = lazy(() => import('@/pages/master-details'))
 const BrigadeDetailsPage = lazy(() => import('@/pages/brigade-details'))
@@ -22,6 +23,7 @@ const LoginPage = lazy(() => import('@/pages/login'))
 const SignupPage = lazy(() => import('@/pages/signup'))
 const AuthCallbackPage = lazy(() => import('@/pages/auth-callback'))
 const AnnouncementsPage = lazy(() => import('@/pages/announcements'))
+const AnnouncementDetailsPage = lazy(() => import('@/pages/announcement-details'))
 
 const router = createBrowserRouter([
   {
@@ -50,6 +52,10 @@ const router = createBrowserRouter([
           {
             path: "profile/orders",
             element: <MyOrdersPage />,
+          },
+          {
+            path: "profile/notifications",
+            element: <NotificationsPage />,
           }
         ]
       },
@@ -68,6 +74,10 @@ const router = createBrowserRouter([
       {
         path: "announcements",
         element: <AnnouncementsPage />,
+      },
+      {
+        path: "announcements/:id",
+        element: <AnnouncementDetailsPage />,
       },
       {
         path: "search",

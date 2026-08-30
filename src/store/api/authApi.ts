@@ -48,24 +48,26 @@ export const authApi = createApi({
       providesTags: ['Profile'],
     }),
     getMasters: builder.query({
-      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow }: MastersQueryArgs) => {
+      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow, sortBy }: MastersQueryArgs) => {
         let qs = `masters?page=${page}&limit=${limit}`;
         if (search) qs += `&search=${encodeURIComponent(search)}`;
         if (regionId) qs += `&regionId=${encodeURIComponent(regionId)}`;
         if (cityId) qs += `&cityId=${encodeURIComponent(cityId)}`;
         if (topRated !== undefined) qs += `&topRated=${topRated}`;
         if (availableNow !== undefined) qs += `&availableNow=${availableNow}`;
+        if (sortBy && sortBy !== 'relevance') qs += `&sortBy=${sortBy}`;
         return qs;
       },
     }),
     globalSearch: builder.query({
-      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow }: MastersQueryArgs) => {
+      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow, sortBy }: MastersQueryArgs) => {
         let qs = `search?page=${page}&limit=${limit}`;
         if (search) qs += `&search=${encodeURIComponent(search)}`;
         if (regionId) qs += `&regionId=${encodeURIComponent(regionId)}`;
         if (cityId) qs += `&cityId=${encodeURIComponent(cityId)}`;
         if (topRated !== undefined) qs += `&topRated=${topRated}`;
         if (availableNow !== undefined) qs += `&availableNow=${availableNow}`;
+        if (sortBy && sortBy !== 'relevance') qs += `&sortBy=${sortBy}`;
         return qs;
       },
     }),
@@ -233,7 +235,41 @@ export const authApi = createApi({
         url: `notifications/${id}/read`,
         method: 'PUT',
       }),
+      async onQueryStarted(id: string, { dispatch, queryFulfilled }) {
+        const patch = dispatch(
+          authApi.util.updateQueryData('getNotifications', undefined, (draft) => {
+            const target = draft.notifications?.find((n) => n.id === id);
+            if (target) target.isRead = true;
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patch.undo();
+        }
+      },
       invalidatesTags: ['Profile'], // Or a specific tag if preferred
+    }),
+    markAllNotificationsRead: builder.mutation<{ success?: boolean; error?: string }, void>({
+      query: () => ({
+        url: 'notifications/read-all',
+        method: 'PUT',
+      }),
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        const patch = dispatch(
+          authApi.util.updateQueryData('getNotifications', undefined, (draft) => {
+            draft.notifications?.forEach((n) => {
+              n.isRead = true;
+            });
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patch.undo();
+        }
+      },
+      invalidatesTags: ['Profile'],
     }),
     acceptBrigadeInvite: builder.mutation({
       query: (brigadeId: string) => ({
@@ -371,6 +407,7 @@ export const {
   useDeleteBrigadeMutation,
   useGetNotificationsQuery,
   useMarkNotificationReadMutation,
+  useMarkAllNotificationsReadMutation,
   useAcceptBrigadeInviteMutation,
   useRejectBrigadeInviteMutation,
   useGetMyAnnouncementsQuery,
