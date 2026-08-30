@@ -2,6 +2,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { authApi } from './api/authApi';
 import { publicApi } from './api/publicApi';
+import { chatApi } from './api/chatApi';
 import authReducer from './slices/authSlice';
 import type { UnknownAction } from '@reduxjs/toolkit';
 
@@ -9,6 +10,7 @@ const appReducer = combineReducers({
   auth: authReducer,
   [authApi.reducerPath]: authApi.reducer,
   [publicApi.reducerPath]: publicApi.reducer,
+  [chatApi.reducerPath]: chatApi.reducer,
 });
 
 const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: UnknownAction) => {
@@ -22,7 +24,7 @@ const rootReducer = (state: ReturnType<typeof appReducer> | undefined, action: U
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware, publicApi.middleware),
+    getDefaultMiddleware().concat(authApi.middleware, publicApi.middleware, chatApi.middleware),
 });
 
 setupListeners(store.dispatch);

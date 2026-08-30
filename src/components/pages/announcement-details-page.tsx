@@ -17,8 +17,10 @@ import {
   Clock,
   Instagram,
   Facebook,
+  MessageSquare,
 } from "lucide-react";
 import { useGetAnnouncementByIdQuery } from "@/store/api/publicApi";
+import { useAppSelector } from "@/store/hooks";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/seo";
@@ -29,6 +31,7 @@ export default function AnnouncementDetailsPageContent() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const currentUser = useAppSelector((s) => s.auth.user);
   const [activeImage, setActiveImage] = useState(0);
 
   const { data: announcement, isLoading, isError } = useGetAnnouncementByIdQuery(
@@ -341,9 +344,25 @@ export default function AnnouncementDetailsPageContent() {
               )}
 
               <div className="pt-4 border-t border-slate-100 space-y-2">
+                {currentUser && currentUser.id !== company.id && (
+                  <Button
+                    className="w-full bg-brand text-white hover:bg-brand/90"
+                    onClick={() =>
+                      navigate(
+                        `/messages/new?recipientId=${company.id}&type=MASTER_COMPANY` +
+                          `&announcementId=${announcement.id}` +
+                          `&recipientName=${encodeURIComponent(companyName)}` +
+                          `&recipientAvatar=${encodeURIComponent(company.avatarUrl || "")}`
+                      )
+                    }
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    {t("message_company", "Message company")}
+                  </Button>
+                )}
                 {company.phone && (
                   <a href={`tel:${company.phone}`} className="block">
-                    <Button className="w-full bg-brand text-white hover:bg-brand/90">
+                    <Button variant="outline" className="w-full">
                       <Phone className="w-4 h-4" />
                       {t("call", "Call")} {company.phone}
                     </Button>

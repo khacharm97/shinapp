@@ -13,6 +13,7 @@ const ProfileSettingsPage = lazy(() => import('@/pages/profile-settings'))
 const MyAnnouncementsPage = lazy(() => import('@/pages/my-announcements'))
 const MyOrdersPage = lazy(() => import('@/pages/my-orders'))
 const NotificationsPage = lazy(() => import('@/pages/notifications'))
+const MessagesPage = lazy(() => import('@/pages/messages'))
 const MastersPage = lazy(() => import('@/pages/masters'))
 const MasterDetailsPage = lazy(() => import('@/pages/master-details'))
 const BrigadeDetailsPage = lazy(() => import('@/pages/brigade-details'))
@@ -56,6 +57,14 @@ const router = createBrowserRouter([
           {
             path: "profile/notifications",
             element: <NotificationsPage />,
+          },
+          {
+            path: "messages",
+            element: <MessagesPage />,
+          },
+          {
+            path: "messages/:conversationId",
+            element: <MessagesPage />,
           }
         ]
       },

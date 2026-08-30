@@ -32,6 +32,7 @@ import { useAppSelector, useAppDispatch } from "@/store/hooks"
 import { logout, updateUser } from "@/store/slices/authSlice"
 import { useEffect, useState } from "react"
 import { NotificationsMenu } from "@/components/notifications/NotificationsMenu"
+import { MessagesLink } from "@/components/chat/MessagesLink"
 
 const FOOTER_PHONE = "+374(93)-23-34-02"
 const FOOTER_PHONE_HREF = "tel:+37493233402"
@@ -131,6 +132,7 @@ export default function RootLayout() {
               <LanguageToggle />
               <ModeToggle />
               <div className="hidden md:flex items-center gap-2">
+                {isLoggedIn && <MessagesLink />}
                 {isLoggedIn && <NotificationsMenu />}
                 {isLoggedIn ? (
                   <DropdownMenu>
@@ -203,6 +205,11 @@ export default function RootLayout() {
                       <NavLink to="/contact" className={getMobileNavLinkClass}>{t("nav_contact_us", "Contact us")}</NavLink>
                     </nav>
                     
+                    {isLoggedIn && (
+                      <div className="mt-4 pt-4 border-t border-border">
+                        <MessagesLink isMobile={true} />
+                      </div>
+                    )}
                     {isLoggedIn && <NotificationsMenu isMobile={true} />}
 
                     <div className="mt-auto flex flex-col gap-2 pt-6 border-t pb-2">

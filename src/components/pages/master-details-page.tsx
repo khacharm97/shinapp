@@ -170,6 +170,22 @@ export default function MasterDetailsPageContent() {
                       {t("propose_order", "Propose Order")}
                     </Button>
                   )}
+                  {profile && profile.id !== master.id && (
+                    <Button
+                      variant="outline"
+                      className="w-full md:w-auto border-brand text-brand hover:bg-brand/10 hover:text-brand"
+                      onClick={() =>
+                        navigate(
+                          `/messages/new?recipientId=${master.id}&type=USER_MASTER` +
+                            `&recipientName=${encodeURIComponent(master.name || "")}` +
+                            `&recipientAvatar=${encodeURIComponent(master.avatarUrl || "")}`
+                        )
+                      }
+                    >
+                      <MessageSquare className="w-4 h-4 me-2" />
+                      {t("send_message", "Message")}
+                    </Button>
+                  )}
                   <Button onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
                     <Phone className="w-4 h-4 me-2" />
                     {t("master_details_call_manager", "Call Manager")}

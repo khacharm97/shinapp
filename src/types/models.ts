@@ -14,6 +14,36 @@ export interface User {
   [key: string]: unknown;
 }
 
+export type ConversationType = "USER_MASTER" | "MASTER_COMPANY" | "SUPPORT";
+
+export interface ChatParticipant {
+  id: string;
+  name?: string | null;
+  avatarUrl?: string | null;
+  roles?: string[];
+}
+
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  sender?: { id: string; name?: string | null; avatarUrl?: string | null };
+  body: string;
+  attachments: string[];
+  createdAt: string;
+}
+
+export interface Conversation {
+  id: string;
+  type: ConversationType;
+  announcementId?: string | null;
+  orderId?: string | null;
+  lastMessageAt: string;
+  otherParticipants: ChatParticipant[];
+  lastMessage?: ChatMessage | null;
+  unreadCount: number;
+}
+
 export interface LocalizedString {
   name?: string;
   nameEn?: string;

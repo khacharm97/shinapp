@@ -13,6 +13,8 @@ export function getNotificationLink(notification: AppNotification): string | nul
   const brigadeId = typeof metadata.brigadeId === 'string' ? metadata.brigadeId : null;
   const announcementId =
     typeof metadata.announcementId === 'string' ? metadata.announcementId : null;
+  const conversationId =
+    typeof metadata.conversationId === 'string' ? metadata.conversationId : null;
 
   switch (notification.type) {
     case 'ORDER_INVITE':
@@ -24,6 +26,8 @@ export function getNotificationLink(notification: AppNotification): string | nul
       return brigadeId ? `/brigades/${brigadeId}` : null;
     case 'ANNOUNCEMENT':
       return announcementId ? `/announcements/${announcementId}` : '/announcements';
+    case 'MESSAGE':
+      return conversationId ? `/messages/${conversationId}` : '/messages';
     default:
       return null;
   }

@@ -384,5 +384,15 @@
   "working_areas": "مناطق کاری",
   "website": "وب‌سایت",
   "call": "تماس",
-  "send_email": "ارسال ایمیل"
+  "send_email": "ارسال ایمیل",
+  "messages": "پیام‌ها",
+  "send_message": "پیام",
+  "message_company": "پیام به شرکت",
+  "new_message": "پیام جدید",
+  "unknown_user": "ناشناس",
+  "no_conversations": "هنوز گفتگویی وجود ندارد.",
+  "no_messages_yet": "هنوز پیامی نیست",
+  "no_messages_yet_start": "هنوز پیامی نیست. سلام کنید!",
+  "select_conversation": "برای شروع گفتگو یک مکالمه را انتخاب کنید",
+  "type_a_message": "پیامی بنویسید..."
 }

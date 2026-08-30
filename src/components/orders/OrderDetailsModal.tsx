@@ -17,7 +17,8 @@ import {
 } from "@/store/api/authApi";
 import { LeaveReviewModal } from "./LeaveReviewModal";
 import { getImageUrl } from "@/utils";
-import { MapPin, Calendar, CreditCard, DollarSign } from "lucide-react";
+import { MapPin, Calendar, CreditCard, DollarSign, MessageSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface OrderDetailsModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ interface OrderDetailsModalProps {
 
 export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: OrderDetailsModalProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [acceptOrder, { isLoading: isAccepting }] = useAcceptOrderMutation();
   const [rejectOrder, { isLoading: isRejecting }] = useRejectOrderMutation();
   const [updateOrder, { isLoading: isUpdating }] = useUpdateOrderMutation();
@@ -152,10 +154,29 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
                 className="w-12 h-12 rounded-full object-cover border"
                 onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${otherParty?.name}&background=random`; }}
               />
-              <div>
+              <div className="flex-1">
                 <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{roleLabel}</p>
                 <p className="text-lg font-semibold text-slate-900">{otherParty?.name || t("unknown", "Unknown")}</p>
               </div>
+              {otherParty?.id && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-brand text-brand hover:bg-brand/10 hover:text-brand"
+                  onClick={() => {
+                    onClose();
+                    navigate(
+                      `/messages/new?recipientId=${otherParty.id}&type=USER_MASTER` +
+                        `&orderId=${order.id}` +
+                        `&recipientName=${encodeURIComponent(otherParty.name || "")}` +
+                        `&recipientAvatar=${encodeURIComponent(otherParty.avatarUrl || "")}`
+                    );
+                  }}
+                >
+                  <MessageSquare className="w-4 h-4 me-1" />
+                  {t("send_message", "Message")}
+                </Button>
+              )}
             </div>
 
             <div className="space-y-2">
