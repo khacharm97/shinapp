@@ -122,6 +122,9 @@ export const chatApi = createApi({
         if (!token) return;
 
         const socket = io(`${httpBase}/chat`, {
+          // `auth` survives the upgrade to the websocket transport; browsers
+          // drop `extraHeaders` at that point. Keep the header as a fallback.
+          auth: { token: `Bearer ${token}` },
           extraHeaders: { authorization: `Bearer ${token}` },
         });
 

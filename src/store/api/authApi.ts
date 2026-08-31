@@ -184,8 +184,12 @@ export const authApi = createApi({
         const token = state.auth.token;
         if (!token) return;
 
-        const wsUrl = backendUrl.startsWith('http') ? backendUrl : `http://${backendUrl}`;
+        const wsUrl = backendUrl.startsWith('http') ? backendUrl : `https://${backendUrl}`;
         const socket = io(wsUrl, {
+          // `auth` is sent in the handshake for both the polling and websocket
+          // transports; `extraHeaders` is ignored by browsers once the socket
+          // upgrades to websocket, which broke realtime notifications in prod.
+          auth: { token: `Bearer ${token}` },
           extraHeaders: {
             authorization: `Bearer ${token}`
           }
