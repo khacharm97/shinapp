@@ -42,7 +42,7 @@ export function OurMastersSection() {
     <InfiniteSliderSection
       title={t('our_masters')}
       items={masters}
-      exploreLink="/masters"
+      exploreLink="/search"
       exploreText={t('explore_more')}
       renderItem={(master: Master, index: number) => (
         <Link 

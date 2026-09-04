@@ -1,6 +1,7 @@
 import { getImageUrl } from '@/utils';
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useAppSelector } from "@/store/hooks";
 import { useTranslation } from "react-i18next";
 import { Loader2, MapPin, Star, CheckCircle2, Clock, Phone, Mail, ArrowLeft, ImagePlus, FileText, Calendar as CalendarIcon, MessageSquare } from "lucide-react";
 import { useGetMasterByIdQuery, useGetSkillsQuery, useGetProfileQuery, useGetMasterReviewsQuery, useGetMasterBusyDatesQuery } from "@/store/api/authApi";
@@ -33,7 +34,8 @@ export default function MasterDetailsPageContent() {
   };
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
-  const { data: profile } = useGetProfileQuery(undefined);
+  const token = useAppSelector((state) => state.auth.token);
+  const { data: profile } = useGetProfileQuery(undefined, { skip: !token });
   const { data: master, isLoading, isError } = useGetMasterByIdQuery(id as string, {
     skip: !id,
   });
