@@ -21,8 +21,16 @@ const baseQuery = fetchBaseQuery({
 
 const baseQueryWithReauth = async (args: string | FetchArgs, api: BaseQueryApi, extraOptions: object) => {
   const result = await baseQuery(args, api, extraOptions);
+  const hadToken = !!(api.getState() as RootState).auth.token;
   if (result.error && result.error.status === 401) {
-    api.dispatch(logout());
+    // Only log out (which resets the whole store, including in-flight queries
+    // from other, unauthenticated endpoints on the same page) if there was
+    // actually a session to invalidate. A 401 from a request made while
+    // logged out - e.g. a public page's own useGetProfileQuery call - is
+    // expected and must not wipe unrelated queries that are still in flight.
+    if (hadToken) {
+      api.dispatch(logout());
+    }
   } else if (result.error && result.error.status === 403) {
     // If blocked, 403 is returned
     const errorData = result.error.data as { message?: string } | undefined;

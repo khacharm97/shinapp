@@ -1,18 +1,71 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, CalendarIcon, AlertCircle, ChevronLeft, ChevronRight, MoreHorizontal, Briefcase, ImageIcon, ArrowRight } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import {
+  Loader2,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+  Briefcase,
+  ImageIcon,
+  ArrowRight,
+  Search,
+  MapPin,
+  BadgeCheck,
+} from "lucide-react";
 import { useGetAnnouncementsQuery } from "@/store/api/publicApi";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { armeniaRegions } from "@/lib/armenia-regions";
 import { SEO } from "@/components/seo";
-import { getImageUrl } from "@/utils";
+import { getImageUrl, getLocalizedName } from "@/utils";
 
 export default function AnnouncementsPageContent() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [page, setPage] = useState(1);
-  const limit = 9; // Grid of 3x3
+  const [search, setSearch] = useState("");
+  const [regionId, setRegionId] = useState("");
+  const limit = 10;
 
   const { data, isLoading, isError } = useGetAnnouncementsQuery({ page, limit });
+
+  const getLocalizedLocation = (rId?: string | null, cId?: string | null) => {
+    if (!rId) return "";
+    const region = armeniaRegions.find((r) => r.id === rId);
+    if (!region) return "";
+    let loc = getLocalizedName(region, i18n.language);
+    if (cId) {
+      const city = region.cities.find((c) => c.id === cId);
+      if (city) loc = `${getLocalizedName(city, i18n.language)}, ${loc}`;
+    }
+    return loc;
+  };
+
+  const { items: pageAnnouncements, totalPages } = data || { items: [], totalPages: 1 };
+
+  const isFiltering = !!search.trim() || !!regionId;
+
+  const filteredAnnouncements = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return pageAnnouncements.filter((a: any) => {
+      const matchesQuery =
+        !q ||
+        a.title?.toLowerCase().includes(q) ||
+        a.sphere?.toLowerCase().includes(q) ||
+        a.description?.toLowerCase().includes(q);
+      const matchesRegion = !regionId || a.company?.userInfo?.regionId === regionId;
+      return matchesQuery && matchesRegion;
+    });
+  }, [pageAnnouncements, search, regionId]);
 
   if (isLoading) {
     return (
@@ -38,17 +91,15 @@ export default function AnnouncementsPageContent() {
     );
   }
 
-  const { items: announcements, totalPages } = data || { items: [], totalPages: 1 };
-
   return (
-    <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-12 px-4 sm:px-6 lg:px-8">
       <SEO title={t('nav_announcements', 'Announcements')} description={t('announcements_meta_desc', 'Browse the latest construction and renovation announcements in Armenia.')} />
-      
-      <div className="max-w-7xl mx-auto space-y-10">
-        
+
+      <div className="max-w-5xl mx-auto space-y-8">
+
         {/* Header Section */}
-        <div className="text-center max-w-2xl mx-auto mb-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-4">
+        <div className="max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-700">
+          <h1 className="text-4xl md:text-5xl font-bold text-brand tracking-tight mb-4 leading-tight">
             {t("announcements_title", "Latest Announcements")}
           </h1>
           <p className="text-lg text-slate-600">
@@ -56,107 +107,136 @@ export default function AnnouncementsPageContent() {
           </p>
         </div>
 
-        {announcements.length === 0 ? (
+        {/* Search Bar */}
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="bg-white rounded-2xl shadow-sm border border-slate-100 p-3 flex flex-col md:flex-row gap-3 animate-in fade-in slide-in-from-bottom-6 duration-700"
+        >
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t("announcements_search_placeholder", "Search announcements...")}
+              className="pl-10 h-11 border-slate-200"
+            />
+          </div>
+          <div className="md:w-56">
+            <Select value={regionId} onValueChange={(val) => setRegionId(val === "all" ? "" : val)}>
+              <SelectTrigger className="h-11 data-[size=default]:h-11 w-full border-slate-200">
+                <SelectValue placeholder={t("search_regions_placeholder", "Regions")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("search_all_regions", "All Regions")}</SelectItem>
+                {armeniaRegions.map((r) => (
+                  <SelectItem key={r.id} value={r.id}>
+                    {getLocalizedName(r, i18n.language)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button type="submit" className="h-11 px-8 bg-brand hover:bg-brand/90 text-white font-bold">
+            {t("search_button", "Search")}
+          </Button>
+        </form>
+
+        <h2 className="text-lg font-bold text-brand">
+          {t("announcements_results_count", "{{count}} announcements found", { count: filteredAnnouncements.length })}
+        </h2>
+
+        {filteredAnnouncements.length === 0 ? (
           <div className="bg-white p-12 rounded-3xl shadow-sm border border-slate-100 text-center animate-in fade-in duration-500">
             <div className="bg-brand/5 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
               <Briefcase className="w-10 h-10 text-brand" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-800 mb-2">{t("no_announcements_title", "No Announcements Yet")}</h3>
+            <h3 className="text-2xl font-bold text-slate-800 mb-2">
+              {isFiltering ? t("no_announcements_match_title", "No Matching Announcements") : t("no_announcements_title", "No Announcements Yet")}
+            </h3>
             <p className="text-slate-500 max-w-md mx-auto">
-              {t("no_announcements_desc", "There are currently no active announcements. Check back later for new updates!")}
+              {isFiltering
+                ? t("no_announcements_match_desc", "Try a different search term or region.")
+                : t("no_announcements_desc", "There are currently no active announcements. Check back later for new updates!")}
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {announcements.map((announcement: any  , i: number) => {
-              const companyName = announcement.company?.name || "Unknown Company";
+          <div className="flex flex-col gap-4">
+            {filteredAnnouncements.map((announcement: any, i: number) => {
+              const companyName = announcement.company?.name || t("unknown_company", "Unknown Company");
               const isUrgent = announcement.urgent;
-              const formattedDate = new Date(announcement.createdAt).toLocaleDateString(undefined, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              });
+              const isVerified = !!announcement.company?.verifiedAt;
+              const location = getLocalizedLocation(announcement.company?.userInfo?.regionId, announcement.company?.userInfo?.cityId);
+              const posted = formatDistanceToNow(new Date(announcement.createdAt), { addSuffix: true });
 
               return (
                 <Link
                   to={`/announcements/${announcement.id}`}
                   key={announcement.id}
-                  className={`group bg-white rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col border relative animate-in fade-in slide-in-from-bottom-8 hover:-translate-y-2
-                    ${isUrgent ? 'border-red-200' : 'border-slate-100'}
-                  `}
-                  style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'both' }}
+                  className="group bg-white rounded-2xl border border-slate-100 hover:shadow-lg hover:border-brand/20 transition-all duration-300 overflow-hidden flex flex-col sm:flex-row gap-5 p-4 sm:p-5 animate-in fade-in slide-in-from-bottom-4"
+                  style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
                 >
-                  {isUrgent && (
-                    <div className="absolute top-0 right-0 overflow-hidden w-24 h-24 z-20 pointer-events-none">
-                      <div className="absolute transform rotate-45 bg-red-500 text-white text-[10px] font-bold py-1 right-[-35px] top-[32px] w-[170px] text-center shadow-md animate-pulse">
-                        {t("urgent", "URGENT")}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Announcement Banner Image */}
-                  {announcement.imageUrls && announcement.imageUrls.length > 0 && (
-                    <div className="w-full h-48 overflow-hidden relative z-0">
-                      <img 
-                        src={getImageUrl(announcement.imageUrls[0])} 
-                        alt={announcement.title} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  <div className="w-full sm:w-40 h-40 sm:h-28 rounded-xl overflow-hidden bg-slate-100 shrink-0 relative">
+                    {announcement.imageUrls && announcement.imageUrls.length > 0 ? (
+                      <img
+                        src={getImageUrl(announcement.imageUrls[0])}
+                        alt={announcement.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                      {/* Gradient overlay for better text contrast if we ever put text on it, or just to make it look premium */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
-                      
-                      {announcement.imageUrls.length > 1 && (
-                        <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm shadow-sm flex items-center gap-1">
-                          <ImageIcon className="w-3 h-3" />
-                          <span>{announcement.imageUrls.length}</span>
-                        </div>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-300">
+                        <ImageIcon className="w-8 h-8" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                    <div className="flex items-center gap-2 text-sm text-slate-500">
+                      <span className="truncate">{announcement.sphere}</span>
+                      {isVerified && (
+                        <span className="flex items-center gap-1 text-brand font-semibold shrink-0">
+                          <BadgeCheck className="w-4 h-4" />
+                          {t("verified", "Verified")}
+                        </span>
                       )}
                     </div>
-                  )}
 
-                  <div className="p-8 flex-1 flex flex-col relative z-10 bg-white">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-14 h-14 rounded-2xl overflow-hidden bg-slate-100 shadow-inner flex-shrink-0 border border-slate-200">
-                        {announcement.company?.avatarUrl ? (
-                          <img 
-                            src={getImageUrl(announcement.company.avatarUrl)} 
-                            alt={companyName} 
-                            className="w-full h-full object-cover"
-                            onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&q=80&w=200" }}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-brand/5 text-brand font-bold text-xl">
-                            {companyName.charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-slate-900 truncate text-lg group-hover:text-brand transition-colors">{companyName}</h4>
-                        <p className="text-xs text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full inline-block mt-1 font-medium truncate max-w-full">
-                          {announcement.sphere}
-                        </p>
-                      </div>
-                    </div>
-
-                    <h3 className="text-2xl font-bold text-slate-800 mb-3 line-clamp-2 leading-tight">
+                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-brand transition-colors line-clamp-1">
                       {announcement.title}
                     </h3>
-                    
-                    <p className="text-slate-600 text-sm leading-relaxed line-clamp-3 mb-6 flex-1">
-                      {announcement.description}
-                    </p>
 
-                    <div className="pt-5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 mt-auto">
-                      <div className="flex items-center gap-1.5 font-medium">
-                        <CalendarIcon className="w-4 h-4 text-brand/70" />
-                        <span>{formattedDate}</span>
-                      </div>
-
-                      <span className="flex items-center gap-1 text-brand font-semibold group-hover:gap-2 transition-all">
-                        {t("view_details", "View details")}
-                        <ArrowRight className="w-4 h-4" />
-                      </span>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
+                      {location && (
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5" />
+                          {location}
+                        </span>
+                      )}
+                      {location && <span>&middot;</span>}
+                      <span>{t("posted", "Posted")} {posted}</span>
                     </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <div className="w-7 h-7 rounded-full bg-brand/10 text-brand font-bold text-xs flex items-center justify-center overflow-hidden shrink-0">
+                        {announcement.company?.avatarUrl ? (
+                          <img src={getImageUrl(announcement.company.avatarUrl)} alt={companyName} className="w-full h-full object-cover" />
+                        ) : (
+                          companyName.charAt(0).toUpperCase()
+                        )}
+                      </div>
+                      <span className="text-sm text-slate-600 truncate">{companyName}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 sm:w-auto shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 sm:border-l border-slate-100 sm:pl-5">
+                    {isUrgent && (
+                      <span className="bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0 whitespace-nowrap">
+                        {t("urgent", "URGENT")}
+                      </span>
+                    )}
+                    <span className="flex items-center gap-1 text-brand font-semibold text-sm group-hover:gap-2 transition-all shrink-0 whitespace-nowrap">
+                      {t("view_details", "View details")}
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
                   </div>
                 </Link>
               );
@@ -164,8 +244,8 @@ export default function AnnouncementsPageContent() {
           </div>
         )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
+        {/* Pagination - only meaningful when browsing the unfiltered, server-paginated list */}
+        {!isFiltering && totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-12 animate-in fade-in duration-1000">
             <Button
               variant="outline"
@@ -176,7 +256,7 @@ export default function AnnouncementsPageContent() {
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            
+
             <div className="flex items-center gap-1.5 bg-white p-1.5 rounded-full shadow-sm border border-slate-100">
               {[...Array(totalPages)].map((_, i) => {
                 const pageNum = i + 1;
