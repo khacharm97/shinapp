@@ -206,7 +206,17 @@ export default function SignupPageContent() {
               htmlFor="terms"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-foreground/80"
             >
-              {t("auth_agree_terms", "I agree to the terms and conditions")}
+              {t("auth_agree_privacy_pre", "I agree to the ")}
+              <Link
+                to="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand underline hover:no-underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {t("auth_agree_privacy_link", "Privacy Policy")}
+              </Link>
+              {t("auth_agree_privacy_post", "")}
             </label>
           </div>
 

@@ -19,6 +19,7 @@ const MasterDetailsPage = lazy(() => import('@/pages/master-details'))
 const BrigadeDetailsPage = lazy(() => import('@/pages/brigade-details'))
 const AboutPage = lazy(() => import('@/pages/about'))
 const ContactPage = lazy(() => import('@/pages/contact'))
+const PrivacyPolicyPage = lazy(() => import('@/pages/privacy-policy'))
 const SearchPage = lazy(() => import('@/pages/search'))
 const LoginPage = lazy(() => import('@/pages/login'))
 const SignupPage = lazy(() => import('@/pages/signup'))
@@ -107,6 +108,10 @@ const router = createBrowserRouter([
       {
         path: "contact",
         element: <ContactPage />,
+      },
+      {
+        path: "privacy-policy",
+        element: <PrivacyPolicyPage />,
       },
       {
         element: <AuthLayout />,
