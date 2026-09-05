@@ -6,7 +6,7 @@ import {
   useUpdateMyAnnouncementMutation,
   useDeleteMyAnnouncementMutation,
 } from "@/store/api/authApi";
-import { PlusIcon, PencilIcon, TrashIcon, CalendarIcon, Loader2, ImageIcon, X, UploadCloud } from "lucide-react";
+import { PlusIcon, PencilIcon, TrashIcon, CalendarIcon, Loader2, ImageIcon, X, UploadCloud, EyeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -241,6 +241,10 @@ export default function MyAnnouncements() {
                     <span>
                       {new Date(announcement.startDate).toLocaleDateString()} - {new Date(announcement.endDate).toLocaleDateString()}
                     </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 font-medium" title={t("my_announcements_views_tooltip", "Views")}>
+                    <EyeIcon className="w-4 h-4 text-brand/70" />
+                    <span>{announcement.viewsCount ?? 0}</span>
                   </div>
                 </div>
               </div>
