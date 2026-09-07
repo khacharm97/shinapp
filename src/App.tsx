@@ -6,12 +6,14 @@ import AuthLayout from '@/layouts/auth-layout'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 const HomePage = lazy(() => import('@/pages/home'))
-const ComingSoonPage = lazy(() => import('@/pages/coming-soon'))
 const CalculatorPage = lazy(() => import('@/pages/calculator'))
 const ProfilePage = lazy(() => import('@/pages/profile'))
 const ProfileSettingsPage = lazy(() => import('@/pages/profile-settings'))
 const MyAnnouncementsPage = lazy(() => import('@/pages/my-announcements'))
 const MyOrdersPage = lazy(() => import('@/pages/my-orders'))
+const MyTechniquesPage = lazy(() => import('@/pages/my-techniques'))
+const TechniquePage = lazy(() => import('@/pages/technique'))
+const TechniqueDetailsPage = lazy(() => import('@/pages/technique-details'))
 const NotificationsPage = lazy(() => import('@/pages/notifications'))
 const MessagesPage = lazy(() => import('@/pages/messages'))
 const MastersPage = lazy(() => import('@/pages/masters'))
@@ -56,6 +58,10 @@ const router = createBrowserRouter([
             element: <MyOrdersPage />,
           },
           {
+            path: "profile/techniques",
+            element: <MyTechniquesPage />,
+          },
+          {
             path: "profile/notifications",
             element: <NotificationsPage />,
           },
@@ -95,7 +101,11 @@ const router = createBrowserRouter([
       },
       {
         path: "technique",
-        element: <ComingSoonPage />,
+        element: <TechniquePage />,
+      },
+      {
+        path: "technique/:id",
+        element: <TechniqueDetailsPage />,
       },
       {
         path: "calculator",

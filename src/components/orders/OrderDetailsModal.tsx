@@ -17,7 +17,7 @@ import {
 } from "@/store/api/authApi";
 import { LeaveReviewModal } from "./LeaveReviewModal";
 import { getImageUrl } from "@/utils";
-import { MapPin, Calendar, CreditCard, DollarSign, MessageSquare } from "lucide-react";
+import { MapPin, Calendar, CreditCard, DollarSign, MessageSquare, Wrench } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface OrderDetailsModalProps {
@@ -147,6 +147,13 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
 
         {!isEditing ? (
           <div className="space-y-6 py-4">
+            {order.technique && (
+              <div className="flex items-center gap-2 text-sm text-brand bg-brand/5 border border-brand/20 rounded-lg px-4 py-2 w-fit">
+                <Wrench className="w-4 h-4" />
+                <span className="font-medium">{t("technique_order_label", "Technique")}:</span> {order.technique.name}
+              </div>
+            )}
+
             <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
               <img
                 src={getImageUrl(otherParty?.avatarUrl)}

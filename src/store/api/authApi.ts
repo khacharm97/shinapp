@@ -3,7 +3,7 @@ import type { BaseQueryApi, FetchArgs } from '@reduxjs/toolkit/query';
 import type { RootState } from '../index';
 import { logout } from '../slices/authSlice';
 import { io } from 'socket.io-client';
-import type { Notification as AppNotification, MastersQueryArgs, Master } from '@/types';
+import type { Notification as AppNotification, MastersQueryArgs, Master, Technique, TechniquesQueryArgs } from '@/types';
 
 const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
 const baseUrl = backendUrl.startsWith('http') ? `${backendUrl}/auth/` : `https://${backendUrl}/auth/`;
@@ -49,7 +49,9 @@ export const authApi = createApi({
     'Reviews',
     'Orders',
     'Masters',
-    'Profile'],
+    'Profile',
+    'Techniques',
+    'MyTechniques'],
   endpoints: (builder) => ({
     getProfile: builder.query({
       query: () => 'profile',
@@ -394,6 +396,53 @@ export const authApi = createApi({
     getMasterBusyDates: builder.query<any, string>({
       query: (masterId) => `/reviews/master/${masterId}/busy-dates`,
     }),
+
+    getTechniques: builder.query<{ items: Technique[]; total: number; page: number; limit: number; totalPages: number }, TechniquesQueryArgs>({
+      query: ({ page = 1, limit = 10, search }) => {
+        let qs = `techniques?page=${page}&limit=${limit}`;
+        if (search) qs += `&search=${encodeURIComponent(search)}`;
+        return qs;
+      },
+      providesTags: ['Techniques'],
+    }),
+    getHomeTechniques: builder.query<{ items: Technique[]; total: number }, { limit?: number }>({
+      query: ({ limit = 6 }) => `techniques?limit=${limit}`,
+      providesTags: ['Techniques'],
+    }),
+    getTechniqueById: builder.query<Technique, string>({
+      query: (id) => `techniques/${id}`,
+      providesTags: (_result, _error, id) => [{ type: 'Techniques', id }],
+    }),
+    getTechniqueBusyDates: builder.query<{ startDate: string; endDate: string }[], string>({
+      query: (id) => `techniques/${id}/busy-dates`,
+    }),
+    getMyTechniques: builder.query<Technique[], void>({
+      query: () => 'profile/techniques',
+      providesTags: ['MyTechniques'],
+    }),
+    createTechnique: builder.mutation<Technique, FormData>({
+      query: (data) => ({
+        url: 'profile/techniques',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['MyTechniques', 'Techniques'],
+    }),
+    updateTechnique: builder.mutation<Technique, { id: string; body: FormData }>({
+      query: (payload) => ({
+        url: `profile/techniques/${payload.id}`,
+        method: 'PUT',
+        body: payload.body,
+      }),
+      invalidatesTags: ['MyTechniques', 'Techniques'],
+    }),
+    deleteTechnique: builder.mutation<{ success?: boolean }, string>({
+      query: (id) => ({
+        url: `profile/techniques/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['MyTechniques', 'Techniques'],
+    }),
   }),
 });
 
@@ -438,5 +487,14 @@ export const {
   useCreateReviewMutation,
   useGetMasterReviewsQuery,
   useGetMasterBusyDatesQuery,
+
+  useGetTechniquesQuery,
+  useGetHomeTechniquesQuery,
+  useGetTechniqueByIdQuery,
+  useGetTechniqueBusyDatesQuery,
+  useGetMyTechniquesQuery,
+  useCreateTechniqueMutation,
+  useUpdateTechniqueMutation,
+  useDeleteTechniqueMutation,
 } = authApi;
 

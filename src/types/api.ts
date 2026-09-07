@@ -44,3 +44,9 @@ export interface MastersQueryArgs {
   availableNow?: boolean;
   sortBy?: 'relevance' | 'rating';
 }
+
+export interface TechniquesQueryArgs {
+  page?: number;
+  limit?: number;
+  search?: string;
+}

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
-import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search, Hourglass, PackageCheck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search, Hourglass, PackageCheck, Wrench } from "lucide-react";
 import { useGetMyOrdersQuery, useGetProfileQuery } from "@/store/api/authApi";
 import { SEO } from "@/components/seo";
 import { Badge } from "@/components/ui/badge";
@@ -87,6 +88,12 @@ export default function MyOrdersPageContent() {
             <h1 className="text-3xl font-bold text-slate-900">{t("my_orders", "My Orders")}</h1>
             <p className="text-slate-500 mt-1">{t("my_orders_desc", "Manage your contracts and service requests.")}</p>
           </div>
+          <Button asChild variant="outline" className="border-brand text-brand hover:bg-brand/10 hover:text-brand shrink-0">
+            <Link to="/profile/techniques">
+              <Wrench className="w-4 h-4 me-2" />
+              {t("my_techniques_manage_link", "Manage My Techniques")}
+            </Link>
+          </Button>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-col sm:flex-row gap-4">
@@ -139,6 +146,12 @@ export default function MyOrdersPageContent() {
                     {getStatusBadge(order.status)}
                     <span className="text-xs text-slate-400">{format(new Date(order.createdAt), "MMM d, yyyy")}</span>
                   </div>
+
+                  {order.technique && (
+                    <Badge variant="outline" className="w-fit mb-3 bg-brand/5 text-brand border-brand/20">
+                      <Wrench className="w-3 h-3 mr-1" /> {order.technique.name}
+                    </Badge>
+                  )}
 
                   <div className="flex items-center gap-3 mb-4">
                     <img

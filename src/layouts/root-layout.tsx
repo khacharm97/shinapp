@@ -2,7 +2,7 @@ import { getImageUrl } from '@/utils';
 
 import { NavLink, Outlet, Link, useNavigate, ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Mail, Phone, Menu, User, LogOut, FileText } from "lucide-react"
+import { Mail, Phone, Menu, User, LogOut, FileText, Wrench } from "lucide-react"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ModeToggle } from "@/components/mode-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
@@ -122,7 +122,7 @@ export default function RootLayout() {
                 <NavLink to="/" end className={getDesktopNavLinkClass}>{t("nav_home")}</NavLink>
                 <NavLink to="/search" className={getDesktopNavLinkClass}>{t("nav_masters")}</NavLink>
                 <NavLink to="/announcements" className={getDesktopNavLinkClass}>{t("nav_announcements", "Announcements")}</NavLink>
-                {/* <NavLink to="/technique" className={getDesktopNavLinkClass}>{t("nav_technique")}</NavLink> */}
+                <NavLink to="/technique" className={getDesktopNavLinkClass}>{t("nav_technique")}</NavLink>
                 <NavLink to="/calculator" className={getDesktopNavLinkClass}>{t("nav_calculator")}</NavLink>
                 <NavLink to="/about" className={getDesktopNavLinkClass}>{t("nav_about_us")}</NavLink>
                 <NavLink to="/contact" className={getDesktopNavLinkClass}>{t("nav_contact_us", "Contact us")}</NavLink>
@@ -155,6 +155,12 @@ export default function RootLayout() {
                         <Link to="/profile/orders" className="cursor-pointer flex items-center">
                           <FileText className="me-2 h-4 w-4" />
                           <span>{t("nav_my_orders", "My Orders")}</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile/techniques" className="cursor-pointer flex items-center">
+                          <Wrench className="me-2 h-4 w-4" />
+                          <span>{t("nav_my_techniques", "My Techniques")}</span>
                         </Link>
                       </DropdownMenuItem>
                       {isCompanyUser && isVerified && (
@@ -199,7 +205,7 @@ export default function RootLayout() {
                       <NavLink to="/" end className={getMobileNavLinkClass}>{t("nav_home")}</NavLink>
                       <NavLink to="/search" className={getMobileNavLinkClass}>{t("nav_masters")}</NavLink>
                       <NavLink to="/announcements" className={getMobileNavLinkClass}>{t("nav_announcements", "Announcements")}</NavLink>
-                      {/* <NavLink to="/technique" className={getMobileNavLinkClass}>{t("nav_technique")}</NavLink> */}
+                      <NavLink to="/technique" className={getMobileNavLinkClass}>{t("nav_technique")}</NavLink>
                       <NavLink to="/calculator" className={getMobileNavLinkClass}>{t("nav_calculator")}</NavLink>
                       <NavLink to="/about" className={getMobileNavLinkClass}>{t("nav_about_us")}</NavLink>
                       <NavLink to="/contact" className={getMobileNavLinkClass}>{t("nav_contact_us", "Contact us")}</NavLink>
@@ -220,6 +226,9 @@ export default function RootLayout() {
                           </Button>
                           <Button variant="outline" size="sm" asChild className="w-full justify-start">
                             <Link to="/profile/orders"><FileText className="me-2 h-4 w-4" /> {t("nav_my_orders", "My Orders")}</Link>
+                          </Button>
+                          <Button variant="outline" size="sm" asChild className="w-full justify-start">
+                            <Link to="/profile/techniques"><Wrench className="me-2 h-4 w-4" /> {t("nav_my_techniques", "My Techniques")}</Link>
                           </Button>
                           {isCompanyUser && isVerified && (
                             <Button variant="outline" size="sm" asChild className="w-full justify-start">

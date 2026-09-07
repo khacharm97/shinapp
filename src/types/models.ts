@@ -96,6 +96,27 @@ export interface Notification {
   createdAt: string;
 }
 
+export type TechniquePriceType = "HOURLY" | "FIXED";
+
+export interface Technique {
+  id: string;
+  ownerId: string;
+  name: string;
+  description?: string | null;
+  imageUrls: string[];
+  priceType: TechniquePriceType;
+  price: number;
+  createdAt: string;
+  updatedAt: string;
+  owner?: {
+    id: string;
+    name?: string | null;
+    avatarUrl?: string | null;
+    phone?: string | null;
+    userInfo?: { regionId?: string | null; cityId?: string | null } | null;
+  };
+}
+
 export interface Master {
   id: string;
   name?: string;
