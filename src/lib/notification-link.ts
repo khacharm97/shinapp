@@ -21,6 +21,7 @@ export function getNotificationLink(notification: AppNotification): string | nul
     case 'ORDER_UPDATE':
     case 'ORDER_ACCEPTED':
     case 'ORDER_REJECTED':
+    case 'ORDER_OVERDUE':
       return orderId ? `/profile/orders?orderId=${orderId}` : '/profile/orders';
     case 'BRIGADE_INVITE':
       return brigadeId ? `/brigades/${brigadeId}` : null;
