@@ -19,6 +19,7 @@ import {
 import type { Notification as AppNotification } from '@/types';
 import { cn } from '@/lib/utils';
 import { getNotificationLink } from '@/lib/notification-link';
+import { localizeNotification } from '@/lib/notification-i18n';
 import { toast } from 'react-hot-toast';
 
 export function NotificationsMenu({ isMobile = false }: { isMobile?: boolean }) {
@@ -94,6 +95,7 @@ export function NotificationsMenu({ isMobile = false }: { isMobile?: boolean }) 
   };
 
   const renderNotificationContent = (notification: AppNotification) => {
+    const { title, message } = localizeNotification(notification, t);
     return (
       <div
         key={notification.id}
@@ -104,12 +106,12 @@ export function NotificationsMenu({ isMobile = false }: { isMobile?: boolean }) 
         onClick={() => handleNotificationClick(notification)}
       >
         <div className="flex justify-between items-start gap-2">
-          <span className="font-semibold">{notification.title}</span>
+          <span className="font-semibold">{title}</span>
           <span className="text-xs text-muted-foreground whitespace-nowrap">
             {new Date(notification.createdAt).toLocaleDateString()}
           </span>
         </div>
-        <p className="text-muted-foreground leading-snug">{notification.message}</p>
+        <p className="text-muted-foreground leading-snug">{message}</p>
         
         {notification.type === 'BRIGADE_INVITE' && !notification.isRead && (
           <div className="flex gap-2 mt-2">

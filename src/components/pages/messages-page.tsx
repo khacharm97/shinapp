@@ -19,7 +19,7 @@ import type { ChatMessage, Conversation, ConversationType } from "@/types";
 function Avatar({ name, url, size = 40 }: { name?: string | null; url?: string | null; size?: number }) {
   return (
     <div
-      className="rounded-full overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 font-semibold flex-shrink-0"
+      className="rounded-full overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 flex items-center justify-center text-slate-500 dark:text-gray-400 font-semibold flex-shrink-0"
       style={{ width: size, height: size }}
     >
       {url ? (
@@ -45,22 +45,22 @@ function ConversationRow({
     <Link
       to={`/messages/${conversation.id}`}
       className={cn(
-        "flex items-center gap-3 px-4 py-3 border-b border-slate-100 transition-colors",
-        active ? "bg-brand/5" : "hover:bg-slate-50"
+        "flex items-center gap-3 px-4 py-3 border-b border-slate-100 dark:border-zinc-800 transition-colors",
+        active ? "bg-brand/5 dark:bg-brand/10" : "hover:bg-slate-50 dark:hover:bg-zinc-800/50"
       )}
     >
       <Avatar name={name} url={other?.avatarUrl} />
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-baseline gap-2">
-          <span className="font-semibold text-slate-900 truncate">{name}</span>
+          <span className="font-semibold text-slate-900 dark:text-foreground truncate">{name}</span>
           {conversation.lastMessage && (
-            <span className="text-[11px] text-slate-400 flex-shrink-0">
+            <span className="text-[11px] text-slate-400 dark:text-zinc-500 flex-shrink-0">
               {formatDistanceToNow(new Date(conversation.lastMessage.createdAt), { addSuffix: false })}
             </span>
           )}
         </div>
         <div className="flex justify-between items-center gap-2">
-          <span className="text-sm text-slate-500 truncate">
+          <span className="text-sm text-slate-500 dark:text-gray-400 truncate">
             {conversation.lastMessage?.body || t("no_messages_yet", "No messages yet")}
           </span>
           {conversation.unreadCount > 0 && (
@@ -82,11 +82,11 @@ function MessageBubble({ message, mine }: { message: ChatMessage; mine: boolean 
           "max-w-[75%] rounded-2xl px-4 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words",
           mine
             ? "bg-brand text-white rounded-br-sm"
-            : "bg-white border border-slate-200 text-slate-800 rounded-bl-sm"
+            : "bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-800 dark:text-gray-100 rounded-bl-sm"
         )}
       >
         {message.body}
-        <div className={cn("text-[10px] mt-1", mine ? "text-white/70" : "text-slate-400")}>
+        <div className={cn("text-[10px] mt-1", mine ? "text-white/70" : "text-slate-400 dark:text-zinc-500")}>
           {format(new Date(message.createdAt), "HH:mm")}
         </div>
       </div>
@@ -163,21 +163,21 @@ function Thread({
 
   if (!conversationId && !draftRecipient) {
     return (
-      <div className="hidden md:flex flex-1 flex-col items-center justify-center text-center text-slate-400 p-8">
-        <MessageSquare className="w-12 h-12 mb-3 text-slate-300" />
+      <div className="hidden md:flex flex-1 flex-col items-center justify-center text-center text-slate-400 dark:text-zinc-500 p-8">
+        <MessageSquare className="w-12 h-12 mb-3 text-slate-300 dark:text-zinc-600" />
         <p>{t("select_conversation", "Select a conversation to start chatting")}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-slate-50">
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-200 bg-white">
-        <button onClick={() => navigate("/messages")} className="md:hidden text-slate-500">
+    <div className="flex-1 flex flex-col min-h-0 bg-slate-50 dark:bg-background">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+        <button onClick={() => navigate("/messages")} className="md:hidden text-slate-500 dark:text-gray-400">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <Avatar name={headerName} url={headerAvatar} size={36} />
-        <span className="font-semibold text-slate-900">{headerName}</span>
+        <span className="font-semibold text-slate-900 dark:text-foreground">{headerName}</span>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-2">
@@ -188,13 +188,13 @@ function Thread({
         ) : messages && messages.length > 0 ? (
           messages.map((m) => <MessageBubble key={m.id} message={m} mine={m.senderId === myId} />)
         ) : (
-          <div className="text-center text-slate-400 text-sm py-8">
+          <div className="text-center text-slate-400 dark:text-zinc-500 text-sm py-8">
             {t("no_messages_yet_start", "No messages yet. Say hello!")}
           </div>
         )}
       </div>
 
-      <div className="p-3 border-t border-slate-200 bg-white flex items-end gap-2">
+      <div className="p-3 border-t border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-end gap-2">
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -206,7 +206,7 @@ function Thread({
           }}
           rows={1}
           placeholder={t("type_a_message", "Type a message...")}
-          className="flex-1 resize-none max-h-32 rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand"
+          className="flex-1 resize-none max-h-32 rounded-xl border border-slate-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-foreground dark:placeholder:text-zinc-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand"
         />
         <Button onClick={handleSend} disabled={!text.trim() || isSending} size="icon" className="bg-brand hover:bg-brand/90 text-white rounded-xl">
           {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
@@ -241,18 +241,18 @@ export default function MessagesPageContent() {
   const showThreadOnMobile = !!conversationId;
 
   return (
-    <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-6 px-0 sm:px-6 lg:px-8">
+    <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] py-6 px-0 sm:px-6 lg:px-8">
       <SEO title={t("messages", "Messages")} />
-      <div className="max-w-6xl mx-auto h-[calc(100vh-200px)] bg-white sm:rounded-2xl sm:border sm:border-slate-200 sm:shadow-sm overflow-hidden flex">
+      <div className="max-w-6xl mx-auto h-[calc(100vh-200px)] bg-white dark:bg-zinc-900 sm:rounded-2xl sm:border sm:border-slate-200 dark:sm:border-zinc-800 sm:shadow-sm overflow-hidden flex">
         {/* Conversation list */}
         <div
           className={cn(
-            "w-full md:w-80 md:border-r border-slate-200 flex flex-col min-h-0",
+            "w-full md:w-80 md:border-r border-slate-200 dark:border-zinc-800 flex flex-col min-h-0",
             showThreadOnMobile ? "hidden md:flex" : "flex"
           )}
         >
-          <div className="px-4 py-3 border-b border-slate-200">
-            <h1 className="font-bold text-lg text-slate-900">{t("messages", "Messages")}</h1>
+          <div className="px-4 py-3 border-b border-slate-200 dark:border-zinc-800">
+            <h1 className="font-bold text-lg text-slate-900 dark:text-foreground">{t("messages", "Messages")}</h1>
           </div>
           <div className="flex-1 overflow-y-auto">
             {isLoading ? (
@@ -264,7 +264,7 @@ export default function MessagesPageContent() {
                 <ConversationRow key={c.id} conversation={c} active={c.id === activeId} />
               ))
             ) : (
-              <div className="text-center text-slate-400 text-sm py-10 px-4">
+              <div className="text-center text-slate-400 dark:text-zinc-500 text-sm py-10 px-4">
                 {t("no_conversations", "No conversations yet.")}
               </div>
             )}

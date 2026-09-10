@@ -4,6 +4,8 @@ import type { RootState } from '../index';
 import { logout } from '../slices/authSlice';
 import { io } from 'socket.io-client';
 import type { Notification as AppNotification, MastersQueryArgs, Master, Technique, TechniquesQueryArgs } from '@/types';
+import i18n from '@/i18n';
+import { localizeNotification } from '@/lib/notification-i18n';
 
 const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
 const baseUrl = backendUrl.startsWith('http') ? `${backendUrl}/auth/` : `https://${backendUrl}/auth/`;
@@ -219,12 +221,13 @@ export const authApi = createApi({
             });
 
             // Browser Push Notification
+            const localized = localizeNotification(notification, i18n.t.bind(i18n));
             if (Notification.permission === 'granted') {
-              new Notification(notification.title, { body: notification.message });
+              new Notification(localized.title, { body: localized.message });
             } else if (Notification.permission !== 'denied') {
               Notification.requestPermission().then(permission => {
                 if (permission === 'granted') {
-                  new Notification(notification.title, { body: notification.message });
+                  new Notification(localized.title, { body: localized.message });
                 }
               });
             }

@@ -44,7 +44,7 @@ export default function MyOrdersPageContent() {
 
   if (isLoading || !profile) {
     return (
-      <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex items-center justify-center">
+      <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-brand" />
       </div>
     );
@@ -62,31 +62,31 @@ export default function MyOrdersPageContent() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "PENDING":
-        return <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200"><Clock className="w-3 h-3 mr-1" /> {t("pending", "Pending")}</Badge>;
+        return <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30"><Clock className="w-3 h-3 mr-1" /> {t("pending", "Pending")}</Badge>;
       case "ACCEPTED":
-        return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200"><CheckCircle2 className="w-3 h-3 mr-1" /> {t("accepted", "Accepted")}</Badge>;
+        return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30"><CheckCircle2 className="w-3 h-3 mr-1" /> {t("accepted", "Accepted")}</Badge>;
       case "REJECTED":
-        return <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200"><XCircle className="w-3 h-3 mr-1" /> {t("rejected", "Rejected")}</Badge>;
+        return <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30"><XCircle className="w-3 h-3 mr-1" /> {t("rejected", "Rejected")}</Badge>;
       case "COMPLETION_REQUESTED":
-        return <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200"><Hourglass className="w-3 h-3 mr-1" /> {t("status_completion_requested", "Completion Requested")}</Badge>;
+        return <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30"><Hourglass className="w-3 h-3 mr-1" /> {t("status_completion_requested", "Completion Requested")}</Badge>;
       case "COMPLETED":
-        return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200"><PackageCheck className="w-3 h-3 mr-1" /> {t("status_completed", "Completed")}</Badge>;
+        return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30"><PackageCheck className="w-3 h-3 mr-1" /> {t("status_completed", "Completed")}</Badge>;
       case "CANCELLED":
-        return <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-200"><XCircle className="w-3 h-3 mr-1" /> {t("status_cancelled", "Cancelled")}</Badge>;
+        return <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-200 dark:bg-zinc-800 dark:text-gray-300 dark:border-zinc-700"><XCircle className="w-3 h-3 mr-1" /> {t("status_cancelled", "Cancelled")}</Badge>;
       default:
         return <Badge variant="outline">{humanizeStatus(status)}</Badge>;
     }
   };
 
   return (
-    <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
       <SEO title={t("my_orders", "My Orders")} />
 
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">{t("my_orders", "My Orders")}</h1>
-            <p className="text-slate-500 mt-1">{t("my_orders_desc", "Manage your contracts and service requests.")}</p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-foreground">{t("my_orders", "My Orders")}</h1>
+            <p className="text-slate-500 dark:text-gray-400 mt-1">{t("my_orders_desc", "Manage your contracts and service requests.")}</p>
           </div>
           <Button asChild variant="outline" className="border-brand text-brand hover:bg-brand/10 hover:text-brand shrink-0">
             <Link to="/profile/techniques">
@@ -96,9 +96,9 @@ export default function MyOrdersPageContent() {
           </Button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-col sm:flex-row gap-4">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-800 p-4 flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-zinc-500" />
             <Input
               placeholder={t("search_orders", "Search orders...")}
               className="pl-9"
@@ -124,11 +124,11 @@ export default function MyOrdersPageContent() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredOrders.length === 0 ? (
             <div className="col-span-full py-12 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                <FileText className="w-8 h-8 text-slate-400" />
+              <div className="w-16 h-16 bg-slate-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-4">
+                <FileText className="w-8 h-8 text-slate-400 dark:text-zinc-500" />
               </div>
-              <h3 className="text-lg font-medium text-slate-900">{t("no_orders_found", "No orders found")}</h3>
-              <p className="text-slate-500 mt-1 max-w-sm">{t("no_orders_found_desc", "You don't have any orders matching your criteria.")}</p>
+              <h3 className="text-lg font-medium text-slate-900 dark:text-foreground">{t("no_orders_found", "No orders found")}</h3>
+              <p className="text-slate-500 dark:text-gray-400 mt-1 max-w-sm">{t("no_orders_found_desc", "You don't have any orders matching your criteria.")}</p>
             </div>
           ) : (
             filteredOrders.map((order: any  ) => {
@@ -139,16 +139,16 @@ export default function MyOrdersPageContent() {
               return (
                 <div
                   key={order.id}
-                  className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 hover:shadow-md transition-all cursor-pointer flex flex-col h-full group"
+                  className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-800 p-5 hover:shadow-md transition-all cursor-pointer flex flex-col h-full group"
                   onClick={() => setSelectedOrder(order)}
                 >
                   <div className="flex justify-between items-start mb-4">
                     {getStatusBadge(order.status)}
-                    <span className="text-xs text-slate-400">{format(new Date(order.createdAt), "MMM d, yyyy")}</span>
+                    <span className="text-xs text-slate-400 dark:text-zinc-500">{format(new Date(order.createdAt), "MMM d, yyyy")}</span>
                   </div>
 
                   {order.technique && (
-                    <Badge variant="outline" className="w-fit mb-3 bg-brand/5 text-brand border-brand/20">
+                    <Badge variant="outline" className="w-fit mb-3 bg-brand/5 dark:bg-brand/10 text-brand border-brand/20">
                       <Wrench className="w-3 h-3 mr-1" /> {order.technique.name}
                     </Badge>
                   )}
@@ -161,30 +161,30 @@ export default function MyOrdersPageContent() {
                       onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${otherParty?.name}&background=random`; }}
                     />
                     <div>
-                      <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{roleLabel}</p>
-                      <p className="text-sm font-semibold text-slate-900 line-clamp-1">{otherParty?.name || t("unknown", "Unknown")}</p>
+                      <p className="text-xs text-slate-500 dark:text-gray-400 font-medium uppercase tracking-wider">{roleLabel}</p>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-foreground line-clamp-1">{otherParty?.name || t("unknown", "Unknown")}</p>
                     </div>
                   </div>
 
                   <div className="flex-1">
-                    <p className="text-slate-700 text-sm line-clamp-3 mb-4">{order.description}</p>
+                    <p className="text-slate-700 dark:text-gray-300 text-sm line-clamp-3 mb-4">{order.description}</p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 rounded-lg p-3 mt-auto">
+                  <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-zinc-800/50 rounded-lg p-3 mt-auto">
                     <div>
-                      <p className="text-slate-500">{t("date", "Date")}</p>
-                      <p className="font-medium text-slate-900">
+                      <p className="text-slate-500 dark:text-gray-400">{t("date", "Date")}</p>
+                      <p className="font-medium text-slate-900 dark:text-foreground">
                         {format(new Date(order.startDate), "MMM d")} - {format(new Date(order.endDate), "MMM d")}
                       </p>
                     </div>
                     <div>
-                      <p className="text-slate-500">{t("price", "Price")}</p>
-                      <p className="font-medium text-slate-900">{order.price ? `${order.price} ֏` : t("negotiable", "Negotiable")}</p>
+                      <p className="text-slate-500 dark:text-gray-400">{t("price", "Price")}</p>
+                      <p className="font-medium text-slate-900 dark:text-foreground">{order.price ? `${order.price} ֏` : t("negotiable", "Negotiable")}</p>
                     </div>
                   </div>
 
                   {order.status === "PENDING" && order.initiatorId !== profile.id && (
-                    <div className="mt-4 pt-4 border-t border-slate-100">
+                    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
                       <Button className="w-full bg-brand hover:bg-brand/90 text-white" size="sm" onClick={(e) => { e.stopPropagation(); setSelectedOrder(order); }}>
                         {t("review_order", "Review Order")}
                       </Button>

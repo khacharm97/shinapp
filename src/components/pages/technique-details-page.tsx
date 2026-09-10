@@ -47,7 +47,7 @@ export default function TechniqueDetailsPageContent() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex items-center justify-center">
+      <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-brand" />
       </div>
     );
@@ -55,9 +55,9 @@ export default function TechniqueDetailsPageContent() {
 
   if (isError || !technique) {
     return (
-      <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex flex-col items-center justify-center gap-4">
+      <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] flex flex-col items-center justify-center gap-4">
         <SEO title={t("error_not_found", "Technique not found")} />
-        <p className="text-slate-500">{t("technique_details_not_found", "Technique not found or an error occurred.")}</p>
+        <p className="text-slate-500 dark:text-gray-400">{t("technique_details_not_found", "Technique not found or an error occurred.")}</p>
         <Button variant="outline" onClick={goBack}>
           {t("back", "Back")}
         </Button>
@@ -70,20 +70,20 @@ export default function TechniqueDetailsPageContent() {
   const priceLabel = `${technique.price.toLocaleString()} ֏${technique.priceType === 'HOURLY' ? ` / ${t('technique_price_per_hour', 'hr')}` : ''}`;
 
   return (
-    <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
       <SEO title={technique.name} />
       <div className="max-w-5xl mx-auto space-y-8">
         <div>
-          <Button variant="ghost" onClick={goBack} className="mb-4 text-slate-500 hover:text-slate-900 -ms-4">
+          <Button variant="ghost" onClick={goBack} className="mb-4 text-slate-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-foreground -ms-4">
             <ArrowLeft className="w-4 h-4 me-2" />
             {t("back", "Back")}
           </Button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-800 overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             <div className="p-6 md:p-8 space-y-3">
-              <div className="aspect-video rounded-xl overflow-hidden bg-slate-100">
+              <div className="aspect-video rounded-xl overflow-hidden bg-slate-100 dark:bg-zinc-800">
                 <img
                   src={images[activeImage] ? getImageUrl(images[activeImage]) || "" : techniqueImg}
                   alt={technique.name}
@@ -106,20 +106,20 @@ export default function TechniqueDetailsPageContent() {
               )}
             </div>
 
-            <div className="p-6 md:p-8 flex flex-col gap-6 border-t md:border-t-0 md:border-s border-slate-100">
+            <div className="p-6 md:p-8 flex flex-col gap-6 border-t md:border-t-0 md:border-s border-slate-100 dark:border-zinc-800">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">{technique.name}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-foreground mb-2">{technique.name}</h1>
                 {technique.owner?.name && (
-                  <Link to={`/masters/${technique.owner.id}`} className="flex items-center gap-2 text-sm text-slate-500 hover:text-brand transition-colors w-fit">
+                  <Link to={`/masters/${technique.owner.id}`} className="flex items-center gap-2 text-sm text-slate-500 dark:text-gray-400 hover:text-brand transition-colors w-fit">
                     <User className="w-4 h-4" />
                     {t("technique_owner_label", "Provided by")} {technique.owner.name}
                   </Link>
                 )}
               </div>
 
-              <div className="bg-brand/5 rounded-xl p-5">
+              <div className="bg-brand/5 dark:bg-brand/10 rounded-xl p-5">
                 <div className="text-3xl font-bold text-brand">{priceLabel}</div>
-                <p className="text-sm text-slate-500 mt-1">
+                <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
                   {technique.priceType === 'HOURLY'
                     ? t("technique_price_hourly_desc", "Billed per hour of work.")
                     : t("technique_price_fixed_desc", "Fixed price for the job.")}
@@ -127,8 +127,8 @@ export default function TechniqueDetailsPageContent() {
               </div>
 
               <div>
-                <h2 className="font-semibold text-slate-900 mb-2">{t("description", "Description")}</h2>
-                <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">
+                <h2 className="font-semibold text-slate-900 dark:text-foreground mb-2">{t("description", "Description")}</h2>
+                <p className="text-slate-600 dark:text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
                   {technique.description || t("no_description_provided", "No description provided.")}
                 </p>
               </div>
@@ -163,12 +163,12 @@ export default function TechniqueDetailsPageContent() {
             </div>
           </div>
 
-          <section className="p-6 md:p-8 border-t border-slate-100">
-            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
+          <section className="p-6 md:p-8 border-t border-slate-100 dark:border-zinc-800">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-foreground mb-6 flex items-center">
               <CalendarIcon className="w-5 h-5 me-2 text-brand" />
               {t("technique_schedule", "Availability")}
             </h2>
-            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm inline-block">
+            <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl p-6 shadow-sm inline-block">
               <DayPicker
                 mode="multiple"
                 disabled={disabledDays}
@@ -178,7 +178,7 @@ export default function TechniqueDetailsPageContent() {
                 }}
                 className="mx-auto"
               />
-              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-slate-500">
+              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-gray-400">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <span>{t("busy_days", "Busy Days")}</span>
               </div>

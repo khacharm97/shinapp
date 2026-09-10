@@ -232,7 +232,7 @@ export default function ProfileSettingsPageContent() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-start w-full bg-slate-50/50 min-h-[calc(100vh-14rem)] py-8 animate-in fade-in duration-500">
+    <div className="flex flex-col items-center justify-start w-full bg-slate-50/50 dark:bg-background min-h-[calc(100vh-14rem)] py-8 animate-in fade-in duration-500">
       <SEO title={t('profile')} />
       <div className="max-w-4xl w-full mx-auto space-y-8">
         <div>
@@ -418,7 +418,7 @@ export default function ProfileSettingsPageContent() {
                   </div>
 
                   {/* Preferences / Toggles */}
-                  <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
                     <FormField
                       control={form.control}
                       name="largeScale"
@@ -529,7 +529,7 @@ export default function ProfileSettingsPageContent() {
                   </div>
 
                   {/* Pricing Format */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100 dark:border-zinc-800">
                     <FormField
                       control={form.control}
                       name="pricingFormat"
@@ -573,7 +573,7 @@ export default function ProfileSettingsPageContent() {
               )}
 
               {/* About Textarea */}
-              <div className="pt-4 border-t border-slate-100">
+              <div className="pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <FormField
                   control={form.control}
                   name="about"
@@ -594,7 +594,7 @@ export default function ProfileSettingsPageContent() {
               </div>
 
               {isCompanyUser && (
-                <div className="space-y-4 pt-4 border-t border-slate-100">
+                <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
                   <h3 className="font-semibold text-slate-900 dark:text-foreground">{t("profile_company_details", "Company Details")}</h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -688,12 +688,12 @@ export default function ProfileSettingsPageContent() {
               )}
 
               {submitStatus === 'success' && (
-                <div className="p-3 bg-green-50 text-green-700 rounded-md text-sm font-medium">
+                <div className="p-3 bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 rounded-md text-sm font-medium">
                   {t("profile_update_success", "Profile updated successfully!")}
                 </div>
               )}
               {submitStatus === 'error' && (
-                <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm font-medium">
+                <div className="p-3 bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 rounded-md text-sm font-medium">
                   {t("profile_update_error", "Failed to update profile. Please try again.")}
                 </div>
               )}

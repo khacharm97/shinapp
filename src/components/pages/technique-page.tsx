@@ -29,7 +29,7 @@ export default function TechniquePageContent() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex items-center justify-center">
+      <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-brand" />
       </div>
     );
@@ -37,7 +37,7 @@ export default function TechniquePageContent() {
 
   if (isError) {
     return (
-      <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex items-center justify-center">
+      <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] flex items-center justify-center">
         <p className="text-red-500">{t('error_loading_techniques', 'Failed to load techniques.')}</p>
       </div>
     );
@@ -46,7 +46,7 @@ export default function TechniquePageContent() {
   const { items: techniques, totalPages } = data || { items: [], totalPages: 1 };
 
   return (
-    <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
       <SEO title={t('nav_technique', 'Technique')} />
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -54,13 +54,13 @@ export default function TechniquePageContent() {
             {t("techniques_page_title", "Techniques")}
           </h1>
 
-          <form onSubmit={handleSearch} className="flex w-full md:w-[400px] bg-white p-1.5 rounded-xl shadow-sm border border-slate-200 items-center">
+          <form onSubmit={handleSearch} className="flex w-full md:w-[400px] bg-white dark:bg-zinc-900 p-1.5 rounded-xl shadow-sm border border-slate-200 dark:border-zinc-700 items-center">
             <input
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder={t('techniques_search_placeholder', 'Search techniques...')}
-              className="flex-1 min-w-0 h-10 bg-transparent border-none px-3 text-sm text-black placeholder:text-gray-400 focus:outline-none focus:ring-0"
+              className="flex-1 min-w-0 h-10 bg-transparent border-none px-3 text-sm text-black dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-0"
             />
             <Button type="submit" className="h-10 px-4 rounded-lg bg-brand text-white hover:bg-brand/90 text-[16px] font-bold shrink-0">
               {t('search_button', 'Search')}
@@ -69,8 +69,8 @@ export default function TechniquePageContent() {
         </div>
 
         {techniques.length === 0 ? (
-          <div className="bg-white p-8 rounded-2xl shadow-sm text-center">
-            <p className="text-slate-500">{t("no_techniques_found", "No techniques found.")}</p>
+          <div className="bg-white dark:bg-zinc-900 p-8 rounded-2xl shadow-sm text-center">
+            <p className="text-slate-500 dark:text-gray-400">{t("no_techniques_found", "No techniques found.")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -78,9 +78,9 @@ export default function TechniquePageContent() {
               <Link
                 to={`/technique/${technique.id}`}
                 key={technique.id}
-                className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden flex flex-col hover:shadow-md transition-all group"
+                className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-slate-100 dark:border-zinc-800 overflow-hidden flex flex-col hover:shadow-md transition-all group"
               >
-                <div className="aspect-video bg-slate-100 overflow-hidden">
+                <div className="aspect-video bg-slate-100 dark:bg-zinc-800 overflow-hidden">
                   <img
                     src={technique.imageUrls?.[0] ? getImageUrl(technique.imageUrls[0]) || "" : techniqueImg}
                     alt={technique.name}
@@ -90,16 +90,16 @@ export default function TechniquePageContent() {
                   />
                 </div>
                 <div className="p-5 flex flex-col flex-1">
-                  <h2 className="text-lg font-bold text-slate-900 mb-1 line-clamp-1 group-hover:text-brand transition-colors">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-foreground mb-1 line-clamp-1 group-hover:text-brand transition-colors">
                     {technique.name}
                   </h2>
-                  <p className="text-sm text-slate-500 line-clamp-2 mb-4 flex-1">
+                  <p className="text-sm text-slate-500 dark:text-gray-400 line-clamp-2 mb-4 flex-1">
                     {technique.description || t("no_description_provided", "No description provided.")}
                   </p>
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-zinc-800">
                     <span className="text-brand font-bold">{formatPrice(technique)}</span>
                     {technique.owner?.name && (
-                      <span className="flex items-center gap-1 text-xs text-slate-500 truncate max-w-[120px]">
+                      <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-gray-400 truncate max-w-[120px]">
                         <Wrench className="w-3.5 h-3.5 shrink-0" />
                         {technique.owner.name}
                       </span>
@@ -143,7 +143,7 @@ export default function TechniquePageContent() {
                   );
                 } else if (pageNum === page - 2 || pageNum === page + 2) {
                   return (
-                    <div key={pageNum} className="w-9 h-9 flex items-center justify-center text-slate-400">
+                    <div key={pageNum} className="w-9 h-9 flex items-center justify-center text-slate-400 dark:text-zinc-500">
                       <MoreHorizontal className="h-4 w-4" />
                     </div>
                   );

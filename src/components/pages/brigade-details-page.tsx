@@ -32,7 +32,7 @@ export default function BrigadeDetailsPageContent() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex items-center justify-center">
+      <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-brand" />
       </div>
     );
@@ -40,9 +40,9 @@ export default function BrigadeDetailsPageContent() {
 
   if (isError || !brigade) {
     return (
-      <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex flex-col items-center justify-center gap-4">
+      <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] flex flex-col items-center justify-center gap-4">
         <SEO title={t("error_not_found", "Brigade not found")} />
-        <p className="text-slate-500">{t("error_brigade_not_found_desc", "Brigade not found or an error occurred.")}</p>
+        <p className="text-slate-500 dark:text-gray-400">{t("error_brigade_not_found_desc", "Brigade not found or an error occurred.")}</p>
         <Button variant="outline" onClick={goBack}>
           {t("back", "Back")}
         </Button>
@@ -75,20 +75,20 @@ export default function BrigadeDetailsPageContent() {
   const totalMembers = 1 + acceptedMembers.length; // Owner + members
 
   return (
-    <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
       <SEO title={`${brigade.name} - ShinApp`} />
       <div className="max-w-5xl mx-auto space-y-8">
         <div>
-          <Button variant="ghost" onClick={goBack} className="mb-4 text-slate-500 hover:text-slate-900 -ms-4">
+          <Button variant="ghost" onClick={goBack} className="mb-4 text-slate-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-foreground -ms-4">
             <ArrowLeft className="w-4 h-4 me-2" />
             {t("back", "Back")}
           </Button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden relative">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-800 overflow-hidden relative">
 
           {/* Banner image */}
-          <div className="h-48 md:h-64 w-full bg-slate-200 overflow-hidden">
+          <div className="h-48 md:h-64 w-full bg-slate-200 dark:bg-zinc-800 overflow-hidden">
             <img
               src={brigadeBg}
               alt="Brigade banner"
@@ -97,30 +97,30 @@ export default function BrigadeDetailsPageContent() {
           </div>
 
           {/* Main Card Content that overlaps the banner slightly */}
-          <div className="relative mx-4 md:mx-12 -mt-16 md:-mt-24 bg-white rounded-xl shadow-lg border border-slate-100 p-6 md:p-8 mb-8 z-10">
+          <div className="relative mx-4 md:mx-12 -mt-16 md:-mt-24 bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-slate-100 dark:border-zinc-700 p-6 md:p-8 mb-8 z-10">
             <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6 mb-6">
 
               <div className="text-center md:text-start">
-                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center justify-center md:justify-start gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-foreground flex items-center justify-center md:justify-start gap-2">
                   {brigade.name}
                   <CheckCircle2 className="w-6 h-6 text-blue-500" />
                 </h1>
 
-                <p className="text-slate-500 mt-2 line-clamp-2 max-w-2xl">
+                <p className="text-slate-500 dark:text-gray-400 mt-2 line-clamp-2 max-w-2xl">
                   {brigade.about || brigade.owner?.userInfo?.about || ""}
                 </p>
 
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-4 text-sm text-slate-600">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-4 text-sm text-slate-600 dark:text-gray-300">
                   <div className="flex items-center text-orange-500 font-medium">
                     <Star className="w-4 h-4 me-1 fill-current" />
-                    5.0 (0 reviews)
+                    5.0 ({t("brigade_reviews_count", "{{count}} reviews", { count: 0 })})
                   </div>
-                  <div className="flex items-center text-green-600 font-medium">
+                  <div className="flex items-center text-green-600 dark:text-green-400 font-medium">
                     <CheckCircle2 className="w-4 h-4 me-1" />
                     {t("search_available_now", "Available now")}
                   </div>
                   <div className="flex items-center">
-                    <UserIcon className="w-4 h-4 me-1 text-slate-400" />
+                    <UserIcon className="w-4 h-4 me-1 text-slate-400 dark:text-zinc-500" />
                     {totalMembers} {t("brigade_verified_members", "verified members")}
                   </div>
                 </div>
@@ -141,17 +141,17 @@ export default function BrigadeDetailsPageContent() {
 
             {/* Stats Row */}
             <div className="flex flex-wrap gap-4 mt-6">
-              <div className="flex-1 min-w-[120px] bg-slate-50 p-4 rounded-lg border border-slate-100">
-                <div className="text-sm text-slate-500 mb-1">{t("profile_total_jobs", "Jobs completed")}</div>
+              <div className="flex-1 min-w-[120px] bg-slate-50 dark:bg-zinc-900 p-4 rounded-lg border border-slate-100 dark:border-zinc-700">
+                <div className="text-sm text-slate-500 dark:text-gray-400 mb-1">{t("profile_total_jobs", "Jobs completed")}</div>
                 <div className="text-xl font-bold text-brand">{totalJobs}</div>
               </div>
-              <div className="flex-1 min-w-[120px] bg-slate-50 p-4 rounded-lg border border-slate-100">
-                <div className="text-sm text-slate-500 mb-1">{t("brigade_responds_in", "Responds in")}</div>
-                <div className="text-xl font-bold text-brand">under 2 hours</div>
+              <div className="flex-1 min-w-[120px] bg-slate-50 dark:bg-zinc-900 p-4 rounded-lg border border-slate-100 dark:border-zinc-700">
+                <div className="text-sm text-slate-500 dark:text-gray-400 mb-1">{t("brigade_responds_in", "Responds in")}</div>
+                <div className="text-xl font-bold text-brand">{t("brigade_responds_under_2h", "under 2 hours")}</div>
               </div>
-              <div className="flex-1 min-w-[120px] bg-slate-50 p-4 rounded-lg border border-slate-100 opacity-50">
-                <div className="text-sm text-slate-500 mb-1">{t("profile_hourly_rate", "Hourly rate from")}</div>
-                <div className="text-xl font-bold text-slate-500">-</div>
+              <div className="flex-1 min-w-[120px] bg-slate-50 dark:bg-zinc-900 p-4 rounded-lg border border-slate-100 dark:border-zinc-700 opacity-50">
+                <div className="text-sm text-slate-500 dark:text-gray-400 mb-1">{t("profile_hourly_rate", "Hourly rate from")}</div>
+                <div className="text-xl font-bold text-slate-500 dark:text-gray-400">-</div>
               </div>
             </div>
           </div>
@@ -161,7 +161,7 @@ export default function BrigadeDetailsPageContent() {
             {/* About */}
             <section>
               <h2 className="text-2xl font-bold text-brand mb-4">{t("brigade_about", "About the brigade")}</h2>
-              <div className="text-slate-600 leading-relaxed max-w-4xl whitespace-pre-wrap">
+              <div className="text-slate-600 dark:text-gray-300 leading-relaxed max-w-4xl whitespace-pre-wrap">
                 {brigade.about || brigade.owner?.userInfo?.about || t("brigade_no_about", "No description provided.")}
               </div>
             </section>
@@ -173,8 +173,8 @@ export default function BrigadeDetailsPageContent() {
                 {/* Owner */}
                 {brigade.owner && (
                   <Link to={`/masters/${brigade.owner.id}`} className="block group">
-                    <div className="bg-white border border-slate-200 rounded-xl p-4 flex gap-4 items-center hover:shadow-md transition-shadow">
-                      <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-200 shrink-0">
+                    <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl p-4 flex gap-4 items-center hover:shadow-md transition-shadow">
+                      <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-200 dark:bg-zinc-800 shrink-0">
                         <img
                           src={brigade.owner.avatarUrl ? getImageUrl(brigade.owner.avatarUrl) || "" : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                           alt={brigade.owner.name || "Owner"}
@@ -185,11 +185,11 @@ export default function BrigadeDetailsPageContent() {
                         />
                       </div>
                       <div>
-                        <h3 className="font-bold text-slate-900 group-hover:text-brand transition-colors flex items-center gap-1">
+                        <h3 className="font-bold text-slate-900 dark:text-foreground group-hover:text-brand transition-colors flex items-center gap-1">
                           {brigade.owner.name || t("search_unnamed_master", "Unnamed Master")}
                           <CheckCircle2 className="w-4 h-4 text-blue-500" />
                         </h3>
-                        <div className="text-xs text-slate-500 mt-1">{t("brigade_creator", "Creator")}</div>
+                        <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">{t("brigade_creator", "Creator")}</div>
                       </div>
                     </div>
                   </Link>
@@ -198,8 +198,8 @@ export default function BrigadeDetailsPageContent() {
                 {/* Other Members */}
                 {acceptedMembers.map((member: any  ) => (
                   <Link key={member.user.id} to={`/masters/${member.user.id}`} className="block group">
-                    <div className="bg-white border border-slate-200 rounded-xl p-4 flex gap-4 items-center hover:shadow-md transition-shadow">
-                      <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-200 shrink-0">
+                    <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl p-4 flex gap-4 items-center hover:shadow-md transition-shadow">
+                      <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-200 dark:bg-zinc-800 shrink-0">
                         <img
                           src={member.user.avatarUrl ? getImageUrl(member.user.avatarUrl) || "" : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                           alt={member.user.name || "Member"}
@@ -210,10 +210,10 @@ export default function BrigadeDetailsPageContent() {
                         />
                       </div>
                       <div>
-                        <h3 className="font-bold text-slate-900 group-hover:text-brand transition-colors flex items-center gap-1">
+                        <h3 className="font-bold text-slate-900 dark:text-foreground group-hover:text-brand transition-colors flex items-center gap-1">
                           {member.user.name || t("search_unnamed_master", "Unnamed Master")}
                         </h3>
-                        <div className="text-xs text-slate-500 mt-1">{t("brigade_member", "Member")}</div>
+                        <div className="text-xs text-slate-500 dark:text-gray-400 mt-1">{t("brigade_member", "Member")}</div>
                       </div>
                     </div>
                   </Link>

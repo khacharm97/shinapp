@@ -12,6 +12,7 @@ import { SEO } from '@/components/seo';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { getNotificationLink } from '@/lib/notification-link';
+import { localizeNotification } from '@/lib/notification-i18n';
 import { toast } from 'react-hot-toast';
 
 export default function NotificationsPage() {
@@ -44,23 +45,23 @@ export default function NotificationsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] flex items-center justify-center">
+      <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-brand" />
       </div>
     );
   }
 
   return (
-    <div className="flex-1 w-full bg-slate-50 min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
       <SEO title={t('notifications', 'Notifications')} />
 
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-foreground">
               {t('notifications', 'Notifications')}
             </h1>
-            <p className="text-slate-500 mt-1">
+            <p className="text-slate-500 dark:text-gray-400 mt-1">
               {unreadCount > 0
                 ? t('notifications_unread_count', { count: unreadCount, defaultValue: '{{count}} unread' })
                 : t('notifications_all_read', 'You are all caught up.')}
@@ -80,21 +81,22 @@ export default function NotificationsPage() {
         </div>
 
         {notifications.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 py-16 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-              <Bell className="w-8 h-8 text-slate-400" />
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-800 py-16 flex flex-col items-center justify-center text-center">
+            <div className="w-16 h-16 bg-slate-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-4">
+              <Bell className="w-8 h-8 text-slate-400 dark:text-zinc-500" />
             </div>
-            <h3 className="text-lg font-medium text-slate-900">
+            <h3 className="text-lg font-medium text-slate-900 dark:text-foreground">
               {t('no_notifications', 'No notifications')}
             </h3>
-            <p className="text-slate-500 mt-1 max-w-sm">
+            <p className="text-slate-500 dark:text-gray-400 mt-1 max-w-sm">
               {t('no_notifications_desc', "You don't have any activity yet.")}
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 divide-y divide-slate-100 overflow-hidden">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-800 divide-y divide-slate-100 dark:divide-zinc-800 overflow-hidden">
             {notifications.map((notification) => {
               const hasLink = getNotificationLink(notification) !== null;
+              const { title, message } = localizeNotification(notification, t);
               return (
                 <button
                   key={notification.id}
@@ -102,8 +104,8 @@ export default function NotificationsPage() {
                   onClick={() => handleClick(notification)}
                   className={cn(
                     'w-full text-left px-5 py-4 flex gap-4 transition-colors',
-                    hasLink && 'hover:bg-slate-50',
-                    !notification.isRead && 'bg-brand/5'
+                    hasLink && 'hover:bg-slate-50 dark:hover:bg-zinc-800/50',
+                    !notification.isRead && 'bg-brand/5 dark:bg-brand/10'
                   )}
                 >
                   <span
@@ -114,13 +116,13 @@ export default function NotificationsPage() {
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start gap-3">
-                      <p className="font-semibold text-slate-900">{notification.title}</p>
-                      <span className="text-xs text-slate-400 whitespace-nowrap">
+                      <p className="font-semibold text-slate-900 dark:text-foreground">{title}</p>
+                      <span className="text-xs text-slate-400 dark:text-zinc-500 whitespace-nowrap">
                         {format(new Date(notification.createdAt), 'MMM d, yyyy')}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-600 mt-1 leading-snug">
-                      {notification.message}
+                    <p className="text-sm text-slate-600 dark:text-gray-300 mt-1 leading-snug">
+                      {message}
                     </p>
                   </div>
                 </button>

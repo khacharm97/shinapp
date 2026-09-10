@@ -232,7 +232,7 @@ export default function MyAnnouncements() {
                   {announcement.sphere}
                 </div>
                 <p className="text-muted-foreground text-sm line-clamp-3 mb-6 h-[4.5rem]">
-                  {announcement.description || "No description provided."}
+                  {announcement.description || t("no_description_provided", "No description provided.")}
                 </p>
 
                 <div className="flex items-center justify-between text-xs text-muted-foreground pt-4 border-t border-border/50">
@@ -381,7 +381,7 @@ export default function MyAnnouncements() {
                   />
                   <div>
                     <Label htmlFor="urgent" className="text-sm font-semibold leading-none cursor-pointer">{t("my_announcements_urgent_label", "Urgent")}</Label>
-                    <p className="text-[11px] text-muted-foreground mt-1">Mark as high priority</p>
+                    <p className="text-[11px] text-muted-foreground mt-1">{t("my_announcements_urgent_desc", "Mark as high priority")}</p>
                   </div>
                 </div>
 
