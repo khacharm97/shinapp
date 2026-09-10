@@ -218,6 +218,7 @@ function Thread({
 
 export default function MessagesPageContent() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { conversationId } = useParams<{ conversationId: string }>();
   const [searchParams] = useSearchParams();
   const { data: conversations, isLoading } = useGetConversationsQuery();
@@ -236,6 +237,26 @@ export default function MessagesPageContent() {
       orderId: searchParams.get("orderId") || undefined,
     };
   }, [isNew, searchParams, t]);
+
+  // If a conversation with this recipient already exists (same type / announcement
+  // / order scope, matching how the backend resolves it), skip the blank draft
+  // thread and open the real one so its history is visible.
+  const existingConversation = useMemo(() => {
+    if (!draftRecipient || !conversations) return undefined;
+    return conversations.find(
+      (c) =>
+        c.type === draftRecipient.type &&
+        (c.announcementId ?? null) === (draftRecipient.announcementId ?? null) &&
+        (c.orderId ?? null) === (draftRecipient.orderId ?? null) &&
+        c.otherParticipants.some((p) => p.id === draftRecipient.recipientId),
+    );
+  }, [draftRecipient, conversations]);
+
+  useEffect(() => {
+    if (isNew && existingConversation) {
+      navigate(`/messages/${existingConversation.id}`, { replace: true });
+    }
+  }, [isNew, existingConversation, navigate]);
 
   const activeId = isNew ? undefined : conversationId;
   const showThreadOnMobile = !!conversationId;
