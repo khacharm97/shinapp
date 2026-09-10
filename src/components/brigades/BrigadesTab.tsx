@@ -162,10 +162,10 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'PENDING': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'ACCEPTED': return 'bg-green-100 text-green-800 border-green-200';
-      case 'REJECTED': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-slate-100 text-slate-800';
+      case 'PENDING': return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/30';
+      case 'ACCEPTED': return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/30';
+      case 'REJECTED': return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30';
+      default: return 'bg-slate-100 text-slate-800 dark:bg-zinc-800 dark:text-gray-200';
     }
   };
 
@@ -228,7 +228,7 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
                         </span>
                         <button
                           onClick={() => handleRemoveExistingMember(member.id)}
-                          className="text-slate-400 hover:text-red-500 rounded-full focus:outline-none p-1"
+                          className="text-slate-400 dark:text-zinc-500 hover:text-red-500 rounded-full focus:outline-none p-1"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -268,14 +268,14 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
                               }
                             }}
                           >
-                            <div className="w-8 h-8 rounded-full bg-slate-200 flex-shrink-0 overflow-hidden">
+                            <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-700 flex-shrink-0 overflow-hidden">
                               {user.avatarUrl ? (
                                 <img src={getImageUrl(user.avatarUrl)} alt="" className="w-full h-full object-cover" />
                               ) : null}
                             </div>
                             <div className="flex flex-col overflow-hidden">
-                              <span className="text-sm font-medium truncate">{user.name || 'Unnamed'}</span>
-                              <span className="text-xs text-slate-500 truncate">{user.email || user.phone}</span>
+                              <span className="text-sm font-medium truncate">{user.name || t("search_unnamed_master", "Unnamed")}</span>
+                              <span className="text-xs text-slate-500 dark:text-gray-400 truncate">{user.email || user.phone}</span>
                             </div>
                           </div>
                         ))}
@@ -294,7 +294,7 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
                         {inv}
                         <button
                           onClick={() => handleRemoveNewInvite(idx)}
-                          className="text-slate-400 hover:text-red-500 rounded-full focus:outline-none"
+                          className="text-slate-400 dark:text-zinc-500 hover:text-red-500 rounded-full focus:outline-none"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -305,7 +305,7 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
               </div>
 
               {errorMsg && (
-                <div className="p-3 bg-red-50 text-red-700 text-sm rounded-md border border-red-100">
+                <div className="p-3 bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 text-sm rounded-md border border-red-100 dark:border-red-500/30">
                   {errorMsg}
                 </div>
               )}
@@ -323,7 +323,7 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
 
       {isLoadingBrigades ? (
         <div className="flex justify-center p-8">
-          <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+          <Loader2 className="w-6 h-6 animate-spin text-slate-400 dark:text-zinc-500" />
         </div>
       ) : brigades && brigades.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -336,18 +336,18 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 dark:text-foreground">{brigade.name}</h3>
-                    <p className="text-xs text-slate-500">{t("brigade_owner", "Owner")}: {profileData?.name || t("you", "You")}</p>
+                    <p className="text-xs text-slate-500 dark:text-gray-400">{t("brigade_owner", "Owner")}: {profileData?.name || t("you", "You")}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-blue-600" onClick={() => handleOpenEdit(brigade)}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 dark:text-gray-400 hover:text-blue-600" onClick={() => handleOpenEdit(brigade)}>
                     <Pencil className="w-4 h-4" />
                   </Button>
 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-red-600" disabled={isDeleting}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 dark:text-gray-400 hover:text-red-600" disabled={isDeleting}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </AlertDialogTrigger>
@@ -370,7 +370,7 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
               </div>
 
               <div className="space-y-3 mt-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
-                <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wider">{t("brigade_members", "Members")} ({brigade.members?.length || 0})</h4>
+                <h4 className="text-xs font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wider">{t("brigade_members", "Members")} ({brigade.members?.length || 0})</h4>
 
                 {brigade.members && brigade.members.length > 0 ? (
                   <div className="space-y-2">
@@ -388,7 +388,7 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-400 italic">{t("brigade_no_members", "No members invited yet.")}</p>
+                  <p className="text-sm text-slate-400 dark:text-zinc-500 italic">{t("brigade_no_members", "No members invited yet.")}</p>
                 )}
               </div>
             </div>
@@ -397,10 +397,10 @@ export function BrigadesTab({ profileData, className = "mt-8" }: { profileData: 
       ) : (
         <div className="text-center p-8 bg-slate-50 dark:bg-zinc-900/50 rounded-xl border border-dashed border-slate-200 dark:border-border">
           <div className="mx-auto w-12 h-12 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center mb-3">
-            <Users className="w-6 h-6 text-slate-400" />
+            <Users className="w-6 h-6 text-slate-400 dark:text-zinc-500" />
           </div>
-          <p className="text-slate-500 font-medium">{t("brigade_empty", "You haven't created any brigades yet.")}</p>
-          <p className="text-slate-400 text-sm mt-1 mb-4">{t("brigade_empty_desc", "Group up with other masters to showcase joint projects.")}</p>
+          <p className="text-slate-500 dark:text-gray-400 font-medium">{t("brigade_empty", "You haven't created any brigades yet.")}</p>
+          <p className="text-slate-400 dark:text-zinc-500 text-sm mt-1 mb-4">{t("brigade_empty_desc", "Group up with other masters to showcase joint projects.")}</p>
           <Button variant="outline" onClick={handleOpenCreate}>
             {t("profile_add_brigade", "Create Brigade")}
           </Button>

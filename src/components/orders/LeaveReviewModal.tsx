@@ -47,7 +47,7 @@ export function LeaveReviewModal({ isOpen, onClose, orderId, targetId }: LeaveRe
 
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
           <div className="flex flex-col items-center gap-2">
-            <label className="text-sm font-medium text-slate-700">{t("rating", "Rating")}</label>
+            <label className="text-sm font-medium text-slate-700 dark:text-gray-300">{t("rating", "Rating")}</label>
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -62,7 +62,7 @@ export function LeaveReviewModal({ isOpen, onClose, orderId, targetId }: LeaveRe
                     className={`w-8 h-8 transition-colors ${
                       star <= (hoverRating || rating)
                         ? "fill-orange-400 text-orange-400"
-                        : "fill-slate-200 text-slate-200"
+                        : "fill-slate-200 text-slate-200 dark:fill-zinc-700 dark:text-zinc-700"
                     }`}
                   />
                 </button>
@@ -71,7 +71,7 @@ export function LeaveReviewModal({ isOpen, onClose, orderId, targetId }: LeaveRe
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="comment" className="text-sm font-medium text-slate-700">
+            <label htmlFor="comment" className="text-sm font-medium text-slate-700 dark:text-gray-300">
               {t("comment_optional", "Comment (Optional)")}
             </label>
             <Textarea

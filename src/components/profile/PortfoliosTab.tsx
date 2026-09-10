@@ -80,7 +80,7 @@ export function PortfoliosTab({ profileData }: PortfoliosTabProps) {
                 {portfolioFiles.length > 0 && (
                   <div className="flex gap-2 mt-2 flex-wrap">
                     {portfolioFiles.map((f, i) => (
-                      <div key={i} className="relative w-20 h-20 rounded-md overflow-hidden bg-slate-100">
+                      <div key={i} className="relative w-20 h-20 rounded-md overflow-hidden bg-slate-100 dark:bg-zinc-800">
                         <img src={URL.createObjectURL(f)} className="w-full h-full object-cover" alt="preview" />
                       </div>
                     ))}
@@ -101,11 +101,11 @@ export function PortfoliosTab({ profileData }: PortfoliosTabProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {profileData.portfolios.map((port: Portfolio) => (
             <div key={port.id} className="border border-slate-200 dark:border-border rounded-xl overflow-hidden group">
-              <div className="aspect-video bg-slate-100 relative">
+              <div className="aspect-video bg-slate-100 dark:bg-zinc-800 relative">
                 {port.imageUrls?.[0] ? (
                   <img src={getImageUrl(port.imageUrls[0]) || ""} className="w-full h-full object-cover" alt={port.title} />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-400">
+                  <div className="w-full h-full flex items-center justify-center text-slate-400 dark:text-zinc-500">
                     <ImagePlus className="w-8 h-8" />
                   </div>
                 )}
@@ -126,7 +126,7 @@ export function PortfoliosTab({ profileData }: PortfoliosTabProps) {
         </div>
       ) : (
         <div className="text-center p-8 bg-slate-50 dark:bg-zinc-900/50 rounded-xl border border-dashed border-slate-200 dark:border-border">
-          <p className="text-slate-500">{t("profile_portfolio_empty", "You haven't added any portfolios yet.")}</p>
+          <p className="text-slate-500 dark:text-gray-400">{t("profile_portfolio_empty", "You haven't added any portfolios yet.")}</p>
         </div>
       )}
     </div>

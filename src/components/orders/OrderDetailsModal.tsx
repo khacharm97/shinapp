@@ -148,13 +148,13 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
         {!isEditing ? (
           <div className="space-y-6 py-4">
             {order.technique && (
-              <div className="flex items-center gap-2 text-sm text-brand bg-brand/5 border border-brand/20 rounded-lg px-4 py-2 w-fit">
+              <div className="flex items-center gap-2 text-sm text-brand bg-brand/5 dark:bg-brand/10 border border-brand/20 rounded-lg px-4 py-2 w-fit">
                 <Wrench className="w-4 h-4" />
                 <span className="font-medium">{t("technique_order_label", "Technique")}:</span> {order.technique.name}
               </div>
             )}
 
-            <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div className="flex items-center gap-4 bg-slate-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-slate-100 dark:border-zinc-800">
               <img
                 src={getImageUrl(otherParty?.avatarUrl)}
                 alt={otherParty?.name}
@@ -162,8 +162,8 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
                 onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${otherParty?.name}&background=random`; }}
               />
               <div className="flex-1">
-                <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{roleLabel}</p>
-                <p className="text-lg font-semibold text-slate-900">{otherParty?.name || t("unknown", "Unknown")}</p>
+                <p className="text-xs text-slate-500 dark:text-gray-400 font-medium uppercase tracking-wider">{roleLabel}</p>
+                <p className="text-lg font-semibold text-slate-900 dark:text-foreground">{otherParty?.name || t("unknown", "Unknown")}</p>
               </div>
               {otherParty?.id && (
                 <Button
@@ -187,56 +187,56 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
             </div>
 
             <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-slate-900">{t("description", "Description")}</h4>
-              <p className="text-sm text-slate-700 whitespace-pre-wrap bg-slate-50 p-4 rounded-lg border border-slate-100">
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-foreground">{t("description", "Description")}</h4>
+              <p className="text-sm text-slate-700 dark:text-gray-300 whitespace-pre-wrap bg-slate-50 dark:bg-zinc-800/50 p-4 rounded-lg border border-slate-100 dark:border-zinc-800">
                 {order.description}
               </p>
             </div>
 
             {order.imageUrl && (
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-slate-900">{t("reference_image", "Reference Image")}</h4>
-                <div className="rounded-lg overflow-hidden border border-slate-200">
+                <h4 className="text-sm font-semibold text-slate-900 dark:text-foreground">{t("reference_image", "Reference Image")}</h4>
+                <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-zinc-700">
                   <img src={getImageUrl(order.imageUrl)} alt="Reference" className="w-full h-auto max-h-[300px] object-contain" />
                 </div>
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 space-y-1">
-                <div className="flex items-center gap-2 text-slate-500 text-xs uppercase font-semibold">
+              <div className="bg-slate-50 dark:bg-zinc-800/50 p-4 rounded-lg border border-slate-100 dark:border-zinc-800 space-y-1">
+                <div className="flex items-center gap-2 text-slate-500 dark:text-gray-400 text-xs uppercase font-semibold">
                   <Calendar className="w-3 h-3" />
                   <span>{t("timeline", "Timeline")}</span>
                 </div>
-                <p className="text-sm font-medium text-slate-900">
+                <p className="text-sm font-medium text-slate-900 dark:text-foreground">
                   {format(new Date(order.startDate), "MMM d, yyyy")} - {format(new Date(order.endDate), "MMM d, yyyy")}
                 </p>
               </div>
-              <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 space-y-1">
-                <div className="flex items-center gap-2 text-slate-500 text-xs uppercase font-semibold">
+              <div className="bg-slate-50 dark:bg-zinc-800/50 p-4 rounded-lg border border-slate-100 dark:border-zinc-800 space-y-1">
+                <div className="flex items-center gap-2 text-slate-500 dark:text-gray-400 text-xs uppercase font-semibold">
                   <DollarSign className="w-3 h-3" />
                   <span>{t("price", "Price")}</span>
                 </div>
-                <p className="text-sm font-medium text-slate-900">
+                <p className="text-sm font-medium text-slate-900 dark:text-foreground">
                   {order.price ? `${order.price} ֏` : t("negotiable", "Negotiable")}
                 </p>
               </div>
-              <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 space-y-1">
-                <div className="flex items-center gap-2 text-slate-500 text-xs uppercase font-semibold">
+              <div className="bg-slate-50 dark:bg-zinc-800/50 p-4 rounded-lg border border-slate-100 dark:border-zinc-800 space-y-1">
+                <div className="flex items-center gap-2 text-slate-500 dark:text-gray-400 text-xs uppercase font-semibold">
                   <CreditCard className="w-3 h-3" />
                   <span>{t("payment_method", "Payment Method")}</span>
                 </div>
-                <p className="text-sm font-medium text-slate-900">
+                <p className="text-sm font-medium text-slate-900 dark:text-foreground">
                   {t(order.paymentMethod.toLowerCase(), order.paymentMethod as string)}
                 </p>
               </div>
               {order.address && (
-                <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 space-y-1">
-                  <div className="flex items-center gap-2 text-slate-500 text-xs uppercase font-semibold">
+                <div className="bg-slate-50 dark:bg-zinc-800/50 p-4 rounded-lg border border-slate-100 dark:border-zinc-800 space-y-1">
+                  <div className="flex items-center gap-2 text-slate-500 dark:text-gray-400 text-xs uppercase font-semibold">
                     <MapPin className="w-3 h-3" />
                     <span>{t("location", "Location")}</span>
                   </div>
-                  <p className="text-sm font-medium text-slate-900 line-clamp-2">
+                  <p className="text-sm font-medium text-slate-900 dark:text-foreground line-clamp-2">
                     {order.address}
                   </p>
                 </div>
@@ -244,7 +244,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
             </div>
 
             {canRespond && (
-              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
+              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <Button
                   className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
                   onClick={handleAccept}
@@ -271,7 +271,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
             )}
 
             {order.status === "ACCEPTED" && (
-              <div className="pt-4 border-t border-slate-100">
+              <div className="pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <Button
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   onClick={handleRequestCompletion}
@@ -283,8 +283,8 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
             )}
 
             {order.status === "COMPLETION_REQUESTED" && order.initiatorId !== currentUserId && (
-              <div className="pt-4 border-t border-slate-100">
-                <div className="text-sm text-slate-500 text-center mb-3">
+              <div className="pt-4 border-t border-slate-100 dark:border-zinc-800">
+                <div className="text-sm text-slate-500 dark:text-gray-400 text-center mb-3">
                   {t("other_party_completed", "The other party marked this order as completed. Please confirm.")}
                 </div>
                 <Button
@@ -298,13 +298,13 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
             )}
 
             {order.status === "COMPLETION_REQUESTED" && order.initiatorId === currentUserId && (
-              <div className="pt-4 border-t border-slate-100 text-center">
-                <p className="text-sm text-slate-500">{t("waiting_completion_confirmation", "Waiting for the other party to confirm completion...")}</p>
+              <div className="pt-4 border-t border-slate-100 dark:border-zinc-800 text-center">
+                <p className="text-sm text-slate-500 dark:text-gray-400">{t("waiting_completion_confirmation", "Waiting for the other party to confirm completion...")}</p>
               </div>
             )}
 
             {order.status === "COMPLETED" && (
-              <div className="pt-4 border-t border-slate-100">
+              <div className="pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <Button
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white"
                   onClick={() => setIsReviewModalOpen(true)}
@@ -318,8 +318,8 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
             )}
 
             {order.status === "PENDING" && order.initiatorId === currentUserId && (
-              <div className="pt-4 border-t border-slate-100 text-center">
-                <p className="text-sm text-slate-500">{t("waiting_for_response", "Waiting for the other party to respond...")}</p>
+              <div className="pt-4 border-t border-slate-100 dark:border-zinc-800 text-center">
+                <p className="text-sm text-slate-500 dark:text-gray-400">{t("waiting_for_response", "Waiting for the other party to respond...")}</p>
               </div>
             )}
           </div>
