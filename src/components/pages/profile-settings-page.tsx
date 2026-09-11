@@ -13,6 +13,7 @@ import {
   useGetSkillsQuery,
 } from "@/store/api/authApi";
 import { BrigadesTab } from "@/components/brigades/BrigadesTab";
+import { BusyDaysTab } from "@/components/profile/BusyDaysTab";
 import { PortfoliosTab } from "@/components/profile/PortfoliosTab";
 import { isMaster, isCompany, canHavePortfolio, hasBrigadesAccess } from "@/utils";
 
@@ -707,6 +708,10 @@ export default function ProfileSettingsPageContent() {
 
         {canHavePortfolio(profileData?.roles) && (
           <PortfoliosTab profileData={profileData} />
+        )}
+
+        {(isMaster(profileData?.roles) || isCompany(profileData?.roles)) && (
+          <BusyDaysTab />
         )}
 
         {hasBrigadesAccess(profileData?.roles) && (
