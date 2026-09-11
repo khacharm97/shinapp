@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
-import { Link } from "react-router-dom";
-import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search, Hourglass, PackageCheck, Wrench } from "lucide-react";
+import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search, Hourglass, PackageCheck, Wrench, Plus } from "lucide-react";
 import { useGetMyOrdersQuery, useGetProfileQuery } from "@/store/api/authApi";
 import { SEO } from "@/components/seo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getImageUrl } from "@/utils";
+import { getImageUrl, isMaster, isCompany } from "@/utils";
 import { OrderDetailsModal } from "@/components/orders/OrderDetailsModal";
+import { AddOrderModal } from "@/components/orders/AddOrderModal";
 
 export default function MyOrdersPageContent() {
   const { t } = useTranslation();
@@ -29,6 +29,7 @@ export default function MyOrdersPageContent() {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [isAddOrderOpen, setIsAddOrderOpen] = useState(false);
 
   // Open a specific order's details when arriving from a notification link (?orderId=...).
   useEffect(() => {
@@ -88,12 +89,15 @@ export default function MyOrdersPageContent() {
             <h1 className="text-3xl font-bold text-slate-900 dark:text-foreground">{t("my_orders", "My Orders")}</h1>
             <p className="text-slate-500 dark:text-gray-400 mt-1">{t("my_orders_desc", "Manage your contracts and service requests.")}</p>
           </div>
-          <Button asChild variant="outline" className="border-brand text-brand hover:bg-brand/10 hover:text-brand shrink-0">
-            <Link to="/profile/techniques">
-              <Wrench className="w-4 h-4 me-2" />
-              {t("my_techniques_manage_link", "Manage My Techniques")}
-            </Link>
-          </Button>
+          {(isMaster(profile.roles) || isCompany(profile.roles)) && (
+            <Button
+              className="bg-brand hover:bg-brand/90 text-white shrink-0"
+              onClick={() => setIsAddOrderOpen(true)}
+            >
+              <Plus className="w-4 h-4 me-2" />
+              {t("add_order_button", "Add Order")}
+            </Button>
+          )}
         </div>
 
         <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-800 p-4 flex flex-col sm:flex-row gap-4">
@@ -203,6 +207,14 @@ export default function MyOrdersPageContent() {
           onClose={() => setSelectedOrder(null)}
           order={selectedOrder}
           currentUserId={profile.id}
+        />
+      )}
+
+      {isAddOrderOpen && (
+        <AddOrderModal
+          isOpen={isAddOrderOpen}
+          onClose={() => setIsAddOrderOpen(false)}
+          masterId={profile.id}
         />
       )}
     </div>

@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useCreateOrderMutation } from "@/store/api/authApi";
 import { toast } from "sonner";
 import { Upload, X, MapPin } from "lucide-react";
+import { resolveApiErrorMessage } from "@/utils";
 
 interface CreateOrderModalProps {
   isOpen: boolean;
@@ -70,8 +71,8 @@ export function CreateOrderModal({ isOpen, onClose, masterId, clientId, masterNa
       toast.success(t("order_created_successfully", "Order proposed successfully!"));
       resetForm();
       onClose();
-    } catch (error) {
-      toast.error(t("order_creation_failed", "Failed to propose order."));
+    } catch (error: any) {
+      toast.error(resolveApiErrorMessage(t, error?.data?.message) || t("order_creation_failed", "Failed to propose order."));
       console.error(error);
     }
   };
