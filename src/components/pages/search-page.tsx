@@ -20,6 +20,7 @@ import {
 import { useAppSelector } from "@/store/hooks";
 import type { LocalizedString, Master, Skill } from "@/types";
 import { getLocalizedName } from "@/utils";
+import { cn } from "@/lib/utils";
 
 export default function SearchPageContent() {
   const { t, i18n } = useTranslation();
@@ -285,7 +286,13 @@ export default function SearchPageContent() {
                             />
                           </Link>
                           {/* Online Indicator Dot */}
-                          <div className="absolute top-2 start-2 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                          <div
+                            className={cn(
+                              "absolute top-2 start-2 w-4 h-4 border-2 border-white rounded-full",
+                              master.isOnline ? "bg-green-500" : "bg-gray-400"
+                            )}
+                            title={master.isOnline ? t("online", "Online") : t("offline", "Offline")}
+                          ></div>
                         </div>
                       </div>
 
