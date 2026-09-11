@@ -16,7 +16,7 @@ import {
   useAcceptOrderCompletionMutation
 } from "@/store/api/authApi";
 import { LeaveReviewModal } from "./LeaveReviewModal";
-import { getImageUrl } from "@/utils";
+import { getImageUrl, resolveApiErrorMessage } from "@/utils";
 import { MapPin, Calendar, CreditCard, DollarSign, MessageSquare, Wrench } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -65,8 +65,8 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
       await acceptOrder(order.id).unwrap();
       toast.success(t("order_accepted", "Order accepted successfully!"));
       onClose();
-    } catch (error: any  ) {  
-      toast.error(t("order_accept_failed", "Failed to accept order."));
+    } catch (error: any  ) {
+      toast.error(resolveApiErrorMessage(t, error?.data?.message) || t("order_accept_failed", "Failed to accept order."));
     }
   };
 
@@ -174,7 +174,6 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
                     onClose();
                     navigate(
                       `/messages/new?recipientId=${otherParty.id}&type=USER_MASTER` +
-                        `&orderId=${order.id}` +
                         `&recipientName=${encodeURIComponent(otherParty.name || "")}` +
                         `&recipientAvatar=${encodeURIComponent(otherParty.avatarUrl || "")}`
                     );

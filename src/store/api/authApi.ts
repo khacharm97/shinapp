@@ -93,6 +93,10 @@ export const authApi = createApi({
         return qs;
       },
     }),
+    searchOrderClients: builder.query({
+      query: ({ search, limit = 5 }: { search: string; limit?: number }) =>
+        `orders/clients?search=${encodeURIComponent(search)}&limit=${limit}`,
+    }),
     getHomeMasters: builder.query<{ items: Master[], total: number }, { limit?: number }>({
       query: ({ limit = 6 }) => `masters?limit=${limit}`,
     }),
@@ -456,6 +460,7 @@ export const {
   useGetMastersQuery,
   useGlobalSearchQuery,
   useSearchBrigadeInviteesQuery,
+  useSearchOrderClientsQuery,
   useGetMasterByIdQuery,
   useGetHomeMastersQuery,
   useUpdateProfileMutation,

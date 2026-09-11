@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useCreateOrderMutation } from "@/store/api/authApi";
 import { toast } from "sonner";
 import { MapPin } from "lucide-react";
+import { resolveApiErrorMessage } from "@/utils";
 
 interface CreateTechniqueOrderModalProps {
   isOpen: boolean;
@@ -63,7 +64,7 @@ export function CreateTechniqueOrderModal({ isOpen, onClose, techniqueId, techni
       onClose();
     } catch (error) {
       const message = (error as { data?: { message?: string } })?.data?.message;
-      toast.error(message || t("order_creation_failed", "Failed to propose order."));
+      toast.error(resolveApiErrorMessage(t, message) || t("order_creation_failed", "Failed to propose order."));
     }
   };
 
