@@ -159,10 +159,10 @@ export default function MyOrdersPageContent() {
 
                   <div className="flex items-center gap-3 mb-4">
                     <img
-                      src={getImageUrl(otherParty?.avatarUrl)}
+                      src={otherParty?.avatarUrl ? getImageUrl(otherParty.avatarUrl) : `https://ui-avatars.com/api/?name=${encodeURIComponent(otherParty?.name || "")}&background=random`}
                       alt={otherParty?.name}
                       className="w-10 h-10 rounded-full object-cover border"
-                      onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${otherParty?.name}&background=random`; }}
+                      onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(otherParty?.name || "")}&background=random`; }}
                     />
                     <div>
                       <p className="text-xs text-slate-500 dark:text-gray-400 font-medium uppercase tracking-wider">{roleLabel}</p>
