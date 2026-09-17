@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
+import { Toaster } from 'sonner'
 import RootLayout from '@/layouts/root-layout'
 import AuthLayout from '@/layouts/auth-layout'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -146,9 +147,12 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="w-10 h-10 animate-spin text-brand" /></div>}>
-      <RouterProvider router={router} />
-    </Suspense>
+    <>
+      <Suspense fallback={<div className="flex h-screen w-full items-center justify-center"><Loader2 className="w-10 h-10 animate-spin text-brand" /></div>}>
+        <RouterProvider router={router} />
+      </Suspense>
+      <Toaster richColors position="top-right" />
+    </>
   )
 }
 

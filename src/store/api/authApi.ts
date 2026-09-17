@@ -53,7 +53,8 @@ export const authApi = createApi({
     'Masters',
     'Profile',
     'Techniques',
-    'MyTechniques'],
+    'MyTechniques',
+    'BusyDays'],
   endpoints: (builder) => ({
     getProfile: builder.query({
       query: () => 'profile',
@@ -92,6 +93,10 @@ export const authApi = createApi({
         if (brigadeId) qs += `&brigadeId=${encodeURIComponent(brigadeId)}`;
         return qs;
       },
+    }),
+    searchOrderClients: builder.query({
+      query: ({ search, limit = 5 }: { search: string; limit?: number }) =>
+        `orders/clients?search=${encodeURIComponent(search)}&limit=${limit}`,
     }),
     getHomeMasters: builder.query<{ items: Master[], total: number }, { limit?: number }>({
       query: ({ limit = 6 }) => `masters?limit=${limit}`,
@@ -365,6 +370,25 @@ export const authApi = createApi({
       query: () => 'orders',
       providesTags: ['Profile'],
     }),
+    getMyBusyDays: builder.query<{ id: string; startDate: string; endDate: string; note?: string | null }[], void>({
+      query: () => 'orders/busy-days',
+      providesTags: ['BusyDays'],
+    }),
+    addBusyDay: builder.mutation<any, { startDate: string; endDate: string; note?: string }>({
+      query: (body) => ({
+        url: 'orders/busy-days',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['BusyDays'],
+    }),
+    deleteBusyDay: builder.mutation<any, string>({
+      query: (id) => ({
+        url: `orders/busy-days/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['BusyDays'],
+    }),
     getOrderById: builder.query({
       query: (id: string) => `orders/${id}`,
       providesTags: ['Profile'],
@@ -456,6 +480,7 @@ export const {
   useGetMastersQuery,
   useGlobalSearchQuery,
   useSearchBrigadeInviteesQuery,
+  useSearchOrderClientsQuery,
   useGetMasterByIdQuery,
   useGetHomeMastersQuery,
   useUpdateProfileMutation,
@@ -484,6 +509,9 @@ export const {
   useRejectOrderMutation,
   useGetMyOrdersQuery,
   useGetOrderByIdQuery,
+  useGetMyBusyDaysQuery,
+  useAddBusyDayMutation,
+  useDeleteBusyDayMutation,
 
   useRequestOrderCompletionMutation,
   useAcceptOrderCompletionMutation,

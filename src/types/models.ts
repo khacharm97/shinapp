@@ -150,5 +150,7 @@ export interface Master {
   reviewsCount?: number;
   /** Live availability derived from current in-progress orders. */
   availability?: "AVAILABLE" | "HALF_BUSY" | "BUSY";
+  /** Whether this master currently has the app open (a live socket connected). */
+  isOnline?: boolean;
   [key: string]: unknown;
 }

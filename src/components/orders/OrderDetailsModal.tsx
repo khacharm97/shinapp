@@ -16,7 +16,7 @@ import {
   useAcceptOrderCompletionMutation
 } from "@/store/api/authApi";
 import { LeaveReviewModal } from "./LeaveReviewModal";
-import { getImageUrl } from "@/utils";
+import { getImageUrl, resolveApiErrorMessage } from "@/utils";
 import { MapPin, Calendar, CreditCard, DollarSign, MessageSquare, Wrench } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -65,8 +65,8 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
       await acceptOrder(order.id).unwrap();
       toast.success(t("order_accepted", "Order accepted successfully!"));
       onClose();
-    } catch (error: any  ) {  
-      toast.error(t("order_accept_failed", "Failed to accept order."));
+    } catch (error: any  ) {
+      toast.error(resolveApiErrorMessage(t, error?.data?.message) || t("order_accept_failed", "Failed to accept order."));
     }
   };
 
@@ -156,10 +156,10 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
 
             <div className="flex items-center gap-4 bg-slate-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-slate-100 dark:border-zinc-800">
               <img
-                src={getImageUrl(otherParty?.avatarUrl)}
+                src={otherParty?.avatarUrl ? getImageUrl(otherParty.avatarUrl) : `https://ui-avatars.com/api/?name=${encodeURIComponent(otherParty?.name || "")}&background=random`}
                 alt={otherParty?.name}
                 className="w-12 h-12 rounded-full object-cover border"
-                onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${otherParty?.name}&background=random`; }}
+                onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(otherParty?.name || "")}&background=random`; }}
               />
               <div className="flex-1">
                 <p className="text-xs text-slate-500 dark:text-gray-400 font-medium uppercase tracking-wider">{roleLabel}</p>
@@ -174,7 +174,6 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
                     onClose();
                     navigate(
                       `/messages/new?recipientId=${otherParty.id}&type=USER_MASTER` +
-                        `&orderId=${order.id}` +
                         `&recipientName=${encodeURIComponent(otherParty.name || "")}` +
                         `&recipientAvatar=${encodeURIComponent(otherParty.avatarUrl || "")}`
                     );
