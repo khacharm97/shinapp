@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "postbuild": "node scripts/seo-build.mjs",
+    "seo:snapshot": "node scripts/generate-snapshots.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
