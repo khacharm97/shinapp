@@ -33,6 +33,7 @@ import { logout, updateUser } from "@/store/slices/authSlice"
 import { useEffect, useState } from "react"
 import { NotificationsMenu } from "@/components/notifications/NotificationsMenu"
 import { MessagesLink } from "@/components/chat/MessagesLink"
+import { StructuredData } from "@/components/structured-data"
 
 const FOOTER_PHONE = "+374(93)-23-34-02"
 const FOOTER_PHONE_HREF = "tel:+37493233402"
@@ -108,6 +109,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <StructuredData />
       <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
         <header
           className={`border-b sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-transform duration-300 ${showNavbar ? "translate-y-0" : "-translate-y-full"

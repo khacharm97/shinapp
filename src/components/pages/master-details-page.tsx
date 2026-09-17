@@ -100,8 +100,21 @@ export default function MasterDetailsPageContent() {
     );
   }
 
+  const location = getLocalizedLocation(master.userInfo?.regionId, master.userInfo?.cityId);
+  const skillsLabel = master.userInfo?.skills?.length
+    ? master.userInfo.skills.map(getSkillTranslation).join(', ')
+    : undefined;
+  const seoDescription = [skillsLabel, location].filter(Boolean).length
+    ? t('seo_master_description', 'Contact {{name}}, a construction master in Armenia{{skills}}{{location}}.', {
+        name: master.name,
+        skills: skillsLabel ? ` specializing in ${skillsLabel}` : '',
+        location: location ? ` based in ${location}` : '',
+      })
+    : undefined;
+
   return (
     <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] py-8 px-4 sm:px-6 lg:px-8">
+      <SEO title={master.name} description={seoDescription} />
       <div className="max-w-5xl mx-auto space-y-8">
         <div>
           <Button variant="ghost" onClick={goBack} className="mb-4 text-slate-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-foreground -ms-4">

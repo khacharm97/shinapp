@@ -12,7 +12,7 @@ export default function HomePageContent() {
 
   return (
     <div className="flex flex-col items-center justify-start w-full flex-1">
-      <SEO title="Home" />
+      <SEO />
       <HeroSection />
       {!token && <WhoAreWeSection />}
       <FeaturedSkillsSection />
