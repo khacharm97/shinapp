@@ -18,9 +18,14 @@ interface CreateOrderModalProps {
   masterId: string;
   clientId: string;
   masterName: string;
+  // When set, this order is proposed to a Brigade (masterId is the brigade
+  // owner) rather than to an individual master - the backend stamps the
+  // order with brigadeId so the owner can staff it with specific members
+  // once they accept it.
+  brigadeId?: string;
 }
 
-export function CreateOrderModal({ isOpen, onClose, masterId, clientId, masterName }: CreateOrderModalProps) {
+export function CreateOrderModal({ isOpen, onClose, masterId, clientId, masterName, brigadeId }: CreateOrderModalProps) {
   const { t } = useTranslation();
   const [createOrder, { isLoading }] = useCreateOrderMutation();
 
@@ -54,6 +59,7 @@ export function CreateOrderModal({ isOpen, onClose, masterId, clientId, masterNa
     const formData = new FormData();
     formData.append("masterId", masterId);
     formData.append("clientId", clientId);
+    if (brigadeId) formData.append("brigadeId", brigadeId);
     formData.append("description", description);
     formData.append("startDate", startDate);
     formData.append("endDate", endDate);

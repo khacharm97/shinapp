@@ -366,6 +366,14 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['Profile'],
     }),
+    assignOrderMembers: builder.mutation<any, { id: string; memberIds: string[] }>({
+      query: ({ id, memberIds }) => ({
+        url: `orders/${id}/assign`,
+        method: 'POST',
+        body: { memberIds },
+      }),
+      invalidatesTags: ['Profile', 'BusyDays'],
+    }),
     getMyOrders: builder.query({
       query: () => 'orders',
       providesTags: ['Profile'],
@@ -507,6 +515,7 @@ export const {
   useUpdateOrderMutation,
   useAcceptOrderMutation,
   useRejectOrderMutation,
+  useAssignOrderMembersMutation,
   useGetMyOrdersQuery,
   useGetOrderByIdQuery,
   useGetMyBusyDaysQuery,

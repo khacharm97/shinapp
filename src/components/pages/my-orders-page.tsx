@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
-import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search, Hourglass, PackageCheck, Wrench, Plus } from "lucide-react";
+import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search, Hourglass, PackageCheck, Wrench, Plus, Users } from "lucide-react";
 import { useGetMyOrdersQuery, useGetProfileQuery } from "@/store/api/authApi";
 import { SEO } from "@/components/seo";
 import { Badge } from "@/components/ui/badge";
@@ -154,6 +154,12 @@ export default function MyOrdersPageContent() {
                   {order.technique && (
                     <Badge variant="outline" className="w-fit mb-3 bg-brand/5 dark:bg-brand/10 text-brand border-brand/20">
                       <Wrench className="w-3 h-3 mr-1" /> {order.technique.name}
+                    </Badge>
+                  )}
+
+                  {order.brigade && (
+                    <Badge variant="outline" className="w-fit mb-3 bg-brand/5 dark:bg-brand/10 text-brand border-brand/20">
+                      <Users className="w-3 h-3 mr-1" /> {order.brigade.name}
                     </Badge>
                   )}
 

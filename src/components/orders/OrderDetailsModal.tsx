@@ -13,11 +13,13 @@ import {
   useRejectOrderMutation,
   useUpdateOrderMutation,
   useRequestOrderCompletionMutation,
-  useAcceptOrderCompletionMutation
+  useAcceptOrderCompletionMutation,
+  useAssignOrderMembersMutation,
+  useGetBrigadeByIdQuery,
 } from "@/store/api/authApi";
 import { LeaveReviewModal } from "./LeaveReviewModal";
 import { getImageUrl, resolveApiErrorMessage } from "@/utils";
-import { MapPin, Calendar, CreditCard, DollarSign, MessageSquare, Wrench } from "lucide-react";
+import { MapPin, Calendar, CreditCard, DollarSign, MessageSquare, Wrench, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface OrderDetailsModalProps {
@@ -35,6 +37,8 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
   const [updateOrder, { isLoading: isUpdating }] = useUpdateOrderMutation();
   const [requestCompletion, { isLoading: isRequestingCompletion }] = useRequestOrderCompletionMutation();
   const [acceptCompletion, { isLoading: isAcceptingCompletion }] = useAcceptOrderCompletionMutation();
+  const [assignOrderMembers, { isLoading: isAssigning }] = useAssignOrderMembersMutation();
+  const { data: brigadeData } = useGetBrigadeByIdQuery(order?.brigadeId, { skip: !order?.brigadeId });
 
   const [isEditing, setIsEditing] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -46,6 +50,9 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
     paymentMethod: order?.paymentMethod || "CASH",
     address: order?.address || "",
   });
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(
+    () => (order?.assignments || []).map((a: any) => a.memberId)
+  );
 
   if (!order) return null;
 
@@ -58,7 +65,35 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
     ? order.reviews.some((r: any) => r.authorId === currentUserId)
     : false;
 
-  const canRespond = order.status === "PENDING" && order.initiatorId !== currentUserId;
+  // An assigned brigade member can view the order (for context/messaging) but
+  // only the two contracting parties - client and brigade owner - can
+  // accept/reject/edit its terms.
+  const isContractingParty = isClient || currentUserId === order.masterId;
+  const canRespond = isContractingParty && order.status === "PENDING" && order.initiatorId !== currentUserId;
+
+  const isBrigadeOrder = !!order.brigadeId;
+  const isBrigadeOwner = isBrigadeOrder && currentUserId === order.masterId;
+  const canAssignTeam =
+    isBrigadeOwner && (order.status === "ACCEPTED" || order.status === "COMPLETION_REQUESTED");
+  const acceptedBrigadeMembers = (brigadeData?.members || []).filter((m: any) => m.status === "ACCEPTED");
+  const assignableTeam = brigadeData?.owner
+    ? [brigadeData.owner, ...acceptedBrigadeMembers.map((m: any) => m.user)]
+    : [];
+
+  const toggleMember = (memberId: string) => {
+    setSelectedMemberIds((prev) =>
+      prev.includes(memberId) ? prev.filter((id) => id !== memberId) : [...prev, memberId]
+    );
+  };
+
+  const handleSaveTeam = async () => {
+    try {
+      await assignOrderMembers({ id: order.id, memberIds: selectedMemberIds }).unwrap();
+      toast.success(t("order_team_saved", "Team updated successfully!"));
+    } catch (error: any) {
+      toast.error(resolveApiErrorMessage(t, error?.data?.message) || t("order_team_save_failed", "Failed to update the team."));
+    }
+  };
 
   const handleAccept = async () => {
     try {
@@ -242,6 +277,76 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
               )}
             </div>
 
+            {isBrigadeOrder && (canAssignTeam || order.assignments?.length > 0) && (
+              <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-zinc-800">
+                <h4 className="text-sm font-semibold text-slate-900 dark:text-foreground flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  {t("order_team_title", "Team")}
+                </h4>
+
+                {canAssignTeam ? (
+                  <>
+                    <p className="text-xs text-slate-500 dark:text-gray-400">
+                      {t("order_team_assign_desc", "Choose who from your brigade will handle this job. Their calendar will show these dates as busy.")}
+                    </p>
+                    {assignableTeam.length === 0 ? (
+                      <p className="text-sm text-slate-500 dark:text-gray-400">
+                        {t("order_team_no_members", "No accepted brigade members yet.")}
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        {assignableTeam.map((person: any) => (
+                          <label
+                            key={person.id}
+                            className="flex items-center gap-3 bg-slate-50 dark:bg-zinc-800/50 p-2.5 rounded-lg border border-slate-100 dark:border-zinc-800 cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedMemberIds.includes(person.id)}
+                              onChange={() => toggleMember(person.id)}
+                              className="w-4 h-4 accent-brand"
+                            />
+                            <img
+                              src={person.avatarUrl ? getImageUrl(person.avatarUrl) : `https://ui-avatars.com/api/?name=${encodeURIComponent(person.name || "")}&background=random`}
+                              alt={person.name}
+                              className="w-8 h-8 rounded-full object-cover border"
+                            />
+                            <span className="text-sm font-medium text-slate-900 dark:text-foreground">
+                              {person.name || t("unknown", "Unknown")}
+                              {person.id === order.masterId && (
+                                <span className="ms-1 text-xs text-slate-500 dark:text-gray-400">({t("brigade_creator", "Creator")})</span>
+                              )}
+                            </span>
+                          </label>
+                        ))}
+                        <Button
+                          size="sm"
+                          className="bg-brand hover:bg-brand/90 text-white"
+                          onClick={handleSaveTeam}
+                          disabled={isAssigning}
+                        >
+                          {isAssigning ? t("processing", "Processing...") : t("order_team_save", "Save Team")}
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {order.assignments.map((a: any) => (
+                      <div key={a.memberId} className="flex items-center gap-2 bg-slate-50 dark:bg-zinc-800/50 px-3 py-1.5 rounded-full border border-slate-100 dark:border-zinc-800">
+                        <img
+                          src={a.member?.avatarUrl ? getImageUrl(a.member.avatarUrl) : `https://ui-avatars.com/api/?name=${encodeURIComponent(a.member?.name || "")}&background=random`}
+                          alt={a.member?.name}
+                          className="w-6 h-6 rounded-full object-cover"
+                        />
+                        <span className="text-xs font-medium text-slate-900 dark:text-foreground">{a.member?.name || t("unknown", "Unknown")}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {canRespond && (
               <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <Button
@@ -269,7 +374,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
               </div>
             )}
 
-            {order.status === "ACCEPTED" && (
+            {isContractingParty && order.status === "ACCEPTED" && (
               <div className="pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <Button
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white"
@@ -281,7 +386,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
               </div>
             )}
 
-            {order.status === "COMPLETION_REQUESTED" && order.initiatorId !== currentUserId && (
+            {isContractingParty && order.status === "COMPLETION_REQUESTED" && order.initiatorId !== currentUserId && (
               <div className="pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <div className="text-sm text-slate-500 dark:text-gray-400 text-center mb-3">
                   {t("other_party_completed", "The other party marked this order as completed. Please confirm.")}

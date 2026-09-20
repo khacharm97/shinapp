@@ -1,10 +1,13 @@
 import { getImageUrl } from '@/utils';
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, ArrowLeft, Star, Phone, Mail, CheckCircle2, User as UserIcon } from "lucide-react";
-import { useGetBrigadeByIdQuery } from "@/store/api/authApi";
+import { Loader2, ArrowLeft, Star, Phone, Mail, CheckCircle2, User as UserIcon, FileText, MessageSquare } from "lucide-react";
+import { useGetBrigadeByIdQuery, useGetProfileQuery } from "@/store/api/authApi";
+import { useAppSelector } from "@/store/hooks";
 import { Button } from "@/components/ui/button";
 import { SEO } from '@/components/seo';
+import { CreateOrderModal } from "@/components/orders/CreateOrderModal";
 import brigadeBg from '@/assets/brigade.webp';
 
 
@@ -15,6 +18,10 @@ export default function BrigadeDetailsPageContent() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+
+  const token = useAppSelector((state) => state.auth.token);
+  const { data: profile } = useGetProfileQuery(undefined, { skip: !token });
 
   // Go back to wherever the user came from; fall back to /search when the page
   // was opened directly with no in-app history.
@@ -126,7 +133,29 @@ export default function BrigadeDetailsPageContent() {
                 </div>
               </div>
 
-              <div className="flex gap-3 shrink-0">
+              <div className="flex flex-wrap gap-3 shrink-0">
+                {profile && brigade.owner && profile.id !== brigade.owner.id && (
+                  <Button onClick={() => setIsOrderModalOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm w-full md:w-auto">
+                    <FileText className="w-4 h-4 me-2" />
+                    {t("propose_order", "Propose Order")}
+                  </Button>
+                )}
+                {profile && brigade.owner && profile.id !== brigade.owner.id && (
+                  <Button
+                    variant="outline"
+                    className="w-full md:w-auto border-brand text-brand hover:bg-brand/10 hover:text-brand"
+                    onClick={() =>
+                      navigate(
+                        `/messages/new?recipientId=${brigade.owner.id}&type=USER_MASTER` +
+                          `&recipientName=${encodeURIComponent(brigade.owner.name || "")}` +
+                          `&recipientAvatar=${encodeURIComponent(brigade.owner.avatarUrl || "")}`
+                      )
+                    }
+                  >
+                    <MessageSquare className="w-4 h-4 me-2" />
+                    {t("send_message", "Message")}
+                  </Button>
+                )}
                 <Button onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
                   <Phone className="w-4 h-4 me-2" />
                   {t("master_details_call_manager", "Call Manager")}
@@ -223,6 +252,16 @@ export default function BrigadeDetailsPageContent() {
           </div>
         </div>
       </div>
+      {profile && brigade.owner && (
+        <CreateOrderModal
+          isOpen={isOrderModalOpen}
+          onClose={() => setIsOrderModalOpen(false)}
+          masterId={brigade.owner.id}
+          clientId={profile.id}
+          masterName={brigade.name}
+          brigadeId={brigade.id}
+        />
+      )}
     </div>
   );
 }
