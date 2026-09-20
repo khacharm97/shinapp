@@ -8,7 +8,6 @@ import {
   CalendarIcon,
   MapPin,
   Phone,
-  Mail,
   Globe,
   BadgeCheck,
   Briefcase,
@@ -344,16 +343,18 @@ export default function AnnouncementDetailsPageContent() {
               )}
 
               <div className="pt-4 border-t border-slate-100 dark:border-zinc-800 space-y-2">
-                {currentUser && currentUser.id !== company.id && (
+                {(!currentUser || currentUser.id !== company.id) && (
                   <Button
                     className="w-full bg-brand text-white hover:bg-brand/90"
                     onClick={() =>
-                      navigate(
-                        `/messages/new?recipientId=${company.id}&type=MASTER_COMPANY` +
-                          `&announcementId=${announcement.id}` +
-                          `&recipientName=${encodeURIComponent(companyName)}` +
-                          `&recipientAvatar=${encodeURIComponent(company.avatarUrl || "")}`
-                      )
+                      !currentUser
+                        ? navigate("/login")
+                        : navigate(
+                            `/messages/new?recipientId=${company.id}&type=MASTER_COMPANY` +
+                              `&announcementId=${announcement.id}` +
+                              `&recipientName=${encodeURIComponent(companyName)}` +
+                              `&recipientAvatar=${encodeURIComponent(company.avatarUrl || "")}`
+                          )
                     }
                   >
                     <MessageSquare className="w-4 h-4" />
@@ -365,14 +366,6 @@ export default function AnnouncementDetailsPageContent() {
                     <Button variant="outline" className="w-full">
                       <Phone className="w-4 h-4" />
                       {t("call", "Call")} {company.phone}
-                    </Button>
-                  </a>
-                )}
-                {company.email && (
-                  <a href={`mailto:${company.email}`} className="block">
-                    <Button variant="outline" className="w-full">
-                      <Mail className="w-4 h-4" />
-                      {t("send_email", "Send email")}
                     </Button>
                   </a>
                 )}

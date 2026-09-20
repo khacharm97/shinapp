@@ -2,7 +2,7 @@ import { getImageUrl } from '@/utils';
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, ArrowLeft, Star, Phone, Mail, CheckCircle2, User as UserIcon, FileText, MessageSquare } from "lucide-react";
+import { Loader2, ArrowLeft, Star, Phone, CheckCircle2, User as UserIcon, FileText, MessageSquare } from "lucide-react";
 import { useGetBrigadeByIdQuery, useGetProfileQuery } from "@/store/api/authApi";
 import { useAppSelector } from "@/store/hooks";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,6 @@ import brigadeBg from '@/assets/brigade.webp';
 
 
 const MANAGER_PHONE = "+37493233402";
-const MANAGER_EMAIL = "info@shinapp.am";
 
 export default function BrigadeDetailsPageContent() {
   const { id } = useParams<{ id: string }>();
@@ -140,16 +139,18 @@ export default function BrigadeDetailsPageContent() {
                     {t("propose_order", "Propose Order")}
                   </Button>
                 )}
-                {profile && brigade.owner && profile.id !== brigade.owner.id && (
+                {brigade.owner && (!profile || profile.id !== brigade.owner.id) && (
                   <Button
                     variant="outline"
                     className="w-full md:w-auto border-brand text-brand hover:bg-brand/10 hover:text-brand"
                     onClick={() =>
-                      navigate(
-                        `/messages/new?recipientId=${brigade.owner.id}&type=USER_MASTER` +
-                          `&recipientName=${encodeURIComponent(brigade.owner.name || "")}` +
-                          `&recipientAvatar=${encodeURIComponent(brigade.owner.avatarUrl || "")}`
-                      )
+                      !profile
+                        ? navigate("/login")
+                        : navigate(
+                            `/messages/new?recipientId=${brigade.owner.id}&type=USER_MASTER` +
+                              `&recipientName=${encodeURIComponent(brigade.owner.name || "")}` +
+                              `&recipientAvatar=${encodeURIComponent(brigade.owner.avatarUrl || "")}`
+                          )
                     }
                   >
                     <MessageSquare className="w-4 h-4 me-2" />
@@ -159,10 +160,6 @@ export default function BrigadeDetailsPageContent() {
                 <Button onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
                   <Phone className="w-4 h-4 me-2" />
                   {t("master_details_call_manager", "Call Manager")}
-                </Button>
-                <Button variant="outline" onClick={() => window.location.href = `mailto:${MANAGER_EMAIL}`} className="w-full md:w-auto">
-                  <Mail className="w-4 h-4 me-2" />
-                  {t("master_details_email_manager", "Email Manager")}
                 </Button>
               </div>
 

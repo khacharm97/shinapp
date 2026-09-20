@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAppSelector } from "@/store/hooks";
 import { useTranslation } from "react-i18next";
-import { Loader2, MapPin, Star, CheckCircle2, Clock, Phone, Mail, ArrowLeft, ImagePlus, FileText, Calendar as CalendarIcon, MessageSquare } from "lucide-react";
+import { Loader2, MapPin, Star, CheckCircle2, Clock, Phone, ArrowLeft, ImagePlus, FileText, Calendar as CalendarIcon, MessageSquare } from "lucide-react";
 import { useGetMasterByIdQuery, useGetSkillsQuery, useGetProfileQuery, useGetMasterReviewsQuery, useGetMasterBusyDatesQuery } from "@/store/api/authApi";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -16,7 +16,6 @@ import { SEO } from '@/components/seo';
 import { CreateOrderModal } from "@/components/orders/CreateOrderModal";
 
 const MANAGER_PHONE = "+37493233402";
-const MANAGER_EMAIL = "info@shinapp.am";
 
 export default function MasterDetailsPageContent() {
   const { id } = useParams<{ id: string }>();
@@ -185,16 +184,18 @@ export default function MasterDetailsPageContent() {
                       {t("propose_order", "Propose Order")}
                     </Button>
                   )}
-                  {profile && profile.id !== master.id && (
+                  {(!profile || profile.id !== master.id) && (
                     <Button
                       variant="outline"
                       className="w-full md:w-auto border-brand text-brand hover:bg-brand/10 hover:text-brand"
                       onClick={() =>
-                        navigate(
-                          `/messages/new?recipientId=${master.id}&type=USER_MASTER` +
-                            `&recipientName=${encodeURIComponent(master.name || "")}` +
-                            `&recipientAvatar=${encodeURIComponent(master.avatarUrl || "")}`
-                        )
+                        !profile
+                          ? navigate("/login")
+                          : navigate(
+                              `/messages/new?recipientId=${master.id}&type=USER_MASTER` +
+                                `&recipientName=${encodeURIComponent(master.name || "")}` +
+                                `&recipientAvatar=${encodeURIComponent(master.avatarUrl || "")}`
+                            )
                       }
                     >
                       <MessageSquare className="w-4 h-4 me-2" />
@@ -204,10 +205,6 @@ export default function MasterDetailsPageContent() {
                   <Button onClick={() => window.location.href = `tel:${MANAGER_PHONE}`} className="bg-brand hover:bg-brand/90 text-white shadow-sm w-full md:w-auto">
                     <Phone className="w-4 h-4 me-2" />
                     {t("master_details_call_manager", "Call Manager")}
-                  </Button>
-                  <Button variant="outline" onClick={() => window.location.href = `mailto:${MANAGER_EMAIL}`} className="w-full md:w-auto">
-                    <Mail className="w-4 h-4 me-2" />
-                    {t("master_details_email_manager", "Email Manager")}
                   </Button>
 
                   {/* Brigade Link */}
