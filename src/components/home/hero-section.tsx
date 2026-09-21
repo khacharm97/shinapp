@@ -2,12 +2,20 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { useAppSelector } from '@/store/hooks'
+import { useGetProfileQuery } from '@/store/api/authApi'
+import { isCompany } from '@/utils'
 import homeBanner from '@/assets/home_bunner.webp'
 
 export function HeroSection() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
+
+  const { token, user: reduxUser } = useAppSelector((state) => state.auth)
+  const { data: profile } = useGetProfileQuery(undefined, { skip: !token })
+  const user = reduxUser || profile
+  const canAddAnnouncement = isCompany(user?.roles) && !!user?.verifiedAt
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,22 +47,40 @@ export function HeroSection() {
 
         {/* Badges container */}
         <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-4 mb-12">
-          <div className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white">
+          <button
+            type="button"
+            onClick={() => navigate('/search')}
+            className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white"
+          >
             <div className="w-4 h-4 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: '#6823F1' }} />
-            <span className="text-sm font-semibold">{t('badge_reliable_specialists')}</span>
-          </div>
-          <div className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white">
+            <span className="text-sm font-semibold">{t('badge_find_masters')}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate(canAddAnnouncement ? '/my-announcements' : '/announcements')}
+            className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white"
+          >
             <div className="w-4 h-4 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: '#F17C23' }} />
-            <span className="text-sm font-semibold">{t('badge_reliable_platform')}</span>
-          </div>
-          <div className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white">
+            <span className="text-sm font-semibold">
+              {canAddAnnouncement ? t('my_announcements_add_btn') : t('nav_announcements')}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/calculator')}
+            className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white"
+          >
             <div className="w-4 h-4 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: '#0900FF' }} />
-            <span className="text-sm font-semibold">{t('badge_wide_selection')}</span>
-          </div>
-          <div className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white">
+            <span className="text-sm font-semibold">{t('nav_calculator')}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/about')}
+            className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white"
+          >
             <div className="w-4 h-4 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: '#F14623' }} />
-            <span className="text-sm font-semibold">{t('badge_fast_decision')}</span>
-          </div>
+            <span className="text-sm font-semibold">{t('nav_about_us')}</span>
+          </button>
         </div>
 
         {/* Search Input and Button */}
