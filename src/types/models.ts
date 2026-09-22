@@ -15,6 +15,7 @@ export interface User {
 }
 
 export type ConversationType = "USER_MASTER" | "MASTER_COMPANY" | "SUPPORT";
+export type ConversationStatus = "OPEN" | "RESOLVED";
 
 export interface ChatParticipant {
   id: string;
@@ -36,6 +37,7 @@ export interface ChatMessage {
 export interface Conversation {
   id: string;
   type: ConversationType;
+  status?: ConversationStatus;
   announcementId?: string | null;
   orderId?: string | null;
   lastMessageAt: string;

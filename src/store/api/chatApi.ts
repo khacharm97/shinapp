@@ -3,7 +3,7 @@ import type { BaseQueryApi, FetchArgs } from '@reduxjs/toolkit/query';
 import { io } from 'socket.io-client';
 import type { RootState } from '../index';
 import { logout } from '../slices/authSlice';
-import type { ChatMessage, Conversation, ConversationType } from '@/types';
+import type { ChatMessage, Conversation, ConversationStatus, ConversationType } from '@/types';
 
 const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
 const httpBase = backendUrl.startsWith('http') ? backendUrl : `https://${backendUrl}`;
@@ -133,7 +133,15 @@ export const chatApi = createApi({
 
           socket.on(
             'chat:message',
-            ({ conversationId, message }: { conversationId: string; message: ChatMessage }) => {
+            ({
+              conversationId,
+              message,
+              conversationStatus,
+            }: {
+              conversationId: string;
+              message: ChatMessage;
+              conversationStatus?: ConversationStatus;
+            }) => {
               const myId = (getState() as RootState).auth.user?.id;
               const fromOther = message.senderId !== myId;
 
@@ -153,6 +161,7 @@ export const chatApi = createApi({
                   const convo = draft[idx];
                   convo.lastMessage = message;
                   convo.lastMessageAt = message.createdAt;
+                  if (conversationStatus) convo.status = conversationStatus;
                   if (fromOther) convo.unreadCount += 1;
                   draft.splice(idx, 1);
                   draft.unshift(convo);

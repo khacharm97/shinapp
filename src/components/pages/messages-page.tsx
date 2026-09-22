@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { formatDistanceToNow, format } from "date-fns";
-import { Loader2, Send, ArrowLeft, MessageSquare } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { Loader2, Send, ArrowLeft, MessageSquare, LifeBuoy } from "lucide-react";
 import {
   useGetConversationsQuery,
   useGetMessagesQuery,
@@ -14,7 +14,8 @@ import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/seo";
 import { getImageUrl } from "@/utils";
 import { cn } from "@/lib/utils";
-import type { ChatMessage, Conversation, ConversationType } from "@/types";
+import { MessageBubble } from "@/components/chat/MessageBubble";
+import type { Conversation, ConversationType } from "@/types";
 
 function Avatar({ name, url, size = 40 }: { name?: string | null; url?: string | null; size?: number }) {
   return (
@@ -74,39 +75,69 @@ function ConversationRow({
   );
 }
 
-function MessageBubble({ message, mine }: { message: ChatMessage; mine: boolean }) {
+function SupportRow({
+  conversation,
+  active,
+}: {
+  conversation?: Conversation;
+  active: boolean;
+}) {
+  const { t } = useTranslation();
   return (
-    <div className={cn("flex", mine ? "justify-end" : "justify-start")}>
-      <div
-        className={cn(
-          "max-w-[75%] rounded-2xl px-4 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words",
-          mine
-            ? "bg-brand text-white rounded-br-sm"
-            : "bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-800 dark:text-gray-100 rounded-bl-sm"
-        )}
-      >
-        {message.body}
-        <div className={cn("text-[10px] mt-1", mine ? "text-white/70" : "text-slate-400 dark:text-zinc-500")}>
-          {format(new Date(message.createdAt), "HH:mm")}
+    <Link
+      to={conversation ? `/messages/${conversation.id}` : "/messages/support"}
+      className={cn(
+        "flex items-center gap-3 px-4 py-3 border-b border-slate-200 dark:border-zinc-700 transition-colors",
+        active ? "bg-brand/5 dark:bg-brand/10" : "hover:bg-slate-50 dark:hover:bg-zinc-800/50"
+      )}
+    >
+      <div className="rounded-full bg-brand/10 text-brand flex items-center justify-center flex-shrink-0 w-10 h-10">
+        <LifeBuoy className="w-5 h-5" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex justify-between items-baseline gap-2">
+          <span className="font-semibold text-slate-900 dark:text-foreground truncate">
+            {t("support_chat", "Support")}
+          </span>
+          {conversation?.lastMessage && (
+            <span className="text-[11px] text-slate-400 dark:text-zinc-500 flex-shrink-0">
+              {formatDistanceToNow(new Date(conversation.lastMessage.createdAt), { addSuffix: false })}
+            </span>
+          )}
+        </div>
+        <div className="flex justify-between items-center gap-2">
+          <span className="text-sm text-slate-500 dark:text-gray-400 truncate">
+            {conversation?.lastMessage?.body || t("support_chat_intro", "Chat with our support team")}
+          </span>
+          {!!conversation?.unreadCount && conversation.unreadCount > 0 && (
+            <span className="flex-shrink-0 bg-brand text-white text-[11px] font-bold min-w-5 h-5 px-1.5 rounded-full flex items-center justify-center">
+              {conversation.unreadCount}
+            </span>
+          )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
+
+type DraftTarget =
+  | {
+      kind: "user";
+      recipientId: string;
+      type: ConversationType;
+      name: string;
+      avatarUrl?: string;
+      announcementId?: string;
+      orderId?: string;
+    }
+  | { kind: "support" };
 
 function Thread({
   conversationId,
   draftRecipient,
 }: {
   conversationId?: string;
-  draftRecipient?: {
-    recipientId: string;
-    type: ConversationType;
-    name: string;
-    avatarUrl?: string;
-    announcementId?: string;
-    orderId?: string;
-  };
+  draftRecipient?: DraftTarget;
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -134,8 +165,13 @@ function Thread({
   }, [messages?.length]);
 
   const other = conversation?.otherParticipants[0];
-  const headerName = other?.name || draftRecipient?.name || t("select_conversation", "Select a conversation");
-  const headerAvatar = other?.avatarUrl || draftRecipient?.avatarUrl;
+  const isSupportThread = conversation?.type === "SUPPORT" || draftRecipient?.kind === "support";
+  const headerName = isSupportThread
+    ? t("support_chat", "Support")
+    : other?.name || (draftRecipient?.kind === "user" ? draftRecipient.name : undefined) || t("select_conversation", "Select a conversation");
+  const headerAvatar = isSupportThread
+    ? undefined
+    : other?.avatarUrl || (draftRecipient?.kind === "user" ? draftRecipient.avatarUrl : undefined);
 
   const handleSend = async () => {
     const body = text.trim();
@@ -144,6 +180,8 @@ function Thread({
       const res = await sendMessage(
         conversationId
           ? { conversationId, body }
+          : draftRecipient?.kind === "support"
+          ? { type: "SUPPORT", body }
           : {
               recipientId: draftRecipient!.recipientId,
               type: draftRecipient!.type,
@@ -224,11 +262,14 @@ export default function MessagesPageContent() {
   const { data: conversations, isLoading } = useGetConversationsQuery();
 
   const isNew = conversationId === "new";
-  const draftRecipient = useMemo(() => {
+  const isSupport = conversationId === "support";
+  const draftRecipient: DraftTarget | undefined = useMemo(() => {
+    if (isSupport) return { kind: "support" };
     if (!isNew) return undefined;
     const recipientId = searchParams.get("recipientId");
     if (!recipientId) return undefined;
     return {
+      kind: "user",
       recipientId,
       type: (searchParams.get("type") as ConversationType) || "USER_MASTER",
       name: searchParams.get("recipientName") || t("new_message", "New message"),
@@ -236,13 +277,18 @@ export default function MessagesPageContent() {
       announcementId: searchParams.get("announcementId") || undefined,
       orderId: searchParams.get("orderId") || undefined,
     };
-  }, [isNew, searchParams, t]);
+  }, [isNew, isSupport, searchParams, t]);
 
   // If a conversation with this recipient already exists (same type / announcement
   // / order scope, matching how the backend resolves it), skip the blank draft
   // thread and open the real one so its history is visible.
   const existingConversation = useMemo(() => {
     if (!draftRecipient || !conversations) return undefined;
+    if (draftRecipient.kind === "support") {
+      // A Resolved conversation is left alone — the next message starts a
+      // fresh one, so only ever redirect into the current (non-Resolved) one.
+      return conversations.find((c) => c.type === "SUPPORT" && c.status !== "RESOLVED");
+    }
     return conversations.find(
       (c) =>
         c.type === draftRecipient.type &&
@@ -253,13 +299,23 @@ export default function MessagesPageContent() {
   }, [draftRecipient, conversations]);
 
   useEffect(() => {
-    if (isNew && existingConversation) {
+    if ((isNew || isSupport) && existingConversation) {
       navigate(`/messages/${existingConversation.id}`, { replace: true });
     }
-  }, [isNew, existingConversation, navigate]);
+  }, [isNew, isSupport, existingConversation, navigate]);
 
-  const activeId = isNew ? undefined : conversationId;
+  const activeId = isNew || isSupport ? undefined : conversationId;
   const showThreadOnMobile = !!conversationId;
+
+  const supportConversation = useMemo(
+    () => conversations?.find((c) => c.type === "SUPPORT" && c.status !== "RESOLVED"),
+    [conversations],
+  );
+  const regularConversations = useMemo(
+    () => conversations?.filter((c) => c.type !== "SUPPORT") ?? [],
+    [conversations],
+  );
+  const isSupportActive = isSupport || activeId === supportConversation?.id;
 
   return (
     <div className="flex-1 w-full bg-slate-50 dark:bg-background min-h-[calc(100vh-140px)] py-6 px-0 sm:px-6 lg:px-8">
@@ -280,14 +336,19 @@ export default function MessagesPageContent() {
               <div className="flex justify-center py-8">
                 <Loader2 className="w-6 h-6 animate-spin text-brand" />
               </div>
-            ) : conversations && conversations.length > 0 ? (
-              conversations.map((c) => (
-                <ConversationRow key={c.id} conversation={c} active={c.id === activeId} />
-              ))
             ) : (
-              <div className="text-center text-slate-400 dark:text-zinc-500 text-sm py-10 px-4">
-                {t("no_conversations", "No conversations yet.")}
-              </div>
+              <>
+                <SupportRow conversation={supportConversation} active={isSupportActive} />
+                {regularConversations.length > 0 ? (
+                  regularConversations.map((c) => (
+                    <ConversationRow key={c.id} conversation={c} active={c.id === activeId} />
+                  ))
+                ) : (
+                  <div className="text-center text-slate-400 dark:text-zinc-500 text-sm py-10 px-4">
+                    {t("no_conversations", "No conversations yet.")}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

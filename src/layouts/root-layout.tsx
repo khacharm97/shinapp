@@ -2,7 +2,7 @@ import { getImageUrl } from '@/utils';
 
 import { NavLink, Outlet, Link, useNavigate, ScrollRestoration } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Mail, Phone, Menu, User, LogOut, FileText, Wrench } from "lucide-react"
+import { Mail, Phone, Menu, User, LogOut, FileText, Wrench, LifeBuoy } from "lucide-react"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ModeToggle } from "@/components/mode-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
@@ -33,6 +33,7 @@ import { logout, updateUser } from "@/store/slices/authSlice"
 import { useEffect, useState } from "react"
 import { NotificationsMenu } from "@/components/notifications/NotificationsMenu"
 import { MessagesLink } from "@/components/chat/MessagesLink"
+import { SupportWidget } from "@/components/chat/SupportWidget"
 import { StructuredData } from "@/components/structured-data"
 
 const FOOTER_PHONE = "+374(93)-23-34-02"
@@ -72,6 +73,7 @@ export default function RootLayout() {
   const showCompleteProfileBanner = isLoggedIn && (isMasterUser || isCompanyUser) && !isVerified
 
   const [showNavbar, setShowNavbar] = useState(true)
+  const [supportOpen, setSupportOpen] = useState(false)
 
   useEffect(() => {
     let lastScrollY = window.scrollY
@@ -173,6 +175,10 @@ export default function RootLayout() {
                           </Link>
                         </DropdownMenuItem>
                       )}
+                      <DropdownMenuItem onClick={() => setSupportOpen(true)} className="cursor-pointer flex items-center">
+                        <LifeBuoy className="me-2 h-4 w-4" />
+                        <span>{t("contact_support", "Contact Support")}</span>
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600">
                         <LogOut className="me-2 h-4 w-4" />
                         <span>{t("nav_logout", "Log out")}</span>
@@ -237,6 +243,9 @@ export default function RootLayout() {
                               <Link to="/my-announcements"><span className="me-2 h-4 w-4">📢</span> {t("nav_my_announcements", "My Announcements")}</Link>
                             </Button>
                           )}
+                          <Button variant="outline" size="sm" onClick={() => setSupportOpen(true)} className="w-full justify-start">
+                            <LifeBuoy className="me-2 h-4 w-4" /> {t("contact_support", "Contact Support")}
+                          </Button>
                           <Button variant="destructive" size="sm" onClick={handleLogout} className="w-full justify-start">
                             <LogOut className="me-2 h-4 w-4" /> {t("nav_logout", "Log out")}
                           </Button>
@@ -310,6 +319,8 @@ export default function RootLayout() {
             </div>
           </div>
         </footer>
+
+        {isLoggedIn && <SupportWidget open={supportOpen} onOpenChange={setSupportOpen} />}
       </div>
     </ThemeProvider>
   )
