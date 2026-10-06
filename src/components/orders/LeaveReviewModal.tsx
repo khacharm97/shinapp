@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useCreateReviewMutation } from "@/store/api/authApi";
 import { Star } from "lucide-react";
+import { resolveApiErrorMessage } from "@/utils/api-errors";
 
 interface LeaveReviewModalProps {
   isOpen: boolean;
@@ -34,7 +35,7 @@ export function LeaveReviewModal({ isOpen, onClose, orderId, targetId }: LeaveRe
       toast.success(t("review_submitted", "Review submitted successfully!"));
       onClose();
     } catch (error: any  ) {
-      toast.error(error.data?.message || t("review_submit_failed", "Failed to submit review."));
+      toast.error(resolveApiErrorMessage(t, error?.data?.message) || t("review_submit_failed", "Failed to submit review."));
     }
   };
 

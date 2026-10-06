@@ -9,6 +9,9 @@ const API_ERROR_CODES: Record<string, string> = {
   order_master_unavailable: "This master has marked themselves unavailable for these dates.",
   busy_day_end_before_start: "End date must be after start date.",
   busy_day_invalid_dates: "A valid start and end date are required.",
+  review_order_not_found: "Order not found.",
+  review_order_not_completed: "Order must be completed to leave a review.",
+  review_already_exists: "You have already left a review for this order.",
 };
 
 export function resolveApiErrorMessage(t: TFunction, message?: string | null): string | undefined {

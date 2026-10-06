@@ -616,5 +616,22 @@
   "date": "تاریخ",
   "price": "قیمت",
   "negotiable": "توافقی",
-  "review_order": "بررسی سفارش"
+  "review_order": "بررسی سفارش",
+  "theme_light": "روشن",
+  "theme_dark": "تیره",
+  "theme_system": "سیستم",
+  "profile_update_success": "پروفایل با موفقیت به‌روزرسانی شد!",
+  "profile_update_error": "به‌روزرسانی پروفایل ناموفق بود. لطفاً دوباره تلاش کنید.",
+  "leave_review": "ثبت نظر",
+  "rating": "امتیاز",
+  "comment_optional": "نظر (اختیاری)",
+  "write_review_placeholder": "تجربه خود را بنویسید...",
+  "submit_review": "ارسال نظر",
+  "review_already_left": "نظر قبلاً ثبت شده است",
+  "review_submitted": "نظر با موفقیت ثبت شد!",
+  "review_submit_failed": "ثبت نظر ناموفق بود.",
+  "please_select_rating": "لطفاً امتیاز را انتخاب کنید.",
+  "review_order_not_found": "سفارش یافت نشد.",
+  "review_order_not_completed": "فقط پس از تکمیل سفارش می‌توانید نظر ثبت کنید.",
+  "review_already_exists": "شما قبلاً برای این سفارش نظر ثبت کرده‌اید."
 }

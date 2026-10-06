@@ -634,5 +634,22 @@
   "date": "Date",
   "price": "Price",
   "negotiable": "Negotiable",
-  "review_order": "Review Order"
+  "review_order": "Review Order",
+  "theme_light": "Light",
+  "theme_dark": "Dark",
+  "theme_system": "System",
+  "profile_update_success": "Profile updated successfully!",
+  "profile_update_error": "Failed to update profile. Please try again.",
+  "leave_review": "Leave a Review",
+  "rating": "Rating",
+  "comment_optional": "Comment (Optional)",
+  "write_review_placeholder": "Write your experience...",
+  "submit_review": "Submit Review",
+  "review_already_left": "Review already submitted",
+  "review_submitted": "Review submitted successfully!",
+  "review_submit_failed": "Failed to submit review.",
+  "please_select_rating": "Please select a rating.",
+  "review_order_not_found": "Order not found.",
+  "review_order_not_completed": "Order must be completed to leave a review.",
+  "review_already_exists": "You have already left a review for this order."
 }
