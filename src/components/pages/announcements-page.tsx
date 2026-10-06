@@ -98,11 +98,11 @@ export default function AnnouncementsPageContent() {
       <div className="max-w-5xl mx-auto space-y-8">
 
         {/* Header Section */}
-        <div className="max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-700">
-          <h1 className="text-4xl md:text-5xl font-bold text-brand tracking-tight mb-4 leading-tight">
+        <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-brand tracking-tight mb-4 leading-tight">
             {t("announcements_title", "Latest Announcements")}
           </h1>
-          <p className="text-lg text-slate-600 dark:text-gray-300">
+          <p className="max-w-2xl text-lg text-slate-600 dark:text-gray-300">
             {t("announcements_subtitle", "Discover the newest construction projects, job openings, and services from top companies.")}
           </p>
         </div>
