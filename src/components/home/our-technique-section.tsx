@@ -35,7 +35,7 @@ export function OurTechniqueSection() {
         <Link
           to={`/technique/${technique.id}`}
           key={`${technique.id}-${index}`}
-          className="min-w-[200px] md:min-w-[240px] flex-shrink-0 snap-start bg-background flex flex-col group cursor-pointer"
+          className="w-[200px] md:w-[240px] flex-shrink-0 snap-start bg-background flex flex-col group cursor-pointer"
         >
           <div className="overflow-hidden rounded-lg mb-2">
             <img
@@ -48,8 +48,8 @@ export function OurTechniqueSection() {
               }}
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <h3 className="font-semibold text-base group-hover:text-brand transition-colors">{technique.name}</h3>
+          <div className="flex flex-col gap-1 min-w-0">
+            <h3 className="font-semibold text-base truncate group-hover:text-brand transition-colors" title={technique.name}>{technique.name}</h3>
             <span className="text-xs text-foreground/70">
               {technique.price.toLocaleString()} ֏{technique.priceType === 'HOURLY' ? ` / ${t('technique_price_per_hour', 'hr')}` : ''}
             </span>
