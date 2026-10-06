@@ -317,6 +317,11 @@ export default function RootLayout() {
                 </ul>
               </div>
             </div>
+            <div className="mt-6 pt-4 border-t text-center sm:text-start text-sm text-muted-foreground">
+              <Link to="/privacy-policy" className="hover:text-foreground transition-colors">
+                {t("footer_privacy", "Privacy Policy")}
+              </Link>
+            </div>
           </div>
         </footer>
 

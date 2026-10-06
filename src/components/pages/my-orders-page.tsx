@@ -8,12 +8,13 @@ import { SEO } from "@/components/seo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getImageUrl, isMaster, isCompany } from "@/utils";
+import { getImageUrl, isMaster, isCompany, getDateLocale } from "@/utils";
 import { OrderDetailsModal } from "@/components/orders/OrderDetailsModal";
 import { AddOrderModal } from "@/components/orders/AddOrderModal";
 
 export default function MyOrdersPageContent() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = getDateLocale(i18n.language);
   const { data: profile } = useGetProfileQuery(undefined);
   const { data: orders, isLoading } = useGetMyOrdersQuery(undefined);
 
@@ -148,7 +149,7 @@ export default function MyOrdersPageContent() {
                 >
                   <div className="flex justify-between items-start mb-4">
                     {getStatusBadge(order.status)}
-                    <span className="text-xs text-slate-400 dark:text-zinc-500">{format(new Date(order.createdAt), "MMM d, yyyy")}</span>
+                    <span className="text-xs text-slate-400 dark:text-zinc-500">{format(new Date(order.createdAt), "d MMM yyyy", { locale: dateLocale })}</span>
                   </div>
 
                   {order.technique && (
@@ -184,7 +185,7 @@ export default function MyOrdersPageContent() {
                     <div>
                       <p className="text-slate-500 dark:text-gray-400">{t("date", "Date")}</p>
                       <p className="font-medium text-slate-900 dark:text-foreground">
-                        {format(new Date(order.startDate), "MMM d")} - {format(new Date(order.endDate), "MMM d")}
+                        {format(new Date(order.startDate), "d MMM", { locale: dateLocale })} - {format(new Date(order.endDate), "d MMM", { locale: dateLocale })}
                       </p>
                     </div>
                     <div>

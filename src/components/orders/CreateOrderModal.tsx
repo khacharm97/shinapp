@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateOrderMutation } from "@/store/api/authApi";
 import { toast } from "sonner";
 import { Upload, X, MapPin } from "lucide-react";
 import { resolveApiErrorMessage } from "@/utils";
+import { PrivacyConsent } from "./PrivacyConsent";
 
 interface CreateOrderModalProps {
   isOpen: boolean;
@@ -202,21 +202,7 @@ export function CreateOrderModal({ isOpen, onClose, masterId, clientId, masterNa
             </div>
           </div>
 
-          <div className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 mt-4">
-            <Checkbox
-              id="privacy"
-              checked={privacyAccepted}
-              onCheckedChange={(checked) => setPrivacyAccepted(checked as boolean)}
-            />
-            <div className="space-y-1 leading-none">
-              <Label htmlFor="privacy" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                {t("accept_privacy", "I accept the Privacy Policy and Contract Conditions")} <span className="text-red-500">*</span>
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                {t("privacy_desc", "By proposing this order, you agree to the platform's terms and conditions.")}
-              </p>
-            </div>
-          </div>
+          <PrivacyConsent checked={privacyAccepted} onCheckedChange={setPrivacyAccepted} />
 
           <DialogFooter className="pt-4">
             <Button type="button" variant="outline" onClick={() => { resetForm(); onClose(); }}>

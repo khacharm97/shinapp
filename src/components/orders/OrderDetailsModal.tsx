@@ -18,7 +18,7 @@ import {
   useGetBrigadeByIdQuery,
 } from "@/store/api/authApi";
 import { LeaveReviewModal } from "./LeaveReviewModal";
-import { getImageUrl, resolveApiErrorMessage } from "@/utils";
+import { getDateLocale, getImageUrl, resolveApiErrorMessage } from "@/utils";
 import { MapPin, Calendar, CreditCard, DollarSign, MessageSquare, Wrench, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -30,7 +30,9 @@ interface OrderDetailsModalProps {
 }
 
 export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: OrderDetailsModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = getDateLocale(i18n.language);
+  const formatDate = (d: string) => format(new Date(d), "d MMM yyyy", { locale: dateLocale });
   const navigate = useNavigate();
   const [acceptOrder, { isLoading: isAccepting }] = useAcceptOrderMutation();
   const [rejectOrder, { isLoading: isRejecting }] = useRejectOrderMutation();
@@ -231,7 +233,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
               <div className="space-y-2">
                 <h4 className="text-sm font-semibold text-slate-900 dark:text-foreground">{t("reference_image", "Reference Image")}</h4>
                 <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-zinc-700">
-                  <img src={getImageUrl(order.imageUrl)} alt="Reference" className="w-full h-auto max-h-[300px] object-contain" />
+                  <img src={getImageUrl(order.imageUrl)} alt={t("reference_image", "Reference Image")}className="w-full h-auto max-h-[300px] object-contain" />
                 </div>
               </div>
             )}
@@ -243,7 +245,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
                   <span>{t("timeline", "Timeline")}</span>
                 </div>
                 <p className="text-sm font-medium text-slate-900 dark:text-foreground">
-                  {format(new Date(order.startDate), "MMM d, yyyy")} - {format(new Date(order.endDate), "MMM d, yyyy")}
+                  {formatDate(order.startDate)} - {formatDate(order.endDate)}
                 </p>
               </div>
               <div className="bg-slate-50 dark:bg-zinc-800/50 p-4 rounded-lg border border-slate-100 dark:border-zinc-800 space-y-1">
@@ -348,7 +350,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
             )}
 
             {canRespond && (
-              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100 dark:border-zinc-800">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <Button
                   className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
                   onClick={handleAccept}
