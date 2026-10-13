@@ -170,7 +170,6 @@ export default function TechniqueDetailsPageContent() {
             </h2>
             <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-xl p-6 shadow-sm inline-block">
               <DayPicker
-                mode="multiple"
                 disabled={disabledDays}
                 modifiers={{ busy: disabledDays }}
                 modifiersStyles={{
