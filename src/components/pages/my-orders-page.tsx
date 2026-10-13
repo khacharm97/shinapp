@@ -139,7 +139,9 @@ export default function MyOrdersPageContent() {
             filteredOrders.map((order: any  ) => {
               const isClient = profile.id === order.clientId;
               const otherParty = isClient ? order.master : order.client;
-              const roleLabel = isClient ? t("master", "Master") : t("client", "Client");
+              const roleLabel = isClient
+                ? order.technique ? t("technique_owner_label", "Provided by") : t("master", "Master")
+                : t("client", "Client");
 
               return (
                 <div

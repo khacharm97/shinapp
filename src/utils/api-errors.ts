@@ -7,6 +7,11 @@ import type { TFunction } from "i18next";
 const API_ERROR_CODES: Record<string, string> = {
   order_master_busy: "This master already has an active job and cannot take on another one at the same time.",
   order_master_unavailable: "This master has marked themselves unavailable for these dates.",
+  order_technique_busy: "\"{{technique}}\" is already booked for these dates.",
+  order_technique_owner_busy: "The owner of \"{{technique}}\" already has an active job for these dates and cannot take on another one.",
+  order_technique_owner_unavailable: "The owner of \"{{technique}}\" is unavailable for these dates.",
+  order_technique_not_found: "Technique not found.",
+  order_technique_own: "You cannot order your own technique.",
   busy_day_end_before_start: "End date must be after start date.",
   busy_day_invalid_dates: "A valid start and end date are required.",
   review_order_not_found: "Order not found.",
@@ -14,8 +19,14 @@ const API_ERROR_CODES: Record<string, string> = {
   review_already_exists: "You have already left a review for this order.",
 };
 
-export function resolveApiErrorMessage(t: TFunction, message?: string | null): string | undefined {
+// `params` fills placeholders in the message, e.g. { technique: "Excavator" }
+// for the order_technique_* codes.
+export function resolveApiErrorMessage(
+  t: TFunction,
+  message?: string | null,
+  params?: Record<string, unknown>,
+): string | undefined {
   if (!message) return undefined;
   const fallback = API_ERROR_CODES[message];
-  return fallback ? t(message, fallback) : message;
+  return fallback ? t(message, { defaultValue: fallback, ...params }) : message;
 }

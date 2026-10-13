@@ -60,7 +60,9 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
 
   const isClient = currentUserId === order.clientId;
   const otherParty = isClient ? order.master : order.client;
-  const roleLabel = isClient ? t("master", "Master") : t("client", "Client");
+  const roleLabel = isClient
+    ? order.technique ? t("technique_owner_label", "Provided by") : t("master", "Master")
+    : t("client", "Client");
 
   // A user may leave only one review per order.
   const hasReviewed = Array.isArray(order.reviews)
@@ -103,7 +105,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
       toast.success(t("order_accepted", "Order accepted successfully!"));
       onClose();
     } catch (error: any  ) {
-      toast.error(resolveApiErrorMessage(t, error?.data?.message) || t("order_accept_failed", "Failed to accept order."));
+      toast.error(resolveApiErrorMessage(t, error?.data?.message, { technique: order.technique?.name }) || t("order_accept_failed", "Failed to accept order."));
     }
   };
 
