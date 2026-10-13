@@ -4,10 +4,12 @@ import { authApi } from './api/authApi';
 import { publicApi } from './api/publicApi';
 import { chatApi } from './api/chatApi';
 import authReducer from './slices/authSlice';
+import guestChatReducer from './slices/guestChatSlice';
 import type { UnknownAction } from '@reduxjs/toolkit';
 
 const appReducer = combineReducers({
   auth: authReducer,
+  guestChat: guestChatReducer,
   [authApi.reducerPath]: authApi.reducer,
   [publicApi.reducerPath]: publicApi.reducer,
   [chatApi.reducerPath]: chatApi.reducer,

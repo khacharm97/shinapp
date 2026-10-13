@@ -3,15 +3,22 @@ import type { BaseQueryApi, FetchArgs } from '@reduxjs/toolkit/query';
 import { io } from 'socket.io-client';
 import type { RootState } from '../index';
 import { logout } from '../slices/authSlice';
+import { clearGuestSession } from '../slices/guestChatSlice';
 import type { ChatMessage, Conversation, ConversationStatus, ConversationType } from '@/types';
 
 const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
 const httpBase = backendUrl.startsWith('http') ? backendUrl : `https://${backendUrl}`;
 
+// Chat works for a logged-in user or, for support chat only, a guest session.
+// A real login always wins over a leftover guest session.
+const chatToken = (state: RootState) => state.auth.token ?? state.guestChat.token;
+const chatUserId = (state: RootState) =>
+  state.auth.token ? state.auth.user?.id : state.guestChat.userId ?? undefined;
+
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: `${httpBase}/chat/`,
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth.token;
+    const token = chatToken(getState() as RootState);
     if (token) headers.set('authorization', `Bearer ${token}`);
     return headers;
   },
@@ -24,7 +31,14 @@ const baseQuery = async (
 ) => {
   const result = await rawBaseQuery(args, api, extraOptions);
   if (result.error && result.error.status === 401) {
-    api.dispatch(logout());
+    if ((api.getState() as RootState).auth.token) {
+      api.dispatch(logout());
+    } else {
+      // The guest session expired - drop it and everything cached under it,
+      // so the next message starts a fresh one.
+      api.dispatch(clearGuestSession());
+      api.dispatch(chatApi.util.resetApiState());
+    }
   }
   return result;
 };
@@ -45,11 +59,21 @@ interface SendMessageResult {
   participantIds: string[];
 }
 
+interface GuestSessionResult {
+  token: string;
+  user: { id: string; name: string | null };
+}
+
 export const chatApi = createApi({
   reducerPath: 'chatApi',
   baseQuery,
   tagTypes: ['Conversations'],
   endpoints: (builder) => ({
+    // Public: gives a not-logged-in visitor a chat-only session for support.
+    createGuestSession: builder.mutation<GuestSessionResult, void>({
+      query: () => ({ url: 'guest-session', method: 'POST' }),
+    }),
+
     getConversations: builder.query<Conversation[], void>({
       query: () => 'conversations',
       providesTags: ['Conversations'],
@@ -118,7 +142,7 @@ export const chatApi = createApi({
         _arg,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved, dispatch, getState },
       ) {
-        const token = (getState() as RootState).auth.token;
+        const token = chatToken(getState() as RootState);
         if (!token) return;
 
         const socket = io(`${httpBase}/chat`, {
@@ -142,7 +166,7 @@ export const chatApi = createApi({
               message: ChatMessage;
               conversationStatus?: ConversationStatus;
             }) => {
-              const myId = (getState() as RootState).auth.user?.id;
+              const myId = chatUserId(getState() as RootState);
               const fromOther = message.senderId !== myId;
 
               dispatch(
@@ -187,6 +211,7 @@ export const chatApi = createApi({
 });
 
 export const {
+  useCreateGuestSessionMutation,
   useGetConversationsQuery,
   useGetConversationQuery,
   useGetMessagesQuery,

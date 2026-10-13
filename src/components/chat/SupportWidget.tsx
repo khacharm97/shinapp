@@ -1,13 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Loader2, LifeBuoy, MessageCircle, Send, X } from "lucide-react";
+import { toast } from "sonner";
 import {
+  chatApi,
+  useCreateGuestSessionMutation,
   useGetConversationsQuery,
   useGetMessagesQuery,
+  useGetUnreadCountQuery,
   useSendMessageMutation,
   useMarkConversationReadMutation,
 } from "@/store/api/chatApi";
-import { useAppSelector } from "@/store/hooks";
+import { setGuestSession } from "@/store/slices/guestChatSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Button } from "@/components/ui/button";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 
@@ -19,23 +24,45 @@ export function SupportWidget({
   onOpenChange: (open: boolean) => void;
 }) {
   const { t } = useTranslation();
-  const myId = useAppSelector((s) => s.auth.user?.id);
+  const dispatch = useAppDispatch();
+  const authToken = useAppSelector((s) => s.auth.token);
+  const authUserId = useAppSelector((s) => s.auth.user?.id);
+  const guest = useAppSelector((s) => s.guestChat);
   const [text, setText] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const { data: conversations } = useGetConversationsQuery();
+  // A visitor who isn't logged in chats through a guest session, which only
+  // gets created when they send their first message.
+  const isGuest = !authToken;
+  const hasSession = !!authToken || !!guest.token;
+  const myId = isGuest ? guest.userId ?? undefined : authUserId;
+
+  // Logging in or out while a guest session exists switches which identity
+  // chat runs as - drop the caches and the socket opened under the old one.
+  const lastAuthToken = useRef(authToken);
+  useEffect(() => {
+    if (lastAuthToken.current === authToken) return;
+    lastAuthToken.current = authToken;
+    if (guest.token) dispatch(chatApi.util.resetApiState());
+  }, [authToken, guest.token, dispatch]);
+
+  const { data: conversations } = useGetConversationsQuery(undefined, { skip: !hasSession });
+  // This query owns the realtime socket; for a guest nothing else mounts it.
+  useGetUnreadCountQuery(undefined, { skip: !hasSession });
   // A Resolved conversation is left alone — the next message starts a fresh
   // one, so only ever surface the current (non-Resolved) thread here.
-  const supportConversation = conversations?.find(
-    (c) => c.type === "SUPPORT" && c.status !== "RESOLVED"
-  );
+  const supportConversation = hasSession
+    ? conversations?.find((c) => c.type === "SUPPORT" && c.status !== "RESOLVED")
+    : undefined;
   const conversationId = supportConversation?.id;
   const unread = supportConversation?.unreadCount ?? 0;
 
   const { data: messages, isLoading } = useGetMessagesQuery(conversationId as string, {
     skip: !conversationId || !open,
   });
-  const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
+  const [createGuestSession, { isLoading: isStartingSession }] = useCreateGuestSessionMutation();
+  const [sendMessage, { isLoading: isSendingMessage }] = useSendMessageMutation();
+  const isSending = isStartingSession || isSendingMessage;
   const [markRead] = useMarkConversationReadMutation();
 
   useEffect(() => {
@@ -54,12 +81,17 @@ export function SupportWidget({
     const body = text.trim();
     if (!body || isSending) return;
     try {
+      if (!hasSession) {
+        const session = await createGuestSession().unwrap();
+        dispatch(setGuestSession({ token: session.token, userId: session.user.id }));
+      }
       await sendMessage(
         conversationId ? { conversationId, body } : { type: "SUPPORT", body }
       ).unwrap();
       setText("");
     } catch {
       // keep the text so the user can retry
+      toast.error(t("support_chat_send_failed", "Couldn't send your message. Please try again."));
     }
   };
 
@@ -91,6 +123,11 @@ export function SupportWidget({
             ) : (
               <div className="text-center text-slate-400 dark:text-zinc-500 text-sm py-8 px-4">
                 {t("support_chat_empty", "Send us a message and we'll get back to you soon.")}
+              </div>
+            )}
+            {isGuest && (
+              <div className="text-center text-slate-400 dark:text-zinc-500 text-xs px-4">
+                {t("support_chat_guest_hint", "You're chatting as a guest. Our reply will appear here, in this browser.")}
               </div>
             )}
           </div>

@@ -325,7 +325,7 @@ export default function RootLayout() {
           </div>
         </footer>
 
-        {isLoggedIn && <SupportWidget open={supportOpen} onOpenChange={setSupportOpen} />}
+        <SupportWidget open={supportOpen} onOpenChange={setSupportOpen} />
       </div>
     </ThemeProvider>
   )
