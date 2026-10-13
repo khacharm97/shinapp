@@ -87,6 +87,10 @@ export const authApi = createApi({
     getMasterById: builder.query({
       query: (id: string) => `masters/${id}`,
     }),
+    // Public profile of any user (master, company or client).
+    getUserById: builder.query({
+      query: (id: string) => `users/${id}`,
+    }),
     searchBrigadeInvitees: builder.query({
       query: ({ search, brigadeId, limit = 5 }: { search: string; brigadeId?: string; limit?: number }) => {
         let qs = `profile/brigade/invitees?search=${encodeURIComponent(search)}&limit=${limit}`;
@@ -490,6 +494,7 @@ export const {
   useSearchBrigadeInviteesQuery,
   useSearchOrderClientsQuery,
   useGetMasterByIdQuery,
+  useGetUserByIdQuery,
   useGetHomeMastersQuery,
   useUpdateProfileMutation,
   useUploadAvatarMutation,

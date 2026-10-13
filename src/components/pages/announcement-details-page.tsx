@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   Loader2,
@@ -218,7 +218,13 @@ export default function AnnouncementDetailsPageContent() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <h2 className="font-bold text-slate-900 dark:text-foreground text-lg truncate">
-                      {companyName}
+                      {company.id ? (
+                        <Link to={`/users/${company.id}`} className="hover:text-brand transition-colors">
+                          {companyName}
+                        </Link>
+                      ) : (
+                        companyName
+                      )}
                     </h2>
                     {company.verifiedAt && (
                       <BadgeCheck className="w-5 h-5 text-brand flex-shrink-0" />

@@ -1,8 +1,8 @@
-import { getImageUrl } from '@/utils';
+import { getImageUrl, isCompany, isMaster } from '@/utils';
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, MapPin, Star, CheckCircle2, ImagePlus, Settings } from "lucide-react";
-import { useGetProfileQuery, useGetSkillsQuery } from "@/store/api/authApi";
+import { Loader2, MapPin, Star, CheckCircle2, ImagePlus, Settings, Building2, Eye } from "lucide-react";
+import { useGetProfileQuery, useGetSkillsQuery, useGetUserByIdQuery } from "@/store/api/authApi";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,15 @@ export default function ProfilePageContent() {
   const { data: profile, isLoading, isError } = useGetProfileQuery(undefined);
   const { data: skillsData } = useGetSkillsQuery(undefined);
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
+
+  // The page adapts to the account type: skills, pricing, job stats and the
+  // availability badges only make sense for a master.
+  const isMasterUser = isMaster(profile?.roles);
+  const isCompanyUser = isCompany(profile?.roles);
+  // The public profile carries the real job stats for a master.
+  const { data: publicProfile } = useGetUserByIdQuery(profile?.id as string, {
+    skip: !profile?.id || !isMasterUser,
+  });
 
   const [editAbout, setEditAbout] = useState(false);
   const [aboutValue, setAboutValue] = useState("");
@@ -147,21 +156,33 @@ export default function ProfilePageContent() {
                         {getLocalizedLocation(profile.userInfo?.regionId, profile.userInfo?.cityId)}
                       </div>
                     )}
-                    <div className="flex gap-4 justify-center md:justify-start">
-                      <div className="flex items-center text-orange-500 font-medium bg-orange-50 dark:bg-orange-500/10 px-2 py-1 rounded-md">
-                        <Star className="w-4 h-4 me-1 fill-current" />
-                        {t("search_top_rated", "Top Rated")}
+                    {isCompanyUser && !isMasterUser && (
+                      <div className="flex items-center justify-center md:justify-start text-slate-500 dark:text-gray-400">
+                        <Building2 className="w-4 h-4 me-1" />
+                        {t("company", "Company")}
                       </div>
+                    )}
+                    {isMasterUser && (
+                      <div className="flex gap-4 justify-center md:justify-start">
+                        <div className="flex items-center text-orange-500 font-medium bg-orange-50 dark:bg-orange-500/10 px-2 py-1 rounded-md">
+                          <Star className="w-4 h-4 me-1 fill-current" />
+                          {t("search_top_rated", "Top Rated")}
+                        </div>
 
-                      <div className="flex items-center text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-md">
-                        <CheckCircle2 className="w-4 h-4 me-1" />
-                        {t("search_available_now", "Available now")}
+                        <div className="flex items-center text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-md">
+                          <CheckCircle2 className="w-4 h-4 me-1" />
+                          {t("search_available_now", "Available now")}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="flex flex-row gap-3 shrink-0">
+                <div className="flex flex-row flex-wrap justify-center gap-3 shrink-0">
+                  <Button variant="outline" onClick={() => navigate(`/users/${profile.id}`)} className="shadow-sm w-full md:w-auto">
+                    <Eye className="w-4 h-4 me-2" />
+                    {t("profile_view_public", "View public page")}
+                  </Button>
                   {hasBrigadesAccess(profile.roles) && (
                     <Dialog>
                       <DialogTrigger asChild>
@@ -182,16 +203,18 @@ export default function ProfilePageContent() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-center md:justify-start gap-12 pt-6">
-                <div>
-                  <div className="text-3xl font-bold text-brand">0</div>
-                  <div className="text-sm text-slate-500 dark:text-gray-400 mt-1">{t("profile_customers", "Customers")}</div>
+              {isMasterUser && (
+                <div className="flex items-center justify-center md:justify-start gap-12 pt-6">
+                  <div>
+                    <div className="text-3xl font-bold text-brand">{publicProfile?.stats?.customers ?? 0}</div>
+                    <div className="text-sm text-slate-500 dark:text-gray-400 mt-1">{t("profile_customers", "Customers")}</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-bold text-brand">{publicProfile?.stats?.totalJobs ?? 0}</div>
+                    <div className="text-sm text-slate-500 dark:text-gray-400 mt-1">{t("profile_total_jobs", "Total Jobs")}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-brand">0</div>
-                  <div className="text-sm text-slate-500 dark:text-gray-400 mt-1">{t("profile_total_jobs", "Total Jobs")}</div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -202,7 +225,9 @@ export default function ProfilePageContent() {
             <section>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-3xl font-bold text-slate-900 dark:text-foreground">
-                  {t("master_details_about", "Short info")}
+                  {isCompanyUser && !isMasterUser
+                    ? t("about_company", "About the company")
+                    : t("master_details_about", "Short info")}
                 </h2>
                 {!editAbout && (
                   <Button variant="ghost" size="icon" onClick={() => {
@@ -239,6 +264,7 @@ export default function ProfilePageContent() {
             </section>
 
             {/* Skills */}
+            {isMasterUser && (
             <section className="pt-8 border-t border-slate-100 dark:border-zinc-800">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-brand">
@@ -285,8 +311,10 @@ export default function ProfilePageContent() {
                 </div>
               )}
             </section>
+            )}
 
             {/* Pricing (if any) */}
+            {isMasterUser && (
             <section className="pt-8 border-t border-slate-100 dark:border-zinc-800">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-brand">{t("pricing_information", "Pricing Information")}</h2>
@@ -347,6 +375,7 @@ export default function ProfilePageContent() {
                 )}
               </div>
             </section>
+            )}
 
             {/* Portfolios */}
             {profile.portfolios && profile.portfolios.length > 0 && (

@@ -110,7 +110,7 @@ export default function TechniqueDetailsPageContent() {
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-foreground mb-2">{technique.name}</h1>
                 {technique.owner?.name && (
-                  <Link to={`/masters/${technique.owner.id}`} className="flex items-center gap-2 text-sm text-slate-500 dark:text-gray-400 hover:text-brand transition-colors w-fit">
+                  <Link to={`/users/${technique.owner.id}`} className="flex items-center gap-2 text-sm text-slate-500 dark:text-gray-400 hover:text-brand transition-colors w-fit">
                     <User className="w-4 h-4" />
                     {t("technique_owner_label", "Provided by")} {technique.owner.name}
                   </Link>

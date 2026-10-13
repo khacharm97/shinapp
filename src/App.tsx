@@ -18,7 +18,7 @@ const TechniqueDetailsPage = lazy(() => import('@/pages/technique-details'))
 const NotificationsPage = lazy(() => import('@/pages/notifications'))
 const MessagesPage = lazy(() => import('@/pages/messages'))
 const MastersPage = lazy(() => import('@/pages/masters'))
-const MasterDetailsPage = lazy(() => import('@/pages/master-details'))
+const UserDetailsPage = lazy(() => import('@/pages/user-details'))
 const BrigadeDetailsPage = lazy(() => import('@/pages/brigade-details'))
 const AboutPage = lazy(() => import('@/pages/about'))
 const ContactPage = lazy(() => import('@/pages/contact'))
@@ -81,8 +81,13 @@ const router = createBrowserRouter([
         element: <MastersPage />,
       },
       {
+        // Same page as users/:id - kept so existing master links keep working.
         path: "masters/:id",
-        element: <MasterDetailsPage />,
+        element: <UserDetailsPage />,
+      },
+      {
+        path: "users/:id",
+        element: <UserDetailsPage />,
       },
       {
         path: "brigades/:id",

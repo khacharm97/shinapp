@@ -20,7 +20,7 @@ import {
 import { LeaveReviewModal } from "./LeaveReviewModal";
 import { getDateLocale, getImageUrl, resolveApiErrorMessage } from "@/utils";
 import { MapPin, Calendar, CreditCard, DollarSign, MessageSquare, Wrench, Users } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 interface OrderDetailsModalProps {
   isOpen: boolean;
@@ -202,7 +202,15 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
               />
               <div className="flex-1">
                 <p className="text-xs text-slate-500 dark:text-gray-400 font-medium uppercase tracking-wider">{roleLabel}</p>
-                <p className="text-lg font-semibold text-slate-900 dark:text-foreground">{otherParty?.name || t("unknown", "Unknown")}</p>
+                <p className="text-lg font-semibold text-slate-900 dark:text-foreground">
+                  {otherParty?.id ? (
+                    <Link to={`/users/${otherParty.id}`} onClick={onClose} className="hover:text-brand transition-colors">
+                      {otherParty.name || t("unknown", "Unknown")}
+                    </Link>
+                  ) : (
+                    otherParty?.name || t("unknown", "Unknown")
+                  )}
+                </p>
               </div>
               {otherParty?.id && (
                 <Button
