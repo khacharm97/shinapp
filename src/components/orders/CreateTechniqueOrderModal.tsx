@@ -64,7 +64,7 @@ export function CreateTechniqueOrderModal({ isOpen, onClose, techniqueId, techni
       onClose();
     } catch (error) {
       const message = (error as { data?: { message?: string } })?.data?.message;
-      toast.error(resolveApiErrorMessage(t, message) || t("order_creation_failed", "Failed to propose order."));
+      toast.error(resolveApiErrorMessage(t, message, { technique: techniqueName }) || t("order_creation_failed", "Failed to propose order."));
     }
   };
 
