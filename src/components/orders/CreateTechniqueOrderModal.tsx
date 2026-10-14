@@ -28,6 +28,7 @@ export function CreateTechniqueOrderModal({ isOpen, onClose, techniqueId, techni
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("CASH");
+  const [price, setPrice] = useState("");
   const [address, setAddress] = useState("");
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
@@ -36,6 +37,7 @@ export function CreateTechniqueOrderModal({ isOpen, onClose, techniqueId, techni
     setStartDate("");
     setEndDate("");
     setPaymentMethod("CASH");
+    setPrice("");
     setAddress("");
     setPrivacyAccepted(false);
   };
@@ -54,6 +56,7 @@ export function CreateTechniqueOrderModal({ isOpen, onClose, techniqueId, techni
     formData.append("startDate", startDate);
     formData.append("endDate", endDate);
     formData.append("paymentMethod", paymentMethod);
+    if (price) formData.append("price", price);
     if (address) formData.append("address", address);
     formData.append("privacyAccepted", "true");
 
@@ -118,17 +121,30 @@ export function CreateTechniqueOrderModal({ isOpen, onClose, techniqueId, techni
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>{t("payment_method", "Payment Method")} <span className="text-red-500">*</span></Label>
-            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-              <SelectTrigger>
-                <SelectValue placeholder={t("select_payment_method", "Select")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="CASH">{t("cash", "Cash")}</SelectItem>
-                <SelectItem value="ONLINE">{t("online", "Online")}</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="price">{t("price", "Budget/Price")} ({t("optional", "Optional")})</Label>
+              <Input
+                id="price"
+                type="number"
+                min="0"
+                placeholder="0.00"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t("payment_method", "Payment Method")} <span className="text-red-500">*</span></Label>
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t("select_payment_method", "Select")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="CASH">{t("cash", "Cash")}</SelectItem>
+                  <SelectItem value="ONLINE">{t("online", "Online")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="space-y-2">

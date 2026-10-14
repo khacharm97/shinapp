@@ -163,13 +163,13 @@ export default function ProfilePageContent() {
                       </div>
                     )}
                     {isMasterUser && (
-                      <div className="flex gap-4 justify-center md:justify-start">
-                        <div className="flex items-center text-orange-500 font-medium bg-orange-50 dark:bg-orange-500/10 px-2 py-1 rounded-md">
+                      <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                        <div className="flex items-center whitespace-nowrap text-orange-500 font-medium bg-orange-50 dark:bg-orange-500/10 px-2 py-1 rounded-md">
                           <Star className="w-4 h-4 me-1 fill-current" />
                           {t("search_top_rated", "Top Rated")}
                         </div>
 
-                        <div className="flex items-center text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-md">
+                        <div className="flex items-center whitespace-nowrap text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-md">
                           <CheckCircle2 className="w-4 h-4 me-1" />
                           {t("search_available_now", "Available now")}
                         </div>

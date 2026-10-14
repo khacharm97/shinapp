@@ -378,8 +378,11 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['Profile', 'BusyDays'],
     }),
-    getMyOrders: builder.query({
-      query: () => 'orders',
+    getMyOrders: builder.query<
+      { items: any[]; total: number; page: number; limit: number; totalPages: number },
+      { page?: number; limit?: number; type?: string; status?: string; search?: string }
+    >({
+      query: (params) => ({ url: 'orders', params }),
       providesTags: ['Profile'],
     }),
     getMyBusyDays: builder.query<{ id: string; startDate: string; endDate: string; note?: string | null }[], void>({

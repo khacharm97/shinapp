@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
-import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search, Hourglass, PackageCheck, Wrench, Plus, Users } from "lucide-react";
-import { useGetMyOrdersQuery, useGetProfileQuery } from "@/store/api/authApi";
+import { Loader2, FileText, CheckCircle2, XCircle, Clock, Search, Hourglass, PackageCheck, Wrench, Plus, Users, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { useGetMyOrdersQuery, useGetOrderByIdQuery, useGetProfileQuery } from "@/store/api/authApi";
 import { SEO } from "@/components/seo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,38 @@ export default function MyOrdersPageContent() {
   const { t, i18n } = useTranslation();
   const dateLocale = getDateLocale(i18n.language);
   const { data: profile } = useGetProfileQuery(undefined);
-  const { data: orders, isLoading } = useGetMyOrdersQuery(undefined);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("ALL");
+  const [filterType, setFilterType] = useState<"ALL" | "ORDER" | "BRIGADE" | "TECHNIQUE">("ALL");
+  const [page, setPage] = useState(1);
+  const limit = 12;
+
+  // Any filter change starts again from the first page.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const next = searchTerm.trim();
+      if (next === debouncedSearch) return;
+      setDebouncedSearch(next);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm, debouncedSearch]);
+
+  const { data, isLoading, isFetching } = useGetMyOrdersQuery({
+    page,
+    limit,
+    type: filterType === "ALL" ? undefined : filterType,
+    status: filterStatus === "ALL" ? undefined : filterStatus,
+    search: debouncedSearch || undefined,
+  });
+  const orders = data?.items ?? [];
+  const totalPages = data?.totalPages ?? 1;
+
+  // If the last page empties (e.g. an order moved out of the current status filter), step back.
+  if (data && data.totalPages > 0 && page > data.totalPages) setPage(data.totalPages);
 
   // Turn an enum-style status ("COMPLETION_REQUESTED") into a readable label ("Completion Requested").
   const humanizeStatus = (status: string) =>
@@ -33,16 +60,17 @@ export default function MyOrdersPageContent() {
   const [isAddOrderOpen, setIsAddOrderOpen] = useState(false);
 
   // Open a specific order's details when arriving from a notification link (?orderId=...).
+  // Fetched by id since the order may not be on the current page.
+  const linkedOrderId = searchParams.get("orderId");
+  const { data: linkedOrder, isError: linkedOrderError } = useGetOrderByIdQuery(linkedOrderId as string, {
+    skip: !linkedOrderId,
+  });
   useEffect(() => {
-    const orderId = searchParams.get("orderId");
-    if (!orderId || !orders) return;
-    const match = orders.find((o: any) => o.id === orderId);
-    if (match) {
-      setSelectedOrder(match);
-      searchParams.delete("orderId");
-      setSearchParams(searchParams, { replace: true });
-    }
-  }, [searchParams, orders, setSearchParams]);
+    if (!linkedOrderId || (!linkedOrder && !linkedOrderError)) return;
+    if (linkedOrder) setSelectedOrder(linkedOrder);
+    searchParams.delete("orderId");
+    setSearchParams(searchParams, { replace: true });
+  }, [linkedOrderId, linkedOrder, linkedOrderError, searchParams, setSearchParams]);
 
   if (isLoading || !profile) {
     return (
@@ -51,15 +79,6 @@ export default function MyOrdersPageContent() {
       </div>
     );
   }
-
-  const filteredOrders = orders?.filter((order: any  ) => {
-    const matchesSearch =
-      order.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.client?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.master?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "ALL" || order.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  }) || [];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -117,7 +136,7 @@ export default function MyOrdersPageContent() {
                 key={status}
                 variant={filterStatus === status ? "default" : "outline"}
                 className={filterStatus === status ? "bg-brand hover:bg-brand/90" : ""}
-                onClick={() => setFilterStatus(status)}
+                onClick={() => { setFilterStatus(status); setPage(1); }}
                 size="sm"
               >
                 {t(`status_${status.toLowerCase()}`, status === "ALL" ? t("all", "All") : humanizeStatus(status))}
@@ -126,8 +145,28 @@ export default function MyOrdersPageContent() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredOrders.length === 0 ? (
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar">
+          {([
+            { value: "ALL", label: t("all", "All"), icon: null },
+            { value: "ORDER", label: t("order_type_order", "Orders"), icon: FileText },
+            { value: "BRIGADE", label: t("order_type_brigade", "Brigade Orders"), icon: Users },
+            { value: "TECHNIQUE", label: t("order_type_technique", "Technique Orders"), icon: Wrench },
+          ] as const).map(({ value, label, icon: Icon }) => (
+            <Button
+              key={value}
+              variant={filterType === value ? "default" : "outline"}
+              className={filterType === value ? "bg-brand hover:bg-brand/90" : ""}
+              onClick={() => { setFilterType(value); setPage(1); }}
+              size="sm"
+            >
+              {Icon && <Icon className="w-4 h-4 me-1" />}
+              {label}
+            </Button>
+          ))}
+        </div>
+
+        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-opacity ${isFetching ? "opacity-60" : ""}`}>
+          {orders.length === 0 ? (
             <div className="col-span-full py-12 flex flex-col items-center justify-center text-center">
               <div className="w-16 h-16 bg-slate-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-4">
                 <FileText className="w-8 h-8 text-slate-400 dark:text-zinc-500" />
@@ -136,7 +175,7 @@ export default function MyOrdersPageContent() {
               <p className="text-slate-500 dark:text-gray-400 mt-1 max-w-sm">{t("no_orders_found_desc", "You don't have any orders matching your criteria.")}</p>
             </div>
           ) : (
-            filteredOrders.map((order: any  ) => {
+            orders.map((order: any  ) => {
               const isClient = profile.id === order.clientId;
               const otherParty = isClient ? order.master : order.client;
               const roleLabel = isClient
@@ -208,6 +247,63 @@ export default function MyOrdersPageContent() {
             })
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 pt-4">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full w-10 h-10 border-slate-200 dark:border-zinc-700 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-zinc-800 dark:hover:text-foreground transition-colors shadow-sm"
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              <ChevronLeft className="h-5 w-5 rtl:rotate-180" />
+            </Button>
+
+            <div className="flex items-center gap-1.5 bg-white dark:bg-zinc-900 p-1.5 rounded-full shadow-sm border border-slate-100 dark:border-zinc-800">
+              {[...Array(totalPages)].map((_, i) => {
+                const pageNum = i + 1;
+                if (
+                  pageNum === 1 ||
+                  pageNum === totalPages ||
+                  (pageNum >= page - 1 && pageNum <= page + 1)
+                ) {
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={page === pageNum ? "default" : "ghost"}
+                      size="sm"
+                      className={`w-9 h-9 rounded-full font-semibold transition-all ${page === pageNum ? "bg-brand hover:bg-brand/90 text-white shadow-md scale-105" : "text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
+                      onClick={() => setPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                } else if (
+                  pageNum === page - 2 ||
+                  pageNum === page + 2
+                ) {
+                  return (
+                    <div key={pageNum} className="w-9 h-9 flex items-center justify-center text-slate-400 dark:text-zinc-500">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </div>
+                  );
+                }
+                return null;
+              })}
+            </div>
+
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-full w-10 h-10 border-slate-200 dark:border-zinc-700 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-zinc-800 dark:hover:text-foreground transition-colors shadow-sm"
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+            >
+              <ChevronRight className="h-5 w-5 rtl:rotate-180" />
+            </Button>
+          </div>
+        )}
       </div>
 
       {selectedOrder && (
