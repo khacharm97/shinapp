@@ -260,7 +260,7 @@ export default function BrigadeDetailsPageContent() {
               {reviewCount > 0 ? (
                 <div className="grid gap-6">
                   {reviewsData.reviews.map((review: Review) => (
-                    <ReviewCard key={review.id} review={review} />
+                    <ReviewCard key={review.id} review={review} showTarget />
                   ))}
                 </div>
               ) : (

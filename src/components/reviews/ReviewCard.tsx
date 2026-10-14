@@ -19,15 +19,23 @@ export interface Review {
   rating: number;
   comment?: string | null;
   images?: string[];
+  // Photos the reviewed person attached to their own review of the same order.
+  targetImages?: string[];
   createdAt: string;
   author?: ReviewUser | null;
-  // Set on brigade pages, where reviews of several members are listed together.
   target?: ReviewUser | null;
 }
 
-export function ReviewCard({ review }: { review: Review }) {
+interface ReviewCardProps {
+  review: Review;
+  // On brigade pages reviews of several members are listed together, so say whose review it is.
+  showTarget?: boolean;
+}
+
+export function ReviewCard({ review, showTarget = false }: ReviewCardProps) {
   const { t } = useTranslation();
-  const images = review.images ?? [];
+  // Both sides' photos of the order, shown together.
+  const images = [...(review.images ?? []), ...(review.targetImages ?? [])];
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const showImage = (delta: number) =>
@@ -50,7 +58,7 @@ export function ReviewCard({ review }: { review: Review }) {
         </div>
       </div>
 
-      {review.target && (
+      {showTarget && review.target && (
         <p className="text-xs text-slate-500 dark:text-gray-400 mb-2">
           {t("review_for_member", "Review for")}{" "}
           <Link to={`/masters/${review.target.id}`} className="font-medium text-brand hover:underline">
@@ -62,7 +70,7 @@ export function ReviewCard({ review }: { review: Review }) {
       {review.comment && <p className="text-slate-600 dark:text-gray-300 text-sm leading-relaxed">{review.comment}</p>}
 
       {images.length > 0 && (
-        <div className="flex gap-2 mt-4">
+        <div className="flex flex-wrap gap-2 mt-4">
           {images.map((url, i) => (
             <button
               key={url}
