@@ -17,6 +17,9 @@ const API_ERROR_CODES: Record<string, string> = {
   review_order_not_found: "Order not found.",
   review_order_not_completed: "Order must be completed to leave a review.",
   review_already_exists: "You have already left a review for this order.",
+  review_not_order_party: "Only the client and the master of this order can leave a review.",
+  review_invalid_target: "You can only review the other party of this order.",
+  review_images_invalid: "Only image files can be attached to a review.",
 };
 
 // `params` fills placeholders in the message, e.g. { technique: "Excavator" }

@@ -423,17 +423,21 @@ export const authApi = createApi({
       }),
       invalidatesTags: (_result, _error, arg) => [{ type: 'Orders', id: arg }, 'Profile'],
     }),
-    createReview: builder.mutation<any, any>({
+    createReview: builder.mutation<any, FormData>({
       query: (data) => ({
         url: '/reviews',
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ['Masters', 'Orders', 'Profile'],
+      invalidatesTags: ['Masters', 'Orders', 'Profile', 'Reviews'],
     }),
     getMasterReviews: builder.query<any, string>({
       query: (masterId) => `/reviews/master/${masterId}`,
       providesTags: (_result, _error, arg) => [{ type: 'Reviews', id: arg }],
+    }),
+    getBrigadeReviews: builder.query<any, string>({
+      query: (brigadeId) => `/reviews/brigade/${brigadeId}`,
+      providesTags: ['Reviews'],
     }),
     getMasterBusyDates: builder.query<any, string>({
       query: (masterId) => `/reviews/master/${masterId}/busy-dates`,
@@ -534,6 +538,7 @@ export const {
   useAcceptOrderCompletionMutation,
   useCreateReviewMutation,
   useGetMasterReviewsQuery,
+  useGetBrigadeReviewsQuery,
   useGetMasterBusyDatesQuery,
 
   useGetTechniquesQuery,

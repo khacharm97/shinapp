@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2, ArrowLeft, Star, Phone, CheckCircle2, User as UserIcon, FileText, MessageSquare } from "lucide-react";
-import { useGetBrigadeByIdQuery, useGetProfileQuery } from "@/store/api/authApi";
+import { useGetBrigadeByIdQuery, useGetBrigadeReviewsQuery, useGetProfileQuery } from "@/store/api/authApi";
+import { ReviewCard, type Review } from "@/components/reviews/ReviewCard";
 import { useAppSelector } from "@/store/hooks";
 import { Button } from "@/components/ui/button";
 import { SEO } from '@/components/seo';
@@ -35,6 +36,9 @@ export default function BrigadeDetailsPageContent() {
   const { data: brigade, isLoading, isError } = useGetBrigadeByIdQuery(id as string, {
     skip: !id,
   });
+  const { data: reviewsData } = useGetBrigadeReviewsQuery(id as string, { skip: !id });
+  const reviewCount: number = reviewsData?.count ?? 0;
+  const averageRating: number = reviewsData?.averageRating ?? 0;
 
   if (isLoading) {
     return (
@@ -119,7 +123,7 @@ export default function BrigadeDetailsPageContent() {
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-4 text-sm text-slate-600 dark:text-gray-300">
                   <div className="flex items-center text-orange-500 font-medium">
                     <Star className="w-4 h-4 me-1 fill-current" />
-                    5.0 ({t("brigade_reviews_count", "{{count}} reviews", { count: 0 })})
+                    {reviewCount > 0 ? averageRating.toFixed(1) : "-"} ({t("brigade_reviews_count", "{{count}} reviews", { count: reviewCount })})
                   </div>
                   <div className="flex items-center text-green-600 dark:text-green-400 font-medium">
                     <CheckCircle2 className="w-4 h-4 me-1" />
@@ -245,6 +249,25 @@ export default function BrigadeDetailsPageContent() {
                   </Link>
                 ))}
               </div>
+            </section>
+
+            {/* Reviews of the owner and members */}
+            <section>
+              <h2 className="text-2xl font-bold text-brand mb-4">
+                {t("reviews_title", "Reviews")}
+                {reviewCount > 0 && <span className="ms-2 text-slate-500 dark:text-gray-400 text-lg font-normal">({reviewCount})</span>}
+              </h2>
+              {reviewCount > 0 ? (
+                <div className="grid gap-6">
+                  {reviewsData.reviews.map((review: Review) => (
+                    <ReviewCard key={review.id} review={review} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center p-8 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                  <p className="text-slate-500 dark:text-gray-400">{t("brigade_no_reviews", "This brigade's members have no reviews yet.")}</p>
+                </div>
+              )}
             </section>
           </div>
         </div>

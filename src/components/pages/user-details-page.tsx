@@ -14,6 +14,7 @@ import type { LocalizedString, Skill, Portfolio, Technique } from "@/types";
 import { getLocalizedName } from "@/utils";
 import { SEO } from '@/components/seo';
 import { CreateOrderModal } from "@/components/orders/CreateOrderModal";
+import { ReviewCard, type Review } from "@/components/reviews/ReviewCard";
 import techniqueImg from '@/assets/technique.webp';
 
 const MANAGER_PHONE = "+37493233402";
@@ -505,24 +506,8 @@ export default function UserDetailsPageContent() {
                     </div>
 
                     <div className="grid gap-6">
-                      {reviewsData.reviews.map((review: any  ) => (
-                        <div key={review.id} className="bg-slate-50 dark:bg-zinc-800/50 p-6 rounded-xl border border-slate-100 dark:border-zinc-800">
-                          <div className="flex items-center justify-between mb-4">
-                            <Link to={review.author?.id ? `/users/${review.author.id}` : "#"} className="flex items-center gap-3 group">
-                              <img src={getImageUrl(review.author?.avatarUrl) || "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"} className="w-10 h-10 rounded-full object-cover" />
-                              <div>
-                                <div className="font-semibold text-slate-900 dark:text-foreground group-hover:text-brand transition-colors">{review.author?.name || t("anonymous", "Anonymous")}</div>
-                                <div className="text-xs text-slate-500 dark:text-gray-400">{format(new Date(review.createdAt), 'PP')}</div>
-                              </div>
-                            </Link>
-                            <div className="flex gap-1">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star key={star} className={`w-4 h-4 ${star <= review.rating ? 'fill-orange-400 text-orange-400' : 'fill-slate-200 text-slate-200 dark:fill-zinc-700 dark:text-zinc-700'}`} />
-                              ))}
-                            </div>
-                          </div>
-                          {review.comment && <p className="text-slate-600 dark:text-gray-300 text-sm leading-relaxed">{review.comment}</p>}
-                        </div>
+                      {reviewsData.reviews.map((review: Review) => (
+                        <ReviewCard key={review.id} review={review} />
                       ))}
                     </div>
                   </div>
