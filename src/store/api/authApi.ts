@@ -439,6 +439,10 @@ export const authApi = createApi({
       query: (brigadeId) => `/reviews/brigade/${brigadeId}`,
       providesTags: ['Reviews'],
     }),
+    getTechniqueReviews: builder.query<any, string>({
+      query: (techniqueId) => `/reviews/technique/${techniqueId}`,
+      providesTags: ['Reviews'],
+    }),
     getMasterBusyDates: builder.query<any, string>({
       query: (masterId) => `/reviews/master/${masterId}/busy-dates`,
     }),
@@ -539,6 +543,7 @@ export const {
   useCreateReviewMutation,
   useGetMasterReviewsQuery,
   useGetBrigadeReviewsQuery,
+  useGetTechniqueReviewsQuery,
   useGetMasterBusyDatesQuery,
 
   useGetTechniquesQuery,

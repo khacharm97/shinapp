@@ -675,6 +675,7 @@
   "review_images_too_large": "Only images up to 10 MB can be added.",
   "review_for_member": "Review for",
   "brigade_no_reviews": "This brigade's members have no reviews yet.",
+  "technique_no_reviews": "This technique has no reviews yet.",
   "review_not_order_party": "Only the client and the master of this order can leave a review.",
   "review_invalid_target": "You can only review the other party of this order.",
   "review_images_invalid": "Only image files can be attached to a review.",

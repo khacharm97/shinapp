@@ -3,8 +3,9 @@ import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAppSelector } from "@/store/hooks";
 import { useTranslation } from "react-i18next";
-import { Loader2, ArrowLeft, FileText, Calendar as CalendarIcon, User, MessageSquare } from "lucide-react";
-import { useGetTechniqueByIdQuery, useGetProfileQuery, useGetTechniqueBusyDatesQuery } from "@/store/api/authApi";
+import { Loader2, ArrowLeft, FileText, Calendar as CalendarIcon, User, MessageSquare, Star } from "lucide-react";
+import { useGetTechniqueByIdQuery, useGetProfileQuery, useGetTechniqueBusyDatesQuery, useGetTechniqueReviewsQuery } from "@/store/api/authApi";
+import { ReviewCard, type Review } from "@/components/reviews/ReviewCard";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { isWithinInterval } from "date-fns";
@@ -33,6 +34,9 @@ export default function TechniqueDetailsPageContent() {
   const { data: profile } = useGetProfileQuery(undefined, { skip: !token });
   const { data: technique, isLoading, isError } = useGetTechniqueByIdQuery(id as string, { skip: !id });
   const { data: busyDatesData } = useGetTechniqueBusyDatesQuery(id as string, { skip: !id });
+  const { data: reviewsData } = useGetTechniqueReviewsQuery(id as string, { skip: !id });
+  const reviewCount: number = reviewsData?.count ?? 0;
+  const averageRating: number = reviewsData?.averageRating ?? 0;
 
   const disabledDays = (date: Date) => {
     if (!busyDatesData) return false;
@@ -115,6 +119,10 @@ export default function TechniqueDetailsPageContent() {
                     {t("technique_owner_label", "Provided by")} {technique.owner.name}
                   </Link>
                 )}
+                <div className="flex items-center text-sm text-orange-500 font-medium mt-2">
+                  <Star className="w-4 h-4 me-1 fill-current" />
+                  {reviewCount > 0 ? averageRating.toFixed(1) : "-"} ({t("brigade_reviews_count", "{{count}} reviews", { count: reviewCount })})
+                </div>
               </div>
 
               <div className="bg-brand/5 dark:bg-brand/10 rounded-xl p-5">
@@ -182,6 +190,25 @@ export default function TechniqueDetailsPageContent() {
                 <span>{t("busy_days", "Busy Days")}</span>
               </div>
             </div>
+          </section>
+
+          <section className="p-6 md:p-8 border-t border-slate-100 dark:border-zinc-800">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-foreground mb-6 flex items-center">
+              <Star className="w-5 h-5 me-2 text-brand" />
+              {t("reviews_title", "Reviews")}
+              {reviewCount > 0 && <span className="ms-2 text-slate-500 dark:text-gray-400 text-base font-normal">({reviewCount})</span>}
+            </h2>
+            {reviewCount > 0 ? (
+              <div className="grid gap-6">
+                {reviewsData.reviews.map((review: Review) => (
+                  <ReviewCard key={review.id} review={review} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center p-8 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800">
+                <p className="text-slate-500 dark:text-gray-400">{t("technique_no_reviews", "This technique has no reviews yet.")}</p>
+              </div>
+            )}
           </section>
         </div>
 
