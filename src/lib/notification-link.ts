@@ -31,6 +31,7 @@ export function getNotificationLink(notification: AppNotification): string | nul
     case 'MESSAGE':
       return conversationId ? `/messages/${conversationId}` : '/messages';
     default:
-      return null;
+      // SYSTEM notifications about an order (e.g. completion requested / completed) carry an orderId.
+      return orderId ? `/profile/orders?orderId=${orderId}` : null;
   }
 }
