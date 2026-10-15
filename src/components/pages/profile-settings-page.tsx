@@ -395,7 +395,8 @@ export default function ProfileSettingsPageContent() {
                 )}
               </div>
 
-              {!isCompanyUser && (
+              {/* Skills, work preferences and pricing only apply to masters */}
+              {isMasterUser && !isCompanyUser && (
                 <>
                   <div className="space-y-4">
                     <FormField
