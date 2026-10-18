@@ -14,10 +14,10 @@ export default function HomePageContent() {
     <div className="flex flex-col items-center justify-start w-full flex-1">
       <SEO />
       <HeroSection />
-      {!token && <WhoAreWeSection />}
       <FeaturedSkillsSection />
       <OurMastersSection />
       <OurTechniqueSection />
+      {!token && <WhoAreWeSection />}
       <WhyTrustUsSection />
     </div>
   )
