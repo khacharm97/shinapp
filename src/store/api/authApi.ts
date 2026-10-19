@@ -33,8 +33,9 @@ const baseQueryWithReauth = async (args: string | FetchArgs, api: BaseQueryApi, 
     if (hadToken) {
       api.dispatch(logout());
     }
-  } else if (result.error && result.error.status === 403) {
-    // If blocked, 403 is returned
+  } else if (result.error && result.error.status === 403 && hadToken) {
+    // A blocked user gets 403. Only a logged-in session can be blocked - a 403
+    // for an anonymous visitor must not wipe the page or redirect to login.
     const errorData = result.error.data as { message?: string } | undefined;
     if (errorData?.message === 'auth_error_user_blocked' || result.error.status === 403) {
       api.dispatch(logout());

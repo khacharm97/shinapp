@@ -58,6 +58,7 @@ export interface Skill extends LocalizedString {
   id: string;
   key: string;
   icon?: string;
+  color?: string | null;
 }
 
 export interface Portfolio {

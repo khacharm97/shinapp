@@ -2,20 +2,20 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { useAppSelector } from '@/store/hooks'
-import { useGetProfileQuery } from '@/store/api/authApi'
-import { isCompany } from '@/utils'
+import { useGetSkillsQuery } from '@/store/api/authApi'
+import { getLocalizedName } from '@/utils'
+import type { Skill } from '@/types'
+import * as LucideIcons from 'lucide-react'
 import homeBanner from '@/assets/home_bunner.webp'
 
 export function HeroSection() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
 
-  const { token, user: reduxUser } = useAppSelector((state) => state.auth)
-  const { data: profile } = useGetProfileQuery(undefined, { skip: !token })
-  const user = reduxUser || profile
-  const canAddAnnouncement = isCompany(user?.roles) && !!user?.verifiedAt
+  // Every approved skill shows up as a badge, in the color set in the admin panel.
+  const { data: skills } = useGetSkillsQuery(undefined)
+  const featuredSkills: Skill[] = skills || []
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,42 +46,34 @@ export function HeroSection() {
         </h1>
 
         {/* Badges container */}
-        <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-4 mb-12">
-          <button
-            type="button"
-            onClick={() => navigate('/search')}
-            className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white"
-          >
-            <div className="w-4 h-4 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: '#6823F1' }} />
-            <span className="text-sm font-semibold">{t('badge_find_masters')}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate(canAddAnnouncement ? '/my-announcements' : '/announcements')}
-            className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white"
-          >
-            <div className="w-4 h-4 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: '#F17C23' }} />
-            <span className="text-sm font-semibold">
-              {canAddAnnouncement ? t('my_announcements_add_btn') : t('nav_announcements')}
-            </span>
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/calculator')}
-            className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white"
-          >
-            <div className="w-4 h-4 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: '#0900FF' }} />
-            <span className="text-sm font-semibold">{t('nav_calculator')}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/about')}
-            className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white"
-          >
-            <div className="w-4 h-4 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: '#F14623' }} />
-            <span className="text-sm font-semibold">{t('nav_about_us')}</span>
-          </button>
+        {featuredSkills.length > 0 && (
+        <div className="flex flex-row flex-wrap justify-center items-center gap-3 md:gap-4 mb-12">
+          {featuredSkills.map((skill) => {
+            const color = skill.color || '#6823F1'
+            const isUrl = skill.icon?.startsWith('http') || skill.icon?.startsWith('/')
+            const Icon = !isUrl && skill.icon
+              ? (LucideIcons[skill.icon as keyof typeof LucideIcons] as React.ElementType | undefined)
+              : undefined
+            return (
+              <button
+                key={skill.id}
+                type="button"
+                onClick={() => navigate(`/search?q=${encodeURIComponent(skill.key)}`)}
+                className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white"
+              >
+                {Icon ? (
+                  <Icon className="w-4 h-4 shrink-0" style={{ color }} />
+                ) : isUrl ? (
+                  <img src={skill.icon} alt="" className="w-4 h-4 shrink-0 object-contain" />
+                ) : (
+                  <div className="w-4 h-4 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: color }} />
+                )}
+                <span className="text-sm font-semibold">{getLocalizedName(skill, i18n.language)}</span>
+              </button>
+            )
+          })}
         </div>
+        )}
 
         {/* Search Input and Button */}
         <form onSubmit={handleSearch} className="flex w-full max-w-3xl mx-auto bg-white p-1.5 rounded-xl shadow-lg items-center">

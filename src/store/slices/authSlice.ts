@@ -2,8 +2,25 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { User, AuthState } from '../../types';
 
+// A token saved from an old visit may have expired. Using it would make the
+// first requests fail with 401 and log the visitor out mid-load, so drop it.
+function getStoredToken(): string | null {
+  const token = localStorage.getItem('access_token');
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (typeof payload.exp === 'number' && payload.exp * 1000 <= Date.now()) {
+      localStorage.removeItem('access_token');
+      return null;
+    }
+  } catch {
+    // Not a JWT we can read - keep it and let the server decide.
+  }
+  return token;
+}
+
 const initialState: AuthState = {
-  token: localStorage.getItem('access_token'),
+  token: getStoredToken(),
   user: null,
 };
 
