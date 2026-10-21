@@ -213,14 +213,15 @@ export function TopAnnouncementsSection() {
 
                     <div className="flex items-center gap-x-3 text-sm text-slate-500 dark:text-gray-400 min-w-0">
                       {location && (
-                        <span className="flex items-center gap-1 truncate">
+                        <span className="flex items-center gap-1 min-w-0">
                           <MapPin className="w-3.5 h-3.5 shrink-0" />
                           <span className="truncate">{location}</span>
                         </span>
                       )}
-                      {location && posted && <span>&middot;</span>}
+                      {/* On phones there's room for one: show location, or the date if there's no location */}
+                      {location && posted && <span className="hidden sm:inline">&middot;</span>}
                       {posted && (
-                        <span className="truncate shrink-0">
+                        <span className={`truncate shrink-0 ${location ? 'hidden sm:inline' : ''}`}>
                           {t('posted', 'Posted')} {posted}
                         </span>
                       )}
