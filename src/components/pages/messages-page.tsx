@@ -12,7 +12,7 @@ import {
 import { useAppSelector } from "@/store/hooks";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/seo";
-import { getImageUrl } from "@/utils";
+import { getDateLocale, getImageUrl } from "@/utils";
 import { cn } from "@/lib/utils";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import type { Conversation, ConversationType } from "@/types";
@@ -39,7 +39,7 @@ function ConversationRow({
   conversation: Conversation;
   active: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const other = conversation.otherParticipants[0];
   const name = other?.name || t("unknown_user", "Unknown");
   return (
@@ -56,7 +56,7 @@ function ConversationRow({
           <span className="font-semibold text-slate-900 dark:text-foreground truncate">{name}</span>
           {conversation.lastMessage && (
             <span className="text-[11px] text-slate-400 dark:text-zinc-500 flex-shrink-0">
-              {formatDistanceToNow(new Date(conversation.lastMessage.createdAt), { addSuffix: false })}
+              {formatDistanceToNow(new Date(conversation.lastMessage.createdAt), { addSuffix: false, locale: getDateLocale(i18n.language) })}
             </span>
           )}
         </div>
@@ -82,7 +82,7 @@ function SupportRow({
   conversation?: Conversation;
   active: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <Link
       to={conversation ? `/messages/${conversation.id}` : "/messages/support"}
@@ -101,7 +101,7 @@ function SupportRow({
           </span>
           {conversation?.lastMessage && (
             <span className="text-[11px] text-slate-400 dark:text-zinc-500 flex-shrink-0">
-              {formatDistanceToNow(new Date(conversation.lastMessage.createdAt), { addSuffix: false })}
+              {formatDistanceToNow(new Date(conversation.lastMessage.createdAt), { addSuffix: false, locale: getDateLocale(i18n.language) })}
             </span>
           )}
         </div>

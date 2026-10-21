@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { SEO } from "@/components/seo";
-import { getImageUrl, getLocalizedName } from "@/utils";
+import { getDateLocale, getImageUrl, getLocalizedName } from "@/utils";
 
 export default function AnnouncementsPageContent() {
   const { t, i18n } = useTranslation();
@@ -166,7 +166,7 @@ export default function AnnouncementsPageContent() {
               const isUrgent = announcement.urgent;
               const isVerified = !!announcement.company?.verifiedAt;
               const location = getLocalizedLocation(announcement.company?.userInfo?.regionId, announcement.company?.userInfo?.cityId);
-              const posted = formatDistanceToNow(new Date(announcement.createdAt), { addSuffix: true });
+              const posted = formatDistanceToNow(new Date(announcement.createdAt), { addSuffix: true, locale: getDateLocale(i18n.language) });
 
               return (
                 <Link

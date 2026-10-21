@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useGetAnnouncementsQuery } from '@/store/api/publicApi'
 import { armeniaRegions } from '@/lib/armenia-regions'
-import { getImageUrl, getLocalizedName } from '@/utils'
+import { getDateLocale, getImageUrl, getLocalizedName } from '@/utils'
 
 interface HomeAnnouncement {
   id: string
@@ -167,7 +167,7 @@ export function TopAnnouncementsSection() {
                 announcement.company?.userInfo?.cityId,
               )
               const posted = announcement.createdAt
-                ? formatDistanceToNow(new Date(announcement.createdAt), { addSuffix: true })
+                ? formatDistanceToNow(new Date(announcement.createdAt), { addSuffix: true, locale: getDateLocale(i18n.language) })
                 : ''
 
               return (
