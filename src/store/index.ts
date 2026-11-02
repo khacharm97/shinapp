@@ -3,7 +3,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import { authApi } from './api/authApi';
 import { publicApi } from './api/publicApi';
 import { chatApi } from './api/chatApi';
-import authReducer, { logout } from './slices/authSlice';
+import authReducer, { logout, setCredentials } from './slices/authSlice';
 import guestChatReducer from './slices/guestChatSlice';
 import type { UnknownAction } from '@reduxjs/toolkit';
 
@@ -35,6 +35,15 @@ logoutListener.startListening({
     listenerApi.dispatch(authApi.util.resetApiState());
     listenerApi.dispatch(publicApi.util.resetApiState());
     listenerApi.dispatch(chatApi.util.resetApiState());
+  },
+});
+
+// On login, refetch public data: logged-out responses leave out details
+// (e.g. announcement descriptions) that a logged-in user should get.
+logoutListener.startListening({
+  actionCreator: setCredentials,
+  effect: (_action, listenerApi) => {
+    listenerApi.dispatch(publicApi.util.resetApiState());
   },
 });
 

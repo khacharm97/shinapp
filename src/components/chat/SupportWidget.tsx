@@ -96,7 +96,7 @@ export function SupportWidget({
   };
 
   return (
-    <div className="fixed bottom-5 end-5 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-5 end-5 z-40 flex flex-col items-end gap-3">
       {open && (
         <div className="w-[calc(100vw-2.5rem)] max-w-sm h-[28rem] max-h-[70vh] bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-zinc-800 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200">
           <div className="flex items-center justify-between gap-2 px-4 py-3 bg-brand text-white shrink-0">

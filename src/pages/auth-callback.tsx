@@ -4,6 +4,7 @@ import { useAppDispatch } from '@/store/hooks';
 import type { User } from '@/types';
 import { setCredentials } from '@/store/slices/authSlice';
 import { authApi } from '@/store/api/authApi';
+import { takeReturnTo } from '@/lib/return-to';
 
 export default function AuthCallbackPage() {
   const [searchParams] = useSearchParams();
@@ -24,8 +25,8 @@ export default function AuthCallbackPage() {
           // Update credentials with the full user object
           dispatch(setCredentials({ token, user }));
 
-          // Check roles and navigate accordingly
-          navigate('/');
+          // Back to the page that asked for a login, if any.
+          navigate(takeReturnTo() ?? '/', { replace: true });
         })
         .catch((error: unknown) => {
           console.error('Failed to fetch user profile:', error);

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { AnnouncementCardLink, AnnouncementDetailsHint } from '@/components/announcements/announcement-card-link'
 import { formatDistanceToNow } from 'date-fns'
 import { ArrowRight, BadgeCheck, ChevronDown, ChevronUp, Image as ImageIcon, Loader2, MapPin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -171,8 +172,8 @@ export function TopAnnouncementsSection() {
                 : ''
 
               return (
-                <Link
-                  to={`/announcements/${announcement.id}`}
+                <AnnouncementCardLink
+                  id={announcement.id}
                   key={`${announcement.id}-${i}`}
                   className="group h-[var(--card-h)] shrink-0 snap-startbg-white dark:bg-zinc-900 rounded-2xl border border-slate-100 dark:border-zinc-800 hover:shadow-lg hover:border-brand/20 transition-[box-shadow,border-color] duration-300 overflow-hidden flex flex-row gap-4 sm:gap-5 p-3 sm:p-5"
                 >
@@ -249,12 +250,14 @@ export function TopAnnouncementsSection() {
                         {t('urgent', 'URGENT')}
                       </span>
                     )}
-                    <span className="flex items-center gap-1 text-brand font-semibold text-sm group-hover:gap-2 transition-all shrink-0 whitespace-nowrap">
-                      {t('view_details', 'View details')}
-                      <ArrowRight className="w-4 h-4" />
-                    </span>
+                    <AnnouncementDetailsHint>
+                      <span className="flex items-center gap-1 text-brand font-semibold text-sm group-hover:gap-2 transition-all shrink-0 whitespace-nowrap">
+                        {t('view_details', 'View details')}
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </AnnouncementDetailsHint>
                   </div>
-                </Link>
+                </AnnouncementCardLink>
               )
             })}
           </div>

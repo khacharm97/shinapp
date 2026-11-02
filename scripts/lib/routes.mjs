@@ -22,9 +22,8 @@ async function fetchAllIds(url, key = 'items') {
 }
 
 export async function collectRoutes() {
-  const [masterIds, announcementIds, techniqueIds] = await Promise.all([
+  const [masterIds, techniqueIds] = await Promise.all([
     fetchAllIds(`${backendUrl}/auth/masters`),
-    fetchAllIds(`${backendUrl}/announcements`),
     fetchAllIds(`${backendUrl}/auth/techniques`),
   ])
 
@@ -41,7 +40,7 @@ export async function collectRoutes() {
 
   const dynamicRoutes = [
     ...masterIds.map((id) => ({ path: `/masters/${id}`, priority: '0.6', changefreq: 'weekly' })),
-    ...announcementIds.map((id) => ({ path: `/announcements/${id}`, priority: '0.6', changefreq: 'weekly' })),
+    // Announcement details are login-only, so they are not prerendered or put in the sitemap.
     ...techniqueIds.map((id) => ({ path: `/technique/${id}`, priority: '0.5', changefreq: 'weekly' })),
   ]
 

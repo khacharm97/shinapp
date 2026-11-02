@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useRegisterMutation } from "@/store/api/authApi"
 import { useDispatch } from "react-redux"
 import { setCredentials } from "@/store/slices/authSlice"
+import { takeReturnTo } from "@/lib/return-to"
 
 export default function SignupPageContent() {
   const { t } = useTranslation()
@@ -58,8 +59,12 @@ export default function SignupPageContent() {
       if (response.access_token) {
         dispatch(setCredentials({ token: response.access_token, user: response.user }))
 
+        // Read (and clear) the page that asked for a login, if any.
+        const returnTo = takeReturnTo()
+
         try {
           const payload = JSON.parse(atob(response.access_token.split('.')[1]))
+          // New masters and companies finish setting up their profile first.
           if (payload.roles && (payload.roles.includes('MASTER') || payload.roles.includes('COMPANY'))) {
             navigate("/profile")
             return
@@ -68,7 +73,7 @@ export default function SignupPageContent() {
           console.error("Failed to parse JWT payload:", e)
         }
 
-        navigate("/")
+        navigate(returnTo ?? "/", { replace: true })
       }
     } catch (err) {
       console.error("Registration failed:", err)

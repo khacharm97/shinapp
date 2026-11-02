@@ -1,6 +1,7 @@
 import { getImageUrl } from '@/utils';
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useRequireLogin } from "@/components/auth/login-required-context";
 import { useAppSelector } from "@/store/hooks";
 import { useTranslation } from "react-i18next";
 import { Loader2, ArrowLeft, FileText, Calendar as CalendarIcon, User, MessageSquare, Star } from "lucide-react";
@@ -13,10 +14,12 @@ import { Button } from "@/components/ui/button";
 import { SEO } from '@/components/seo';
 import { CreateTechniqueOrderModal } from "@/components/orders/CreateTechniqueOrderModal";
 import techniqueImg from '@/assets/technique.webp';
+import { ImageViewer } from "@/components/image-viewer";
 
 export default function TechniqueDetailsPageContent() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const requireLogin = useRequireLogin();
   const { t } = useTranslation();
 
   const goBack = () => {
@@ -29,6 +32,7 @@ export default function TechniqueDetailsPageContent() {
 
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
   const token = useAppSelector((state) => state.auth.token);
   const { data: profile } = useGetProfileQuery(undefined, { skip: !token });
@@ -88,13 +92,32 @@ export default function TechniqueDetailsPageContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             <div className="p-6 md:p-8 space-y-3">
               <div className="aspect-video rounded-xl overflow-hidden bg-slate-100 dark:bg-zinc-800">
-                <img
-                  src={images[activeImage] ? getImageUrl(images[activeImage]) || "" : techniqueImg}
-                  alt={technique.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => { e.currentTarget.src = techniqueImg; }}
-                />
+                {/* Only real photos open in the big view, not the placeholder */}
+                <button
+                  type="button"
+                  onClick={() => images.length > 0 && setViewerIndex(activeImage)}
+                  disabled={images.length === 0}
+                  aria-label={t("view_photo", "View photo")}
+                  className="block w-full h-full enabled:cursor-zoom-in disabled:cursor-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand"
+                >
+                  <img
+                    src={images[activeImage] ? getImageUrl(images[activeImage]) || "" : techniqueImg}
+                    alt={technique.name}
+                    className="w-full h-full object-cover transition-opacity hover:opacity-95"
+                    onError={(e) => { e.currentTarget.src = techniqueImg; }}
+                  />
+                </button>
               </div>
+              <ImageViewer
+                images={images.map((url) => getImageUrl(url) || "")}
+                index={viewerIndex}
+                onIndexChange={(i) => {
+                  setViewerIndex(i);
+                  // Keep the page's main photo in step with the one viewed.
+                  if (i !== null) setActiveImage(i);
+                }}
+                title={technique.name}
+              />
               {images.length > 1 && (
                 <div className="flex gap-2">
                   {images.map((url, i) => (
@@ -144,7 +167,7 @@ export default function TechniqueDetailsPageContent() {
               {!isOwner && (
                 <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-2">
                   <Button
-                    onClick={() => profile ? setIsOrderModalOpen(true) : navigate('/login')}
+                    onClick={() => profile ? setIsOrderModalOpen(true) : requireLogin()}
                     className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
                   >
                     <FileText className="w-4 h-4 me-2" />

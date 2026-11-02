@@ -73,6 +73,11 @@ const router = createBrowserRouter([
           {
             path: "messages/:conversationId",
             element: <MessagesPage />,
+          },
+          {
+            // Logged-out visitors only see blurred announcement cards.
+            path: "announcements/:id",
+            element: <AnnouncementDetailsPage />,
           }
         ]
       },
@@ -96,10 +101,6 @@ const router = createBrowserRouter([
       {
         path: "announcements",
         element: <AnnouncementsPage />,
-      },
-      {
-        path: "announcements/:id",
-        element: <AnnouncementDetailsPage />,
       },
       {
         path: "search",

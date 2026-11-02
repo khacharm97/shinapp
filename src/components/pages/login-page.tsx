@@ -2,6 +2,7 @@ import { SEO } from '@/components/seo'
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
+import { takeReturnTo } from "@/lib/return-to"
 import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -38,7 +39,8 @@ export default function LoginPageContent() {
       if (response.access_token) {
         dispatch(setCredentials({ token: response.access_token, user: response.user }))
 
-        navigate("/")
+        // Back to the page that asked for a login, if any.
+        navigate(takeReturnTo() ?? "/", { replace: true })
       }
     } catch (err) {
       console.error("Login failed:", err)

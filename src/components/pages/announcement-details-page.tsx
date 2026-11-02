@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useRequireLogin } from "@/components/auth/login-required-context";
 import { useTranslation } from "react-i18next";
 import {
   Loader2,
@@ -23,15 +24,18 @@ import { useAppSelector } from "@/store/hooks";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/seo";
+import { ImageViewer } from "@/components/image-viewer";
 import { getImageUrl, getLocalizedName } from "@/utils";
 import type { LocalizedString } from "@/types";
 
 export default function AnnouncementDetailsPageContent() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const requireLogin = useRequireLogin();
   const { t, i18n } = useTranslation();
   const currentUser = useAppSelector((s) => s.auth.user);
   const [activeImage, setActiveImage] = useState(0);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
   const { data: announcement, isLoading, isError } = useGetAnnouncementByIdQuery(
     id as string,
@@ -127,12 +131,29 @@ export default function AnnouncementDetailsPageContent() {
             {images.length > 0 && (
               <div className="space-y-3">
                 <div className="w-full aspect-video rounded-3xl overflow-hidden bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700">
-                  <img
-                    src={getImageUrl(images[activeImage])}
-                    alt={announcement.title}
-                    className="w-full h-full object-cover"
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setViewerIndex(activeImage)}
+                    aria-label={t("view_photo", "View photo")}
+                    className="block w-full h-full cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand"
+                  >
+                    <img
+                      src={getImageUrl(images[activeImage])}
+                      alt={announcement.title}
+                      className="w-full h-full object-cover transition-opacity hover:opacity-95"
+                    />
+                  </button>
                 </div>
+                <ImageViewer
+                  images={images.map((url) => getImageUrl(url) || "")}
+                  index={viewerIndex}
+                  onIndexChange={(i) => {
+                    setViewerIndex(i);
+                    // Keep the page's main photo in step with the one viewed.
+                    if (i !== null) setActiveImage(i);
+                  }}
+                  title={announcement.title}
+                />
                 {images.length > 1 && (
                   <div className="flex gap-3 flex-wrap">
                     {images.map((url, i) => (
@@ -354,7 +375,7 @@ export default function AnnouncementDetailsPageContent() {
                     className="w-full bg-brand text-white hover:bg-brand/90"
                     onClick={() =>
                       !currentUser
-                        ? navigate("/login")
+                        ? requireLogin()
                         : navigate(
                             `/messages/new?recipientId=${company.id}&type=MASTER_COMPANY` +
                               `&announcementId=${announcement.id}` +

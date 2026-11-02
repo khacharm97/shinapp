@@ -1,12 +1,21 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { ContactRequestPayload, EstimateEmailPayload, ContactEmailPayload, BasicApiResponse } from '@/types';
+import type { RootState } from '../index';
 
 const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
 const baseUrl = backendUrl.startsWith('http') ? backendUrl : `https://${backendUrl}`;
 
 export const publicApi = createApi({
   reducerPath: 'publicApi',
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  // Send the token when there is one: announcement details need a login.
+  baseQuery: fetchBaseQuery({
+    baseUrl,
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) headers.set('authorization', `Bearer ${token}`);
+      return headers;
+    },
+  }),
   endpoints: (builder) => ({
     insertContactRequest: builder.mutation<BasicApiResponse, ContactRequestPayload>({
       query: (data) => ({

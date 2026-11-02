@@ -1,8 +1,8 @@
-import { getImageUrl, isCompany, isMaster } from '@/utils';
+import { getImageUrl, isCompany, isMaster, isTopRated } from '@/utils';
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, MapPin, Star, CheckCircle2, ImagePlus, Settings, Building2, Eye } from "lucide-react";
-import { useGetProfileQuery, useGetSkillsQuery, useGetUserByIdQuery } from "@/store/api/authApi";
+import { Loader2, MapPin, Star, CheckCircle2, Clock, ImagePlus, Settings, Building2, Eye } from "lucide-react";
+import { useGetProfileQuery, useGetSkillsQuery, useGetUserByIdQuery, useGetMasterReviewsQuery } from "@/store/api/authApi";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ export default function ProfilePageContent() {
   // availability badges only make sense for a master.
   const isMasterUser = isMaster(profile?.roles);
   const isCompanyUser = isCompany(profile?.roles);
+  const { data: reviewsData } = useGetMasterReviewsQuery(profile?.id as string, { skip: !profile?.id || !isMasterUser });
   // The public profile carries the real job stats for a master.
   const { data: publicProfile } = useGetUserByIdQuery(profile?.id as string, {
     skip: !profile?.id || !isMasterUser,
@@ -164,15 +165,25 @@ export default function ProfilePageContent() {
                     )}
                     {isMasterUser && (
                       <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                        <div className="flex items-center whitespace-nowrap text-orange-500 font-medium bg-orange-50 dark:bg-orange-500/10 px-2 py-1 rounded-md">
-                          <Star className="w-4 h-4 me-1 fill-current" />
-                          {t("search_top_rated", "Top Rated")}
-                        </div>
+                        {isTopRated(reviewsData?.averageRating, reviewsData?.count) && (
+                          <div className="flex items-center whitespace-nowrap text-orange-500 font-medium bg-orange-50 dark:bg-orange-500/10 px-2 py-1 rounded-md">
+                            <Star className="w-4 h-4 me-1 fill-current" />
+                            {t("search_top_rated", "Top Rated")}
+                          </div>
+                        )}
 
-                        <div className="flex items-center whitespace-nowrap text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-md">
-                          <CheckCircle2 className="w-4 h-4 me-1" />
-                          {t("search_available_now", "Available now")}
-                        </div>
+                        {publicProfile?.availability === "AVAILABLE" && (
+                          <div className="flex items-center whitespace-nowrap text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-md">
+                            <CheckCircle2 className="w-4 h-4 me-1" />
+                            {t("search_available_now", "Available now")}
+                          </div>
+                        )}
+                        {publicProfile?.availability === "HALF_BUSY" && (
+                          <div className="flex items-center whitespace-nowrap text-amber-600 dark:text-amber-400 font-medium bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-md">
+                            <Clock className="w-4 h-4 me-1" />
+                            {t("search_half_busy", "Partially busy")}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAppSelector } from "@/store/hooks";
 import type { LocalizedString, Master } from "@/types";
-import { getLocalizedName } from "@/utils";
+import { getLocalizedName, isTopRated } from "@/utils";
 import { SEO } from "@/components/seo";
+import { useCardLink } from "@/lib/use-card-link";
 
 // Manager contact details
 const MANAGER_PHONE = "+37493233402";
@@ -26,6 +27,7 @@ export default function MastersPageContent() {
   const { t, i18n } = useTranslation();
   const { user } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+  const cardLink = useCardLink();
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const limit = 5;
@@ -120,7 +122,11 @@ export default function MastersPageContent() {
               const isCurrentUser = user?.id === master.id;
               
               return (
-              <div key={master.id} className={`bg-white rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md relative ${isCurrentUser ? 'border-2 border-brand' : 'border border-slate-100'}`}>
+              <div
+                key={master.id}
+                onClick={cardLink(`/masters/${master.id}`)}
+                className={`group/card cursor-pointer bg-white rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md relative ${isCurrentUser ? 'border-2 border-brand' : 'border border-slate-100'}`}
+              >
                 {isCurrentUser && (
                   <div className="absolute top-0 end-0 bg-brand text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm">
                     {t("profile_this_is_you", "Your Profile")}
@@ -146,7 +152,7 @@ export default function MastersPageContent() {
                 <div className="p-6 md:p-8 flex-1 flex flex-col justify-between">
                   <div>
                     <Link to={`/masters/${master.id}`}>
-                      <h2 className="text-2xl font-bold text-slate-900 mb-1 hover:text-brand transition-colors">
+                      <h2 className="text-2xl font-bold text-slate-900 mb-1 hover:text-brand group-hover/card:text-brand transition-colors">
                         {master.name || "Unnamed Master"}
                       </h2>
                     </Link>
@@ -168,10 +174,12 @@ export default function MastersPageContent() {
                         </div>
                       )}
 
-                      <div className="flex items-center text-orange-500 font-medium">
-                        <Star className="w-4 h-4 me-1 fill-current" />
-                        Top Rated
-                      </div>
+                      {isTopRated(master.rating, master.reviewsCount) && (
+                        <div className="flex items-center text-orange-500 font-medium">
+                          <Star className="w-4 h-4 me-1 fill-current" />
+                          {t("search_top_rated", "Top Rated")}
+                        </div>
+                      )}
 
                       {master.availability === "AVAILABLE" && (
                         <div className="flex items-center text-green-600 font-medium">

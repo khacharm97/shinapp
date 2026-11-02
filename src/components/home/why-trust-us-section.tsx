@@ -30,10 +30,6 @@ export function WhyTrustUsSection() {
 
   return (
     <section className="w-full max-w-[1740px] mx-auto px-4 md:px-20 py-8 md:py-16 text-start">
-      <h2 className="text-2xl md:text-4xl font-bold text-brand mb-12">
-        {t('why_trust_us_title', 'Why trust us?')}
-      </h2>
-
       <div className="grid grid-cols-1 md:grid-cols-3 xl:gap-12 gap-6">
         {features.map((feature) => (
           <div

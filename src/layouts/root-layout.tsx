@@ -1,6 +1,8 @@
 import { getImageUrl } from '@/utils';
 
-import { NavLink, Outlet, Link, useNavigate, ScrollRestoration } from "react-router-dom"
+import { NavLink, Outlet, Link, useNavigate, useLocation, ScrollRestoration } from "react-router-dom"
+import { LoginRequiredProvider } from "@/components/auth/login-required-provider"
+import { rememberReturnTo } from "@/lib/return-to"
 import { useTranslation } from "react-i18next"
 import { Mail, Phone, Menu, User, LogOut, FileText, Wrench, LifeBuoy } from "lucide-react"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -43,6 +45,9 @@ const FOOTER_EMAIL = "shinapp.support@gmail.com"
 export default function RootLayout() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
+  // Header Log in / Sign up: come back to this page afterwards.
+  const rememberThisPage = () => rememberReturnTo(location.pathname + location.search)
   const dispatch = useAppDispatch()
   const { token, user: reduxUser } = useAppSelector((state) => state.auth)
 
@@ -111,6 +116,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+     <LoginRequiredProvider>
       <StructuredData />
       <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300">
         <header
@@ -188,10 +194,10 @@ export default function RootLayout() {
                 ) : (
                   <>
                     <Button variant="ghost" asChild>
-                      <Link to="/login">{t("nav_login")}</Link>
+                      <Link to="/login" onClick={rememberThisPage}>{t("nav_login")}</Link>
                     </Button>
                     <Button className="bg-brand text-brand-foreground hover:bg-brand/90" asChild>
-                      <Link to="/signup">{t("nav_signup")}</Link>
+                      <Link to="/signup" onClick={rememberThisPage}>{t("nav_signup")}</Link>
                     </Button>
                   </>
                 )}
@@ -253,10 +259,10 @@ export default function RootLayout() {
                       ) : (
                         <>
                           <Button variant="outline" size="sm" asChild className="w-full">
-                            <Link to="/login">{t("nav_login")}</Link>
+                            <Link to="/login" onClick={rememberThisPage}>{t("nav_login")}</Link>
                           </Button>
                           <Button size="sm" className="bg-brand text-brand-foreground hover:bg-brand/90 w-full" asChild>
-                            <Link to="/signup">{t("nav_signup")}</Link>
+                            <Link to="/signup" onClick={rememberThisPage}>{t("nav_signup")}</Link>
                           </Button>
                         </>
                       )}
@@ -288,6 +294,29 @@ export default function RootLayout() {
               <Link to="/" className="flex items-center opacity-70 hover:opacity-100 transition-opacity shrink-0">
                 <img src={logo} width={125} height={42} alt="ShinApp Logo" className="h-6 w-auto object-contain" />
               </Link>
+
+              <nav className="text-center sm:text-start space-y-3" aria-label={t("footer_menu", "Menu")}>
+                <h3 className="text-sm font-semibold text-primary">
+                  {t("footer_menu", "Menu")}
+                </h3>
+                <ul className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm text-muted-foreground">
+                  {[
+                    { to: "/", label: t("nav_home") },
+                    { to: "/search", label: t("nav_masters") },
+                    { to: "/announcements", label: t("nav_announcements", "Announcements") },
+                    { to: "/technique", label: t("nav_technique") },
+                    { to: "/calculator", label: t("nav_calculator") },
+                    { to: "/about", label: t("nav_about_us") },
+                    { to: "/contact", label: t("nav_contact_us", "Contact us") },
+                  ].map((link) => (
+                    <li key={link.to}>
+                      <Link to={link.to} className="hover:text-foreground transition-colors">
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
 
               <div className="text-center sm:text-start space-y-3">
                 <h3 className="text-sm font-semibold text-primary">
@@ -327,6 +356,7 @@ export default function RootLayout() {
 
         <SupportWidget open={supportOpen} onOpenChange={setSupportOpen} />
       </div>
+     </LoginRequiredProvider>
     </ThemeProvider>
   )
 }

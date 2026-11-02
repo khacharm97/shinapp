@@ -3,7 +3,7 @@ import { SEO } from '@/components/seo'
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, Star, CheckCircle2, Clock, ChevronLeft, ChevronRight, MoreHorizontal, Search, X } from "lucide-react";
+import { Loader2, Star, Award, CheckCircle2, Clock, ChevronLeft, ChevronRight, MoreHorizontal, Search, X } from "lucide-react";
 import { useGlobalSearchQuery, useGetSkillsQuery } from "@/store/api/authApi";
 import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
@@ -19,11 +19,13 @@ import {
 
 import { useAppSelector } from "@/store/hooks";
 import type { LocalizedString, Master, Skill } from "@/types";
-import { getLocalizedName } from "@/utils";
+import { getLocalizedName, isTopRated } from "@/utils";
 import { cn } from "@/lib/utils";
+import { useCardLink } from "@/lib/use-card-link";
 
 export default function SearchPageContent() {
   const { t, i18n } = useTranslation();
+  const cardLink = useCardLink();
   const { user } = useAppSelector((state) => state.auth);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -252,7 +254,11 @@ export default function SearchPageContent() {
                   const isCurrentUser = user?.id === master.id;
 
                   return (
-                    <div key={master.id} className={`bg-gray-100 dark:bg-zinc-900 rounded-xl overflow-hidden flex flex-col md:flex-row p-6 md:p-8 relative ${isCurrentUser ? 'ring-2 ring-brand' : ''}`}>
+                    <div
+                      key={master.id}
+                      onClick={cardLink(`/masters/${master.id}`)}
+                      className={`group/card cursor-pointer bg-gray-100 dark:bg-zinc-900 rounded-xl overflow-hidden flex flex-col md:flex-row p-6 md:p-8 relative transition-shadow hover:shadow-md ${isCurrentUser ? 'ring-2 ring-brand' : ''}`}
+                    >
                       {isCurrentUser && (
                         <div className="absolute top-0 end-0 bg-brand text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm">
                           {t("profile_this_is_you", "Your Profile")}
@@ -298,7 +304,7 @@ export default function SearchPageContent() {
 
                       {/* Profile Info */}
                       <div className="flex-1 flex flex-col justify-center">
-                        <Link to={`/masters/${master.id}`} className="block w-max hover:text-brand transition-colors">
+                        <Link to={`/masters/${master.id}`} className="block w-max hover:text-brand group-hover/card:text-brand transition-colors">
                           <h2 className="text-xl font-bold text-gray-900 dark:text-foreground mb-1">
                             {master.name || t("search_unnamed_master", "Unnamed Master")}
                           </h2>
@@ -327,15 +333,17 @@ export default function SearchPageContent() {
                                 ({master.reviewsCount})
                               </span>
                             </div>
-                          ) : master.userInfo?.topRated ? (
-                            <div className="flex items-center text-orange-500 font-medium">
-                              <Star className="w-4 h-4 fill-current me-1" />
-                              {t("search_top_rated", "Top Rated")}
-                            </div>
                           ) : (
                             <div className="flex items-center text-gray-400 font-normal">
                               <Star className="w-4 h-4 me-1" />
                               {t("search_no_reviews", "No reviews yet")}
+                            </div>
+                          )}
+
+                          {isTopRated(master.rating, master.reviewsCount) && (
+                            <div className="flex items-center text-orange-500 font-medium">
+                              <Award className="w-4 h-4 me-1" />
+                              {t("search_top_rated", "Top Rated")}
                             </div>
                           )}
 

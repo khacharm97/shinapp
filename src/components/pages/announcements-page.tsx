@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { AnnouncementCardLink, AnnouncementDetailsHint } from "@/components/announcements/announcement-card-link";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -169,8 +169,8 @@ export default function AnnouncementsPageContent() {
               const posted = formatDistanceToNow(new Date(announcement.createdAt), { addSuffix: true, locale: getDateLocale(i18n.language) });
 
               return (
-                <Link
-                  to={`/announcements/${announcement.id}`}
+                <AnnouncementCardLink
+                  id={announcement.id}
                   key={announcement.id}
                   className="group bg-white dark:bg-zinc-900 rounded-2xl border border-slate-100 dark:border-zinc-800 hover:shadow-lg hover:border-brand/20 transition-all duration-300 overflow-hidden flex flex-col sm:flex-row gap-5 p-4 sm:p-5 animate-in fade-in slide-in-from-bottom-4"
                   style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
@@ -233,12 +233,14 @@ export default function AnnouncementsPageContent() {
                         {t("urgent", "URGENT")}
                       </span>
                     )}
-                    <span className="flex items-center gap-1 text-brand font-semibold text-sm group-hover:gap-2 transition-all shrink-0 whitespace-nowrap">
-                      {t("view_details", "View details")}
-                      <ArrowRight className="w-4 h-4" />
-                    </span>
+                    <AnnouncementDetailsHint>
+                      <span className="flex items-center gap-1 text-brand font-semibold text-sm group-hover:gap-2 transition-all shrink-0 whitespace-nowrap">
+                        {t("view_details", "View details")}
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </AnnouncementDetailsHint>
                   </div>
-                </Link>
+                </AnnouncementCardLink>
               );
             })}
           </div>

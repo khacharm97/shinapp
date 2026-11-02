@@ -1,9 +1,12 @@
-import { getImageUrl, isCompany, isMaster } from '@/utils';
+import { getImageUrl, isCompany, isMaster, isTopRated } from '@/utils';
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useRequireLogin } from "@/components/auth/login-required-context";
+import { AnnouncementCardLink } from "@/components/announcements/announcement-card-link";
 import { useAppSelector } from "@/store/hooks";
 import { useTranslation } from "react-i18next";
 import { Loader2, MapPin, Star, CheckCircle2, Clock, Phone, ArrowLeft, ImagePlus, FileText, Calendar as CalendarIcon, MessageSquare, BadgeCheck, Building2, Globe, Instagram, Facebook, Users, Wrench, Megaphone } from "lucide-react";
+import { ImageViewer } from "@/components/image-viewer";
 import { useGetUserByIdQuery, useGetSkillsQuery, useGetProfileQuery, useGetMasterReviewsQuery, useGetMasterBusyDatesQuery } from "@/store/api/authApi";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -26,6 +29,7 @@ const MANAGER_PHONE = "+37493233402";
 export default function UserDetailsPageContent() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const requireLogin = useRequireLogin();
   const { t, i18n } = useTranslation();
 
   // Go back to wherever the user came from (usually the search page); fall back
@@ -38,6 +42,10 @@ export default function UserDetailsPageContent() {
     }
   };
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isAvatarOpen, setIsAvatarOpen] = useState(false);
+  // Which portfolio's photos are open in the big view, and which photo.
+  // The portfolio is kept after closing so its photo stays visible while the viewer fades out.
+  const [portfolioView, setPortfolioView] = useState<{ portfolio: Portfolio; index: number | null } | null>(null);
 
   const token = useAppSelector((state) => state.auth.token);
   const { data: profile } = useGetProfileQuery(undefined, { skip: !token });
@@ -164,7 +172,14 @@ export default function UserDetailsPageContent() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex gap-4">
                   <div>
-                    <div className="w-24 h-24 rounded-full border-4 border-white dark:border-zinc-800 shadow-md overflow-hidden bg-slate-200 dark:bg-zinc-700 shrink-0">
+                    {/* Only a real uploaded photo opens in the big view, not the placeholder */}
+                    <button
+                      type="button"
+                      onClick={() => user.avatarUrl && setIsAvatarOpen(true)}
+                      disabled={!user.avatarUrl}
+                      aria-label={t("view_photo", "View photo")}
+                      className="block w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full border-4 border-white dark:border-zinc-800 shadow-md overflow-hidden bg-slate-200 dark:bg-zinc-700 shrink-0 enabled:cursor-zoom-in disabled:cursor-default enabled:hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    >
                       <img
                         src={user.avatarUrl ? getImageUrl(user.avatarUrl) || "" : "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600"}
                         alt={displayName}
@@ -173,7 +188,15 @@ export default function UserDetailsPageContent() {
                           e.currentTarget.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600";
                         }}
                       />
-                    </div>
+                    </button>
+                    {user.avatarUrl && (
+                      <ImageViewer
+                        images={[getImageUrl(user.avatarUrl) || ""]}
+                        index={isAvatarOpen ? 0 : null}
+                        onIndexChange={(i) => setIsAvatarOpen(i !== null)}
+                        title={displayName}
+                      />
+                    )}
                   </div>
                   <div className="flex flex-col items-start justify-start gap-3 text-sm text-start">
                     <h1 className="text-xl font-bold text-slate-900 dark:text-foreground flex items-center gap-1.5">
@@ -202,10 +225,12 @@ export default function UserDetailsPageContent() {
                     )}
                     {isMasterUser && (
                       <div className="flex gap-4">
-                        <div className="flex items-center text-orange-500 font-medium bg-orange-50 dark:bg-orange-500/10 px-0 py-1 rounded-md">
-                          <Star className="w-4 h-4 me-1 fill-current" />
-                          {t("search_top_rated", "Top Rated")}
-                        </div>
+                        {isTopRated(reviewsData?.averageRating, reviewsData?.count) && (
+                          <div className="flex items-center text-orange-500 font-medium bg-orange-50 dark:bg-orange-500/10 px-0 py-1 rounded-md">
+                            <Star className="w-4 h-4 me-1 fill-current" />
+                            {t("search_top_rated", "Top Rated")}
+                          </div>
+                        )}
 
                         {user.availability === "AVAILABLE" && (
                           <div className="flex items-center text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-500/10 px-2 py-1 rounded-md">
@@ -237,7 +262,7 @@ export default function UserDetailsPageContent() {
                       className="w-full md:w-auto border-brand text-brand hover:bg-brand/10 hover:text-brand"
                       onClick={() =>
                         !profile
-                          ? navigate("/login")
+                          ? requireLogin()
                           : navigate(
                               `/messages/new?recipientId=${user.id}&type=${isCompanyUser && !isMasterUser ? "MASTER_COMPANY" : "USER_MASTER"}` +
                                 `&recipientName=${encodeURIComponent(user.name || "")}` +
@@ -440,9 +465,9 @@ export default function UserDetailsPageContent() {
                 </h2>
                 <div className="grid gap-3">
                   {announcements.map((announcement) => (
-                    <Link
+                    <AnnouncementCardLink
                       key={announcement.id}
-                      to={`/announcements/${announcement.id}`}
+                      id={announcement.id}
                       className="flex items-center justify-between gap-4 bg-slate-50 dark:bg-zinc-800/50 hover:bg-slate-100 dark:hover:bg-zinc-800 p-4 rounded-xl border border-slate-100 dark:border-zinc-800 transition-colors"
                     >
                       <div className="min-w-0">
@@ -452,7 +477,7 @@ export default function UserDetailsPageContent() {
                       <div className="text-xs text-slate-500 dark:text-gray-400 shrink-0">
                         {fmtDate(announcement.startDate)} – {fmtDate(announcement.endDate)}
                       </div>
-                    </Link>
+                    </AnnouncementCardLink>
                   ))}
                 </div>
               </section>
@@ -528,7 +553,14 @@ export default function UserDetailsPageContent() {
                     <div key={port.id} className="border border-slate-200 dark:border-zinc-700 rounded-xl overflow-hidden group bg-white dark:bg-zinc-900 shadow-sm hover:shadow-md transition-all">
                       <div className="aspect-video bg-slate-100 dark:bg-zinc-800 relative">
                         {port.imageUrls?.[0] ? (
-                          <img src={getImageUrl(port.imageUrls[0]) || ""} className="w-full h-full object-cover" alt={port.title} />
+                          <button
+                            type="button"
+                            onClick={() => setPortfolioView({ portfolio: port, index: 0 })}
+                            aria-label={t("view_photo", "View photo")}
+                            className="block w-full h-full cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand"
+                          >
+                            <img src={getImageUrl(port.imageUrls[0]) || ""} className="w-full h-full object-cover transition-opacity hover:opacity-90" alt={port.title} />
+                          </button>
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-slate-400 dark:text-zinc-500">
                             <ImagePlus className="w-8 h-8" />
@@ -542,9 +574,15 @@ export default function UserDetailsPageContent() {
                         {port.imageUrls && port.imageUrls.length > 1 && (
                           <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
                             {port.imageUrls.slice(1).map((url: string, i: number) => (
-                              <div key={i} className="w-12 h-12 rounded-md overflow-hidden bg-slate-100 dark:bg-zinc-800">
+                              <button
+                                key={i}
+                                type="button"
+                                onClick={() => setPortfolioView({ portfolio: port, index: i + 1 })}
+                                aria-label={t("view_photo", "View photo")}
+                                className="w-12 h-12 rounded-md overflow-hidden bg-slate-100 dark:bg-zinc-800 cursor-zoom-in hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                              >
                                 <img src={getImageUrl(url) || ""} className="w-full h-full object-cover" alt="" />
-                              </div>
+                              </button>
                             ))}
                           </div>
                         )}
@@ -552,6 +590,12 @@ export default function UserDetailsPageContent() {
                     </div>
                   ))}
                 </div>
+                <ImageViewer
+                  images={(portfolioView?.portfolio.imageUrls ?? []).map((url) => getImageUrl(url) || "")}
+                  index={portfolioView?.index ?? null}
+                  onIndexChange={(i) => setPortfolioView((v) => (v ? { ...v, index: i } : v))}
+                  title={portfolioView?.portfolio.title || t("profile_portfolios", "Portfolios")}
+                />
               </section>
             )}
           </div>

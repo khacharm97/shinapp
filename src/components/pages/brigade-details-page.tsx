@@ -1,6 +1,7 @@
 import { getImageUrl } from '@/utils';
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useRequireLogin } from "@/components/auth/login-required-context";
 import { useTranslation } from "react-i18next";
 import { Loader2, ArrowLeft, Star, Phone, CheckCircle2, User as UserIcon, FileText, MessageSquare } from "lucide-react";
 import { useGetBrigadeByIdQuery, useGetBrigadeReviewsQuery, useGetProfileQuery } from "@/store/api/authApi";
@@ -17,6 +18,7 @@ const MANAGER_PHONE = "+37493233402";
 export default function BrigadeDetailsPageContent() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const requireLogin = useRequireLogin();
   const { t } = useTranslation();
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
 
@@ -149,7 +151,7 @@ export default function BrigadeDetailsPageContent() {
                     className="w-full md:w-auto border-brand text-brand hover:bg-brand/10 hover:text-brand"
                     onClick={() =>
                       !profile
-                        ? navigate("/login")
+                        ? requireLogin()
                         : navigate(
                             `/messages/new?recipientId=${brigade.owner.id}&type=USER_MASTER` +
                               `&recipientName=${encodeURIComponent(brigade.owner.name || "")}` +
