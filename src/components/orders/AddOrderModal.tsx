@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCreateOrderMutation, useSearchOrderClientsQuery } from "@/store/api/authApi";
+import { useCreateOrderMutation, useSearchOrderClientsQuery, useGetMasterBusyDatesQuery } from "@/store/api/authApi";
+import { OrderDateRangePicker } from "./OrderDateRangePicker";
 import { toast } from "sonner";
 import { Upload, X, MapPin, Search } from "lucide-react";
 import { getImageUrl, resolveApiErrorMessage } from "@/utils";
@@ -68,6 +69,15 @@ export function AddOrderModal({ isOpen, onClose, masterId }: AddOrderModalProps)
     setPrivacyAccepted(false);
   };
 
+  // Clear the form whenever the modal closes, however it was closed.
+  const [wasOpen, setWasOpen] = useState(isOpen);
+  if (wasOpen !== isOpen) {
+    setWasOpen(isOpen);
+    if (!isOpen) resetForm();
+  }
+
+  const { data: busyDates } = useGetMasterBusyDatesQuery(masterId, { skip: !isOpen });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedClient) {
@@ -118,7 +128,7 @@ export function AddOrderModal({ isOpen, onClose, masterId }: AddOrderModalProps)
         onClose();
       }
     }}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{t("add_order_title", "Add Order")}</DialogTitle>
           <DialogDescription>
@@ -197,28 +207,15 @@ export function AddOrderModal({ isOpen, onClose, masterId }: AddOrderModalProps)
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="startDate">{t("start_date", "Start Date")} <span className="text-red-500">*</span></Label>
-              <Input
-                id="startDate"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="endDate">{t("end_date", "End Date")} <span className="text-red-500">*</span></Label>
-              <Input
-                id="endDate"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                required
-              />
-            </div>
-          </div>
+          <OrderDateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            busyDates={busyDates}
+            onChange={(start, end) => {
+              setStartDate(start);
+              setEndDate(end);
+            }}
+          />
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">

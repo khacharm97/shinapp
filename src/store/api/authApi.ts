@@ -449,9 +449,10 @@ export const authApi = createApi({
     }),
 
     getTechniques: builder.query<{ items: Technique[]; total: number; page: number; limit: number; totalPages: number }, TechniquesQueryArgs>({
-      query: ({ page = 1, limit = 10, search }) => {
+      query: ({ page = 1, limit = 10, search, sortBy }) => {
         let qs = `techniques?page=${page}&limit=${limit}`;
         if (search) qs += `&search=${encodeURIComponent(search)}`;
+        if (sortBy === 'rating') qs += `&sortBy=rating`;
         return qs;
       },
       providesTags: ['Techniques'],

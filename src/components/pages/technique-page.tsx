@@ -2,9 +2,17 @@ import { getImageUrl } from '@/utils';
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Loader2, ChevronLeft, ChevronRight, MoreHorizontal, Wrench } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, MoreHorizontal, Wrench, Star } from "lucide-react";
 import { useGetTechniquesQuery } from "@/store/api/authApi";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { Technique } from "@/types";
 import { SEO } from "@/components/seo";
 import techniqueImg from '@/assets/technique.webp';
@@ -14,9 +22,10 @@ export default function TechniquePageContent() {
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'newest' | 'rating'>('newest');
   const limit = 9;
 
-  const { data, isLoading, isError } = useGetTechniquesQuery({ page, limit, search });
+  const { data, isLoading, isError } = useGetTechniquesQuery({ page, limit, search, sortBy });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +77,27 @@ export default function TechniquePageContent() {
           </form>
         </div>
 
+        <div className="flex items-center justify-end gap-3">
+          <Label htmlFor="technique-sort-by" className="text-sm text-gray-600 dark:text-gray-400 shrink-0">
+            {t("search_sort_by", "Sort by")}
+          </Label>
+          <Select
+            value={sortBy}
+            onValueChange={(val) => {
+              setSortBy(val === "rating" ? "rating" : "newest");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger id="technique-sort-by" className="w-48 bg-white dark:bg-card border-gray-300 dark:border-border">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">{t("techniques_sort_newest", "Newest")}</SelectItem>
+              <SelectItem value="rating">{t("search_sort_rating", "Highest rated")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {techniques.length === 0 ? (
           <div className="bg-white dark:bg-zinc-900 p-8 rounded-2xl shadow-sm text-center">
             <p className="text-slate-500 dark:text-gray-400">{t("no_techniques_found", "No techniques found.")}</p>
@@ -93,6 +123,13 @@ export default function TechniquePageContent() {
                   <h2 className="text-lg font-bold text-slate-900 dark:text-foreground mb-1 line-clamp-1 group-hover:text-brand transition-colors">
                     {technique.name}
                   </h2>
+                  <div className="flex items-center gap-1 text-sm text-slate-600 dark:text-gray-300 mb-2">
+                    <Star className={`w-4 h-4 ${technique.reviewsCount ? 'fill-orange-400 text-orange-400' : 'fill-slate-200 text-slate-200 dark:fill-zinc-700 dark:text-zinc-700'}`} />
+                    <span className="font-semibold">{technique.reviewsCount ? (technique.rating ?? 0).toFixed(1) : "-"}</span>
+                    <span className="text-slate-500 dark:text-gray-400">
+                      ({t("brigade_reviews_count", "{{count}} reviews", { count: technique.reviewsCount ?? 0 })})
+                    </span>
+                  </div>
                   <p className="text-sm text-slate-500 dark:text-gray-400 line-clamp-2 mb-4 flex-1">
                     {technique.description || t("no_description_provided", "No description provided.")}
                   </p>

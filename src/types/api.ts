@@ -49,4 +49,5 @@ export interface TechniquesQueryArgs {
   page?: number;
   limit?: number;
   search?: string;
+  sortBy?: 'newest' | 'rating';
 }

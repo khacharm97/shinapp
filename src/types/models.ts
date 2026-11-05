@@ -111,6 +111,9 @@ export interface Technique {
   price: number;
   createdAt: string;
   updatedAt: string;
+  /** Average review score; only sent by the technique list endpoint. */
+  rating?: number;
+  reviewsCount?: number;
   owner?: {
     id: string;
     name?: string | null;
