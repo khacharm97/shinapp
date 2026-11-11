@@ -43,6 +43,14 @@ export interface MastersQueryArgs {
   topRated?: boolean;
   availableNow?: boolean;
   sortBy?: 'relevance' | 'rating';
+  /** Skill keys - masters with any of them match. */
+  skills?: string[];
+  minRating?: number;
+  maxRating?: number;
+  /** The price range only applies within one unit (per day or per m²). */
+  priceUnit?: 'daily' | 'sqm';
+  minPrice?: number;
+  maxPrice?: number;
 }
 
 export interface TechniquesQueryArgs {

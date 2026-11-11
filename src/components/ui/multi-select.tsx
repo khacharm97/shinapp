@@ -22,6 +22,10 @@ interface MultiSelectProps {
   onChange: (values: string[]) => void
   placeholder?: string
   className?: string
+  /** Let the user add a value that isn't in the options. Off for filters. */
+  allowCreate?: boolean
+  searchPlaceholder?: string
+  emptyText?: string
 }
 
 export function MultiSelect({
@@ -30,6 +34,9 @@ export function MultiSelect({
   onChange,
   placeholder = "Select items...",
   className,
+  allowCreate = true,
+  searchPlaceholder,
+  emptyText = "No options found.",
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
@@ -40,7 +47,7 @@ export function MultiSelect({
 
   const filteredOptions = options.filter(o => o.label.toLowerCase().includes(searchQuery.toLowerCase()))
 
-  const showCreate = searchQuery.trim().length > 0 &&
+  const showCreate = allowCreate && searchQuery.trim().length > 0 &&
     !options.some(o => o.label.toLowerCase() === searchQuery.toLowerCase()) &&
     !selected.includes(searchQuery.trim());
 
@@ -70,6 +77,12 @@ export function MultiSelect({
                   variant="secondary"
                   key={item}
                   className="me-1 mb-1 font-normal"
+                  // The dropdown trigger opens on pointerdown, before click fires.
+                  // Stop it here so removing a chip doesn't open the menu instead.
+                  onPointerDown={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
                   onClick={(e) => {
                     e.stopPropagation()
                     handleUnselect(item)
@@ -80,7 +93,9 @@ export function MultiSelect({
                     type="button"
                     className="ms-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault()
+                        e.stopPropagation()
                         handleUnselect(item)
                       }
                     }}
@@ -109,7 +124,7 @@ export function MultiSelect({
           <Input
             autoFocus
             className="h-8 border-0 focus-visible:ring-0 shadow-none p-0"
-            placeholder="Search or type to create..."
+            placeholder={searchPlaceholder ?? (allowCreate ? "Search or type to create..." : "Search...")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -147,7 +162,7 @@ export function MultiSelect({
           )}
           {filteredOptions.length === 0 && !showCreate && (
             <div className="p-2 text-sm text-center text-muted-foreground">
-              No options found.
+              {emptyText}
             </div>
           )}
         </div>

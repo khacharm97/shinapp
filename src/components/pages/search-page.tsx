@@ -9,6 +9,8 @@ import { armeniaRegions } from "@/lib/armenia-regions";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -38,8 +40,49 @@ export default function SearchPageContent() {
   const [regionId, setRegionId] = useState<string>("");
   const [cityId, setCityId] = useState<string>("");
   const [sortBy, setSortBy] = useState<"relevance" | "rating">("relevance");
+  const [skills, setSkills] = useState<string[]>([]);
+  const [minRating, setMinRating] = useState<number | undefined>();
+  const [maxRating, setMaxRating] = useState<number | undefined>();
+  const [priceUnit, setPriceUnit] = useState<"daily" | "sqm">("daily");
+  const [minPriceInput, setMinPriceInput] = useState("");
+  const [maxPriceInput, setMaxPriceInput] = useState("");
+  const [debouncedPrice, setDebouncedPrice] = useState({ min: "", max: "" });
 
   const limit = 10;
+
+  // Wait until the user stops typing a price before searching.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedPrice({ min: minPriceInput, max: maxPriceInput });
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [minPriceInput, maxPriceInput]);
+
+  const toPrice = (v: string) => {
+    const n = Number(v);
+    return v.trim() !== "" && Number.isFinite(n) && n >= 0 ? n : undefined;
+  };
+  const minPrice = toPrice(debouncedPrice.min);
+  const maxPrice = toPrice(debouncedPrice.max);
+
+  const hasExtraFilters =
+    topRated || availableNow || !!regionId || skills.length > 0 ||
+    minRating !== undefined || maxRating !== undefined ||
+    minPriceInput !== "" || maxPriceInput !== "";
+
+  const clearFilters = () => {
+    setTopRated(false);
+    setAvailableNow(false);
+    setRegionId("");
+    setCityId("");
+    setSkills([]);
+    setMinRating(undefined);
+    setMaxRating(undefined);
+    setMinPriceInput("");
+    setMaxPriceInput("");
+    setPage(1);
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -66,9 +109,21 @@ export default function SearchPageContent() {
     topRated: topRated || undefined,
     availableNow: availableNow || undefined,
     sortBy,
+    skills: skills.length ? skills : undefined,
+    minRating,
+    maxRating,
+    priceUnit,
+    minPrice,
+    maxPrice,
   });
 
   const { data: skillsData } = useGetSkillsQuery(undefined);
+
+  const skillOptions = ((skillsData as Skill[] | undefined) ?? [])
+    .map((s) => ({ value: s.key, label: getLocalizedName(s, i18n.language) }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+  const ratingSteps = [1, 2, 3, 4, 4.5, 5];
 
   const getLocalizedLocation = (rId?: string | null, cId?: string | null) => {
     if (!rId) return "";
@@ -210,6 +265,113 @@ export default function SearchPageContent() {
                 )}
               </div>
             </div>
+
+            <div>
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-foreground mb-4">{t("search_skills", "Skills")}</h3>
+              <MultiSelect
+                options={skillOptions}
+                selected={skills}
+                onChange={(vals) => { setSkills(vals); setPage(1); }}
+                allowCreate={false}
+                placeholder={t("search_skills_any", "All skills")}
+                searchPlaceholder={t("search_skills_search", "Search skills...")}
+                emptyText={t("search_skills_empty", "No skills found.")}
+                className="bg-white dark:bg-card border-gray-300 dark:border-border"
+              />
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-foreground mb-4">{t("search_rating", "Rating")}</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="min-rating" className="text-xs text-gray-500 dark:text-gray-400">{t("search_from", "From")}</Label>
+                  <Select
+                    value={minRating === undefined ? "any" : String(minRating)}
+                    onValueChange={(val) => {
+                      const v = val === "any" ? undefined : Number(val);
+                      setMinRating(v);
+                      if (v !== undefined && maxRating !== undefined && maxRating < v) setMaxRating(undefined);
+                      setPage(1);
+                    }}
+                  >
+                    <SelectTrigger id="min-rating" className="w-full bg-white dark:bg-card border-gray-300 dark:border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="any">{t("search_any", "Any")}</SelectItem>
+                      {ratingSteps.filter((r) => r < 5).map((r) => (
+                        <SelectItem key={r} value={String(r)}>★ {r}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="max-rating" className="text-xs text-gray-500 dark:text-gray-400">{t("search_to", "To")}</Label>
+                  <Select
+                    value={maxRating === undefined ? "any" : String(maxRating)}
+                    onValueChange={(val) => { setMaxRating(val === "any" ? undefined : Number(val)); setPage(1); }}
+                  >
+                    <SelectTrigger id="max-rating" className="w-full bg-white dark:bg-card border-gray-300 dark:border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="any">{t("search_any", "Any")}</SelectItem>
+                      {ratingSteps.filter((r) => minRating === undefined || r >= minRating).map((r) => (
+                        <SelectItem key={r} value={String(r)}>★ {r}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-foreground mb-4">{t("search_price", "Price")}</h3>
+              <div className="space-y-3">
+                <Select
+                  value={priceUnit}
+                  onValueChange={(val) => { setPriceUnit(val === "sqm" ? "sqm" : "daily"); setPage(1); }}
+                >
+                  <SelectTrigger aria-label={t("search_price_unit", "Price unit")} className="w-full bg-white dark:bg-card border-gray-300 dark:border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="daily">{t("profile_price_daily")}</SelectItem>
+                    <SelectItem value="sqm">{t("profile_price_sqm")}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    value={minPriceInput}
+                    onChange={(e) => setMinPriceInput(e.target.value)}
+                    placeholder={t("search_price_min", "Min")}
+                    aria-label={t("search_price_min", "Min")}
+                    className="bg-white dark:bg-card border-gray-300 dark:border-border"
+                  />
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    min={0}
+                    value={maxPriceInput}
+                    onChange={(e) => setMaxPriceInput(e.target.value)}
+                    placeholder={t("search_price_max", "Max")}
+                    aria-label={t("search_price_max", "Max")}
+                    className="bg-white dark:bg-card border-gray-300 dark:border-border"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{t("currency_amd", "AMD")}</p>
+              </div>
+            </div>
+
+            {hasExtraFilters && (
+              <Button variant="outline" className="w-full" onClick={clearFilters}>
+                <X className="w-4 h-4 me-2" />
+                {t("search_clear_filters", "Clear filters")}
+              </Button>
+            )}
           </div>
 
           {/* Right Content */}

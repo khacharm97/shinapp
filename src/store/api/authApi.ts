@@ -10,6 +10,27 @@ import { localizeNotification } from '@/lib/notification-i18n';
 const backendUrl = import.meta.env.VITE_BACK_URL || 'http://localhost:3000';
 const baseUrl = backendUrl.startsWith('http') ? `${backendUrl}/auth/` : `https://${backendUrl}/auth/`;
 
+/** Builds the query string shared by the masters list and the global search. */
+function buildMastersQuery(path: string, args: MastersQueryArgs): string {
+  const { page = 1, limit = 10, search, regionId, cityId, topRated, availableNow, sortBy, skills, minRating, maxRating, priceUnit, minPrice, maxPrice } = args;
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (search) params.set('search', search);
+  if (regionId) params.set('regionId', regionId);
+  if (cityId) params.set('cityId', cityId);
+  if (topRated !== undefined) params.set('topRated', String(topRated));
+  if (availableNow !== undefined) params.set('availableNow', String(availableNow));
+  if (sortBy && sortBy !== 'relevance') params.set('sortBy', sortBy);
+  if (skills?.length) params.set('skills', skills.join(','));
+  if (minRating !== undefined) params.set('minRating', String(minRating));
+  if (maxRating !== undefined) params.set('maxRating', String(maxRating));
+  if (priceUnit && (minPrice !== undefined || maxPrice !== undefined)) {
+    params.set('priceUnit', priceUnit);
+    if (minPrice !== undefined) params.set('minPrice', String(minPrice));
+    if (maxPrice !== undefined) params.set('maxPrice', String(maxPrice));
+  }
+  return `${path}?${params.toString()}`;
+}
+
 const baseQuery = fetchBaseQuery({
   baseUrl, // Ensure api-gateway runs on 3000
   prepareHeaders: (headers, { getState }) => {
@@ -62,28 +83,10 @@ export const authApi = createApi({
       providesTags: ['Profile'],
     }),
     getMasters: builder.query({
-      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow, sortBy }: MastersQueryArgs) => {
-        let qs = `masters?page=${page}&limit=${limit}`;
-        if (search) qs += `&search=${encodeURIComponent(search)}`;
-        if (regionId) qs += `&regionId=${encodeURIComponent(regionId)}`;
-        if (cityId) qs += `&cityId=${encodeURIComponent(cityId)}`;
-        if (topRated !== undefined) qs += `&topRated=${topRated}`;
-        if (availableNow !== undefined) qs += `&availableNow=${availableNow}`;
-        if (sortBy && sortBy !== 'relevance') qs += `&sortBy=${sortBy}`;
-        return qs;
-      },
+      query: (args: MastersQueryArgs) => buildMastersQuery('masters', args),
     }),
     globalSearch: builder.query({
-      query: ({ page = 1, limit = 10, search, regionId, cityId, topRated, availableNow, sortBy }: MastersQueryArgs) => {
-        let qs = `search?page=${page}&limit=${limit}`;
-        if (search) qs += `&search=${encodeURIComponent(search)}`;
-        if (regionId) qs += `&regionId=${encodeURIComponent(regionId)}`;
-        if (cityId) qs += `&cityId=${encodeURIComponent(cityId)}`;
-        if (topRated !== undefined) qs += `&topRated=${topRated}`;
-        if (availableNow !== undefined) qs += `&availableNow=${availableNow}`;
-        if (sortBy && sortBy !== 'relevance') qs += `&sortBy=${sortBy}`;
-        return qs;
-      },
+      query: (args: MastersQueryArgs) => buildMastersQuery('search', args),
     }),
     getMasterById: builder.query({
       query: (id: string) => `masters/${id}`,

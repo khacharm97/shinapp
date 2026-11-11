@@ -134,8 +134,6 @@ export default function RootLayout() {
                 <NavLink to="/announcements" className={getDesktopNavLinkClass}>{t("nav_announcements", "Announcements")}</NavLink>
                 <NavLink to="/technique" className={getDesktopNavLinkClass}>{t("nav_technique")}</NavLink>
                 <NavLink to="/calculator" className={getDesktopNavLinkClass}>{t("nav_calculator")}</NavLink>
-                <NavLink to="/about" className={getDesktopNavLinkClass}>{t("nav_about_us")}</NavLink>
-                <NavLink to="/contact" className={getDesktopNavLinkClass}>{t("nav_contact_us", "Contact us")}</NavLink>
               </nav>
             </div>
             <div className="flex items-center space-x-4">
@@ -221,8 +219,6 @@ export default function RootLayout() {
                       <NavLink to="/announcements" className={getMobileNavLinkClass}>{t("nav_announcements", "Announcements")}</NavLink>
                       <NavLink to="/technique" className={getMobileNavLinkClass}>{t("nav_technique")}</NavLink>
                       <NavLink to="/calculator" className={getMobileNavLinkClass}>{t("nav_calculator")}</NavLink>
-                      <NavLink to="/about" className={getMobileNavLinkClass}>{t("nav_about_us")}</NavLink>
-                      <NavLink to="/contact" className={getMobileNavLinkClass}>{t("nav_contact_us", "Contact us")}</NavLink>
                     </nav>
                     
                     {isLoggedIn && (
