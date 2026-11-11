@@ -727,5 +727,17 @@
   "search_price_unit": "Price unit",
   "search_price_min": "Min",
   "search_price_max": "Max",
-  "search_clear_filters": "Clear filters"
+  "search_clear_filters": "Clear filters",
+  "cancel_order": "Cancel Order",
+  "cancel_order_confirm_title": "Cancel this order?",
+  "cancel_order_confirm_desc": "The other party will be notified and won't be able to accept it. This can't be undone - to change your mind, send a new order.",
+  "keep_order": "Keep order",
+  "order_cancelled_success": "Order cancelled.",
+  "order_cancel_failed": "Failed to cancel order.",
+  "order_cancelled": "This order was cancelled.",
+  "order_not_pending": "This order is no longer waiting for a response.",
+  "order_cancel_not_pending": "Only orders still waiting for a response can be cancelled.",
+  "order_cancel_not_sender": "Only the person who sent this offer can cancel it. You can reject it instead.",
+  "notif_order_cancelled_title": "Order Cancelled",
+  "notif_order_cancelled_message": "{{name}} has cancelled the order."
 }

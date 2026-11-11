@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import {
   useAcceptOrderMutation,
   useRejectOrderMutation,
+  useCancelOrderMutation,
   useUpdateOrderMutation,
   useRequestOrderCompletionMutation,
   useAcceptOrderCompletionMutation,
@@ -18,6 +19,17 @@ import {
   useGetBrigadeByIdQuery,
 } from "@/store/api/authApi";
 import { LeaveReviewModal } from "./LeaveReviewModal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { getDateLocale, getImageUrl, resolveApiErrorMessage } from "@/utils";
 import { MapPin, Calendar, CreditCard, DollarSign, MessageSquare, Wrench, Users } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
@@ -36,6 +48,7 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
   const navigate = useNavigate();
   const [acceptOrder, { isLoading: isAccepting }] = useAcceptOrderMutation();
   const [rejectOrder, { isLoading: isRejecting }] = useRejectOrderMutation();
+  const [cancelOrder, { isLoading: isCancelling }] = useCancelOrderMutation();
   const [updateOrder, { isLoading: isUpdating }] = useUpdateOrderMutation();
   const [requestCompletion, { isLoading: isRequestingCompletion }] = useRequestOrderCompletionMutation();
   const [acceptCompletion, { isLoading: isAcceptingCompletion }] = useAcceptOrderCompletionMutation();
@@ -115,7 +128,17 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
       toast.success(t("order_rejected", "Order rejected successfully!"));
       onClose();
     } catch (error: any  ) {  
-      toast.error(t("order_reject_failed", "Failed to reject order."));
+      toast.error(resolveApiErrorMessage(t, error?.data?.message) || t("order_reject_failed", "Failed to reject order."));
+    }
+  };
+
+  const handleCancel = async () => {
+    try {
+      await cancelOrder(order.id).unwrap();
+      toast.success(t("order_cancelled_success", "Order cancelled."));
+      onClose();
+    } catch (error: any) {
+      toast.error(resolveApiErrorMessage(t, error?.data?.message) || t("order_cancel_failed", "Failed to cancel order."));
     }
   };
 
@@ -434,8 +457,31 @@ export function OrderDetailsModal({ isOpen, onClose, order, currentUserId }: Ord
             )}
 
             {order.status === "PENDING" && order.initiatorId === currentUserId && (
-              <div className="pt-4 border-t border-slate-100 dark:border-zinc-800 text-center">
+              <div className="pt-4 border-t border-slate-100 dark:border-zinc-800 text-center space-y-3">
                 <p className="text-sm text-slate-500 dark:text-gray-400">{t("waiting_for_response", "Waiting for the other party to respond...")}</p>
+                {isContractingParty && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" className="w-full text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:border-red-500/30 dark:hover:bg-red-500/10" disabled={isCancelling}>
+                        {isCancelling ? t("processing", "Processing...") : t("cancel_order", "Cancel Order")}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t("cancel_order_confirm_title", "Cancel this order?")}</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t("cancel_order_confirm_desc", "The other party will be notified and won't be able to accept it. This can't be undone - to change your mind, send a new order.")}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>{t("keep_order", "Keep order")}</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleCancel} className="bg-red-600 hover:bg-red-700 text-white">
+                          {t("cancel_order", "Cancel Order")}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
               </div>
             )}
           </div>

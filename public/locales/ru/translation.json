@@ -727,5 +727,17 @@
   "search_price_unit": "Единица цены",
   "search_price_min": "Мин.",
   "search_price_max": "Макс.",
-  "search_clear_filters": "Сбросить фильтры"
+  "search_clear_filters": "Сбросить фильтры",
+  "cancel_order": "Отменить заказ",
+  "cancel_order_confirm_title": "Отменить этот заказ?",
+  "cancel_order_confirm_desc": "Другая сторона получит уведомление и не сможет принять заказ. Это действие нельзя отменить - если передумаете, отправьте новый заказ.",
+  "keep_order": "Оставить заказ",
+  "order_cancelled_success": "Заказ отменён.",
+  "order_cancel_failed": "Не удалось отменить заказ.",
+  "order_cancelled": "Этот заказ был отменён.",
+  "order_not_pending": "Этот заказ больше не ожидает ответа.",
+  "order_cancel_not_pending": "Отменить можно только заказы, ожидающие ответа.",
+  "order_cancel_not_sender": "Отменить предложение может только тот, кто его отправил. Вы можете его отклонить.",
+  "notif_order_cancelled_title": "Заказ отменён",
+  "notif_order_cancelled_message": "{{name}} отменил(а) заказ."
 }

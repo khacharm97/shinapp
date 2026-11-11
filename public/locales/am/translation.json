@@ -727,5 +727,17 @@
   "search_price_unit": "Գնի միավոր",
   "search_price_min": "Նվազ.",
   "search_price_max": "Առավ.",
-  "search_clear_filters": "Մաքրել ֆիլտրերը"
+  "search_clear_filters": "Մաքրել ֆիլտրերը",
+  "cancel_order": "Չեղարկել պատվերը",
+  "cancel_order_confirm_title": "Չեղարկե՞լ այս պատվերը",
+  "cancel_order_confirm_desc": "Մյուս կողմը կստանա ծանուցում և չի կարողանա ընդունել այն։ Սա հնարավոր չէ հետարկել․ մտափոխվելու դեպքում ուղարկեք նոր պատվեր։",
+  "keep_order": "Պահել պատվերը",
+  "order_cancelled_success": "Պատվերը չեղարկվեց։",
+  "order_cancel_failed": "Չհաջողվեց չեղարկել պատվերը։",
+  "order_cancelled": "Այս պատվերը չեղարկվել է։",
+  "order_not_pending": "Այս պատվերն այլևս պատասխանի չի սպասում։",
+  "order_cancel_not_pending": "Կարելի է չեղարկել միայն պատասխանի սպասող պատվերները։",
+  "order_cancel_not_sender": "Միայն առաջարկն ուղարկողը կարող է այն չեղարկել։ Դուք կարող եք մերժել այն։",
+  "notif_order_cancelled_title": "Պատվերը չեղարկվեց",
+  "notif_order_cancelled_message": "{{name}}-ն չեղարկել է պատվերը։"
 }

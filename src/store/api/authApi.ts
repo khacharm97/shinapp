@@ -374,6 +374,14 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['Profile'],
     }),
+    // Withdraw a pending order/offer you sent.
+    cancelOrder: builder.mutation({
+      query: (id: string) => ({
+        url: `orders/${id}/cancel`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Profile', 'BusyDays'],
+    }),
     assignOrderMembers: builder.mutation<any, { id: string; memberIds: string[] }>({
       query: ({ id, memberIds }) => ({
         url: `orders/${id}/assign`,
@@ -536,6 +544,7 @@ export const {
   useUpdateOrderMutation,
   useAcceptOrderMutation,
   useRejectOrderMutation,
+  useCancelOrderMutation,
   useAssignOrderMembersMutation,
   useGetMyOrdersQuery,
   useGetOrderByIdQuery,

@@ -709,5 +709,17 @@
   "search_price_unit": "واحد قیمت",
   "search_price_min": "حداقل",
   "search_price_max": "حداکثر",
-  "search_clear_filters": "پاک کردن فیلترها"
+  "search_clear_filters": "پاک کردن فیلترها",
+  "cancel_order": "لغو سفارش",
+  "cancel_order_confirm_title": "این سفارش لغو شود؟",
+  "cancel_order_confirm_desc": "طرف مقابل مطلع می‌شود و نمی‌تواند آن را بپذیرد. این کار قابل بازگشت نیست - اگر نظرتان عوض شد، سفارش جدیدی بفرستید.",
+  "keep_order": "نگه داشتن سفارش",
+  "order_cancelled_success": "سفارش لغو شد.",
+  "order_cancel_failed": "لغو سفارش ناموفق بود.",
+  "order_cancelled": "این سفارش لغو شده است.",
+  "order_not_pending": "این سفارش دیگر منتظر پاسخ نیست.",
+  "order_cancel_not_pending": "فقط سفارش‌هایی که منتظر پاسخ هستند قابل لغو هستند.",
+  "order_cancel_not_sender": "فقط فرستنده این پیشنهاد می‌تواند آن را لغو کند. شما می‌توانید آن را رد کنید.",
+  "notif_order_cancelled_title": "سفارش لغو شد",
+  "notif_order_cancelled_message": "{{name}} سفارش را لغو کرد."
 }
