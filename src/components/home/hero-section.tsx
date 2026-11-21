@@ -47,7 +47,7 @@ export function HeroSection() {
 
         {/* Badges container */}
         {featuredSkills.length > 0 && (
-        <div className="flex flex-row flex-wrap justify-center items-center gap-3 md:gap-4 mb-12">
+        <div className="flex flex-row flex-wrap justify-center items-center gap-2 sm:gap-3 md:gap-4 mb-12">
           {featuredSkills.map((skill) => {
             const color = skill.color || '#6823F1'
             const isUrl = skill.icon?.startsWith('http') || skill.icon?.startsWith('/')
@@ -59,16 +59,16 @@ export function HeroSection() {
                 key={skill.id}
                 type="button"
                 onClick={() => navigate(`/search?q=${encodeURIComponent(skill.key)}`)}
-                className="flex items-center gap-3 border border-gray-500 rounded-full px-5 py-2.5 bg-transparent hover:bg-white/10 transition-colors text-white"
+                className="flex items-center gap-2 md:gap-3 border border-gray-500 rounded-full px-4 py-2 md:px-6 md:py-3 bg-transparent hover:bg-white/10 transition-colors text-white"
               >
                 {Icon ? (
-                  <Icon className="w-4 h-4 shrink-0" style={{ color }} />
+                  <Icon className="w-5 h-5 md:w-6 md:h-6 shrink-0" style={{ color }} />
                 ) : isUrl ? (
-                  <img src={skill.icon} alt="" className="w-4 h-4 shrink-0 object-contain" />
+                  <img src={skill.icon} alt="" className="w-5 h-5 md:w-6 md:h-6 shrink-0 object-contain" />
                 ) : (
-                  <div className="w-4 h-4 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: color }} />
+                  <div className="w-5 h-5 md:w-6 md:h-6 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: color }} />
                 )}
-                <span className="text-sm font-semibold">{getLocalizedName(skill, i18n.language)}</span>
+                <span className="text-sm md:text-base font-normal">{getLocalizedName(skill, i18n.language)}</span>
               </button>
             )
           })}
